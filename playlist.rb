@@ -12,25 +12,24 @@ class PlaylistGenerator
   MAX_IMAGE_FILE_SIZE = 256 * 1024
   MIN_IMAGE_QUALITY = 10
 
-  def initialize(prompt)
-    @prompt = prompt
+  def initialize
     @access_token = refresh_access_token
     @user_id = get_spotify_user_id
   end
 
-  def generate_playlist
-    puts "\nCreating your playlist, hang tight…\n\n"
-    chatgpt_response = get_playlist_from_chatgpt
-    return puts "Oops, I couldn't create a playlist. Please try again!" if chatgpt_response.nil?
+  def generate_playlist(prompt)
+    puts "\nGenerating your playlist, please wait…\n"
+    chatgpt_response = get_playlist_from_chatgpt(prompt)
+    return puts "Oops, failed to generate a playlist. Please try again!" if chatgpt_response.nil?
 
     playlist_id = create_playlist(chatgpt_response[:name], chatgpt_response[:description])
     playlist_url = "https://open.spotify.com/playlist/#{playlist_id}"
-    puts "#{chatgpt_response[:name]}\n#{chatgpt_response[:description]}\n#{playlist_url}\n\n"
+    puts "#{chatgpt_response[:name]}\n#{chatgpt_response[:description]}\n#{playlist_url}\n"
 
     track_uris = chatgpt_response[:tracks].map { |track| search_tracks(track[:track], track[:artist]) }.compact
     add_tracks_to_playlist(playlist_id, track_uris)
 
-    puts "\nGenerating a cover for your playlist: #{chatgpt_response[:cover_prompt]}"
+    puts "Generating a cover for your playlist: #{chatgpt_response[:cover_prompt]}"
     jpeg_data = generate_playlist_cover(chatgpt_response[:cover_prompt])
     handle_cover_image(playlist_id, jpeg_data)
   end
@@ -73,9 +72,9 @@ class PlaylistGenerator
     HTTParty.post("#{SPOTIFY_API_URL}/playlists/#{playlist_id}/tracks", headers: { "Authorization" => "Bearer #{@access_token}", "Content-Type" => "application/json" }, body: { uris: track_uris }.to_json)
   end
 
-  def get_playlist_from_chatgpt
+  def get_playlist_from_chatgpt(prompt)
     headers = { "Authorization" => "Bearer #{ENV['OPENAI_API_KEY']}", "Content-Type" => "application/json" }
-    messages = [{ role: 'system', content: self.class.chatgpt_system_message }, { role: 'user', content: @prompt }]
+    messages = [{ role: 'system', content: self.class.chatgpt_system_prompt }, { role: 'user', content: prompt }]
     body = { model: 'gpt-4-turbo-preview', response_format: { type: "json_object" }, messages: messages }
     response = HTTParty.post("#{OPENAI_API_URL}/chat/completions", headers: headers, body: body.to_json)
     JSON.parse(response.parsed_response['choices'].first['message']['content'], symbolize_names: true)
@@ -164,8 +163,7 @@ class PlaylistGenerator
   end
 end
 
-if ARGV.empty?
-  puts "What kind of playlist would you like me to generate?"
-  prompt = gets.chomp
-  PlaylistGenerator.new(prompt).generate_playlist
-end
+generator = PlaylistGenerator.new
+puts "What kind of playlist would you like me to generate?"
+prompt = gets.chomp
+generator.generate_playlist(prompt)
