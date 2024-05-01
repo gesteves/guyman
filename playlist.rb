@@ -51,6 +51,21 @@ class PlaylistGenerator
     response.parsed_response['id']
   end
 
+  def get_top_artists(limit = 10, time_range = 'long_term')
+    response = HTTParty.get("#{SPOTIFY_API_URL}/me/top/artists", query: { limit: limit, time_range: time_range }, headers: { "Authorization" => "Bearer #{@access_token}" })
+    if response.success?
+      response.parsed_response['items']
+    else
+      []
+    end
+  end
+
+  def get_top_genres(limit = 10, time_range = 'long_term')
+    top_artists = get_top_artists(50)
+    genres = top_artists.map { |artist| artist['genres'] }.flatten.uniq.take(limit)
+    genres
+  end
+
   def create_playlist(playlist_name, playlist_description = '')
     options = {
       headers: { "Authorization" => "Bearer #{@access_token}", "Content-Type" => "application/json" },
@@ -87,7 +102,20 @@ class PlaylistGenerator
       body: {
         model: 'gpt-4-turbo-preview',
         response_format: { type: "json_object" },
-        messages: [{ role: 'system', content: self.class.chatgpt_system_prompt }, { role: 'user', content: prompt }]
+        messages: [
+          {
+            role: 'system',
+            content: self.class.chatgpt_system_prompt
+          },
+          {
+            role: 'system',
+            content: "The user's favorite genres are #{get_top_genres.join(", ")}. You can use this information to guide your choices, but do not feel limited by it."
+          },
+          {
+            role: 'user',
+            content: prompt
+          }
+        ]
       }.to_json
     }
     response = HTTParty.post("#{OPENAI_API_URL}/chat/completions", options)
