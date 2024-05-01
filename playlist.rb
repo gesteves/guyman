@@ -1,10 +1,9 @@
-require 'net/http'
-require 'uri'
-require 'cgi'
+require 'httparty'
 require 'dotenv'
 require 'json'
 require 'mini_magick'
 require 'base64'
+require 'cgi'
 
 Dotenv.load
 
@@ -24,116 +23,93 @@ class PlaylistGenerator
     chatgpt_response = get_playlist_from_chatgpt(prompt)
     return puts "Oops, failed to generate a playlist. Please try again!" if chatgpt_response.nil?
 
-    playlist_id = create_playlist(chatgpt_response[:name], chatgpt_response[:description])
+    playlist_id = create_playlist(chatgpt_response['name'], chatgpt_response['description'])
     playlist_url = "https://open.spotify.com/playlist/#{playlist_id}"
-    puts "#{chatgpt_response[:name]}\n#{chatgpt_response[:description]}\n#{playlist_url}\n\n"
+    puts "#{chatgpt_response['name']}\n#{chatgpt_response['description']}\n#{playlist_url}\n\n"
 
-    track_uris = chatgpt_response[:tracks].map { |track| search_tracks(track[:track], track[:artist]) }.compact
+    track_uris = chatgpt_response['tracks'].map { |track| search_tracks(track['track'], track['artist']) }.compact
     add_tracks_to_playlist(playlist_id, track_uris)
 
-    puts "\nGenerating a cover for your playlist: #{chatgpt_response[:cover_prompt]}"
-    jpeg_data = generate_playlist_cover(chatgpt_response[:cover_prompt])
+    puts "\nGenerating a cover for your playlist: #{chatgpt_response['cover_prompt']}"
+    jpeg_data = generate_playlist_cover(chatgpt_response['cover_prompt'])
     handle_cover_image(playlist_id, jpeg_data)
   end
 
   private
 
-  def send_request(url, method: :get, headers: {}, body: nil)
-    uri = URI(url)
-    http = Net::HTTP.new(uri.host, uri.port)
-    http.use_ssl = true
-    request = case method
-              when :get
-                Net::HTTP::Get.new(uri, headers)
-              when :post
-                req = Net::HTTP::Post.new(uri, headers)
-                req.body = body
-                req
-              when :put
-                req = Net::HTTP::Put.new(uri, headers)
-                req.body = body
-                req
-              end
-    response = http.request(request)
-    if response.is_a?(Net::HTTPSuccess)
-      begin
-        JSON.parse(response.body, symbolize_names: true)
-      rescue JSON::ParserError
-        response.body
-      end
-    else
-      nil
-    end
-  rescue => e
-    puts "An error occurred: #{e.message}"
-    nil
-  end
-  
-
   def refresh_access_token
-    body = URI.encode_www_form({ grant_type: 'refresh_token', refresh_token: ENV['SPOTIFY_REFRESH_TOKEN'] })
-    headers = { "Authorization" => "Basic " + Base64.strict_encode64("#{ENV['SPOTIFY_CLIENT_ID']}:#{ENV['SPOTIFY_CLIENT_SECRET']}"), "Content-Type" => "application/x-www-form-urlencoded" }
-    response = send_request("https://accounts.spotify.com/api/token", method: :post, headers: headers, body: body)
-    response[:access_token]
+    options = {
+      body: { grant_type: 'refresh_token', refresh_token: ENV['SPOTIFY_REFRESH_TOKEN'] },
+      headers: { "Authorization" => "Basic " + Base64.strict_encode64("#{ENV['SPOTIFY_CLIENT_ID']}:#{ENV['SPOTIFY_CLIENT_SECRET']}"), "Content-Type" => "application/x-www-form-urlencoded" }
+    }
+    response = HTTParty.post("https://accounts.spotify.com/api/token", options)
+    response.parsed_response['access_token']
   end
 
   def get_spotify_user_id
-    headers = { "Authorization" => "Bearer #{@access_token}" }
-    response = send_request("#{SPOTIFY_API_URL}/me", headers: headers)
-    response[:id]
+    response = HTTParty.get("#{SPOTIFY_API_URL}/me", headers: { "Authorization" => "Bearer #{@access_token}" })
+    response.parsed_response['id']
   end
 
   def create_playlist(playlist_name, playlist_description = '')
-    headers = { "Authorization" => "Bearer #{@access_token}", "Content-Type" => "application/json" }
-    body = { name: playlist_name, description: playlist_description, public: true }.to_json
-    response = send_request("#{SPOTIFY_API_URL}/users/#{@user_id}/playlists", method: :post, headers: headers, body: body)
-    response[:id]
+    options = {
+      headers: { "Authorization" => "Bearer #{@access_token}", "Content-Type" => "application/json" },
+      body: { name: playlist_name, description: playlist_description, public: true }.to_json
+    }
+    response = HTTParty.post("#{SPOTIFY_API_URL}/users/#{@user_id}/playlists", options)
+    response.parsed_response['id']
   end
-
-  require 'cgi'
 
   def search_tracks(track_name, artist_name)
     return if track_name.nil? || artist_name.nil?
     query = "#{track_name} artist:#{artist_name}"
-    headers = { "Authorization" => "Bearer #{@access_token}" }
-    response = send_request("#{SPOTIFY_API_URL}/search?type=track&limit=1&q=#{CGI.escape(query)}", headers: headers)
-    if response[:tracks] && response[:tracks][:items].any?
-      artists = response[:tracks][:items].first[:artists].map { |artist| artist[:name] }.join(", ")
-      puts "#{artists} – #{response[:tracks][:items].first[:name]}"
-      response[:tracks][:items].first[:uri]
+    response = HTTParty.get("#{SPOTIFY_API_URL}/search", query: { type: 'track', limit: 1, q: CGI.escape(query) }, headers: { "Authorization" => "Bearer #{@access_token}" })
+    if response.parsed_response['tracks'] && response.parsed_response['tracks']['items'].any?
+      artists = response.parsed_response['tracks']['items'].first['artists'].map { |artist| artist['name'] }.join(", ")
+      puts "#{artists} – #{response.parsed_response['tracks']['items'].first['name']}"
+      response.parsed_response['tracks']['items'].first['uri']
     else
       nil
     end
   end
 
   def add_tracks_to_playlist(playlist_id, track_uris)
-    headers = { "Authorization" => "Bearer #{@access_token}", "Content-Type" => "application/json" }
-    body = { uris: track_uris }.to_json
-    send_request("#{SPOTIFY_API_URL}/playlists/#{playlist_id}/tracks", method: :post, headers: headers, body: body)
+    options = {
+      headers: { "Authorization" => "Bearer #{@access_token}", "Content-Type" => "application/json" },
+      body: { uris: track_uris }.to_json
+    }
+    HTTParty.post("#{SPOTIFY_API_URL}/playlists/#{playlist_id}/tracks", options)
   end
 
   def get_playlist_from_chatgpt(prompt)
-    headers = { "Authorization" => "Bearer #{ENV['OPENAI_API_KEY']}", "Content-Type" => "application/json" }
-    messages = [{ role: 'system', content: self.class.chatgpt_system_prompt }, { role: 'user', content: prompt }]
-    body = { model: 'gpt-4-turbo-preview', response_format: { type: "json_object" }, messages: messages }.to_json
-    response = send_request("#{OPENAI_API_URL}/chat/completions", method: :post, headers: headers, body: body)
-    response ? JSON.parse(response[:choices].first[:message][:content], symbolize_names: true) : nil
+    options = {
+      headers: { "Authorization" => "Bearer #{ENV['OPENAI_API_KEY']}", "Content-Type" => "application/json" },
+      body: {
+        model: 'gpt-4-turbo-preview',
+        response_format: { type: "json_object" },
+        messages: [{ role: 'system', content: self.class.chatgpt_system_prompt }, { role: 'user', content: prompt }]
+      }.to_json
+    }
+    response = HTTParty.post("#{OPENAI_API_URL}/chat/completions", options)
+    JSON.parse(response.parsed_response['choices'].first['message']['content']) if response.success?
   end
 
   def generate_playlist_cover(prompt)
-    headers = { "Authorization" => "Bearer #{ENV['OPENAI_API_KEY']}", "Content-Type" => "application/json" }
-    body = {
-      model: 'dall-e-3',
-      prompt: prompt,
-      n: 1,
-      size: "1024x1024",
-      response_format: "b64_json",
-      quality: 'hd'
-    }.to_json
-    response = send_request("#{OPENAI_API_URL}/images/generations", method: :post, headers: headers, body: body)
-    return unless response && response[:data]
+    options = {
+      headers: { "Authorization" => "Bearer #{ENV['OPENAI_API_KEY']}", "Content-Type" => "application/json" },
+      body: {
+        model: 'dall-e-3',
+        prompt: prompt,
+        n: 1,
+        size: "1024x1024",
+        response_format: "b64_json",
+        quality: 'hd'
+      }.to_json
+    }
+    response = HTTParty.post("#{OPENAI_API_URL}/images/generations", options)
+    return unless response.success?
 
-    data = response[:data].first[:b64_json]
+    data = response.parsed_response['data']&.first['b64_json']
     return if data.nil?
 
     png = Base64.decode64(data)
@@ -165,16 +141,21 @@ class PlaylistGenerator
   end
 
   def set_playlist_cover(playlist_id, base64_image)
-    headers = { "Authorization" => "Bearer #{@access_token}", "Content-Type" => "image/jpeg" }
+    options = {
+      headers: { "Authorization" => "Bearer #{@access_token}", "Content-Type" => "image/jpeg" },
+      body: base64_image
+    }
     response = nil
-    retry_count = 0
-    # This endpoint is super flaky, so let's retry a few times
-    while response.nil? && retry_count < 5
-      response = send_request("#{SPOTIFY_API_URL}/playlists/#{playlist_id}/images", method: :put, headers: headers, body: base64_image)
-      retry_count += 1
-      sleep(retry_count * 2) if response.nil? && retry_count < 5
+    retries = 5
+    backoff = 1
+    while retries > 0
+      response = HTTParty.put("#{SPOTIFY_API_URL}/playlists/#{playlist_id}/images", options)
+      break if response.success?
+      sleep(backoff)
+      backoff *= 2
+      retries -= 1
     end
-    !response.nil?
+    response.success?
   end
 
   def self.chatgpt_system_prompt
