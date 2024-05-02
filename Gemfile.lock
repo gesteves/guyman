@@ -2,6 +2,9 @@ GEM
   remote: https://rubygems.org/
   specs:
     dotenv (3.1.0)
+    icalendar (2.10.1)
+      ice_cube (~> 0.16)
+    ice_cube (0.16.4)
     mini_magick (4.12.0)
 
 PLATFORMS
@@ -9,6 +12,7 @@ PLATFORMS
 
 DEPENDENCIES
   dotenv
+  icalendar
   mini_magick
 
 RUBY VERSION
