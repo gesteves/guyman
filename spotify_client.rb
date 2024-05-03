@@ -97,24 +97,11 @@ class SpotifyClient
   end
 
   def set_playlist_cover(playlist_id, png_data)
-    png = Base64.decode64(png_data)
-    image = MiniMagick::Image.read(png)
-    image.format("jpeg")
-    image.resize("640x640")
-    quality = 80
-    image.quality(quality)
-    jpeg_data = image.to_blob
-
-    # Reduce the quality until the file size is less than MAX_IMAGE_FILE_SIZE
-    while jpeg_data.length > MAX_IMAGE_FILE_SIZE && quality > MIN_IMAGE_QUALITY
-      quality -= 5
-      image.quality(quality)
-      jpeg_data = image.to_blob
-    end
+    jpg_data = png_to_jpg(png_data)
 
     options = {
       headers: { "Authorization" => "Bearer #{@access_token}", "Content-Type" => "image/jpeg" },
-      body: Base64.strict_encode64(jpeg_data)
+      body: Base64.strict_encode64(jpg_data)
     }
     response = nil
     retries = 5
@@ -143,5 +130,24 @@ class SpotifyClient
   def get_spotify_user_id
     response = HTTParty.get("#{SPOTIFY_API_URL}/me", headers: { "Authorization" => "Bearer #{@access_token}" })
     response.parsed_response['id']
+  end
+
+  def png_to_jpg(png_data)
+    png = Base64.decode64(png_data)
+    image = MiniMagick::Image.read(png)
+    image.format("jpeg")
+    image.resize("640x640")
+    quality = 80
+    image.quality(quality)
+    jpeg_data = image.to_blob
+
+    # Reduce the quality until the file size is less than MAX_IMAGE_FILE_SIZE
+    while jpeg_data.length > MAX_IMAGE_FILE_SIZE && quality > MIN_IMAGE_QUALITY
+      quality -= 5
+      image.quality(quality)
+      jpeg_data = image.to_blob
+    end
+
+    jpeg_data
   end
 end
