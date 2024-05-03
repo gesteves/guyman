@@ -85,10 +85,12 @@ class WorkoutPlaylistGenerator
     end
   end
 
-  def get_top_genres(limit = 10, time_range = 'long_term')
+  def get_top_genres(limit = 50, time_range = 'long_term')
     top_artists = get_top_artists(50)
-    genres = top_artists.map { |artist| artist['genres'] }.flatten.uniq.take(limit)
-    genres
+    genres = top_artists.map { |artist| artist['genres'] }.flatten
+    genre_counts = genres.each_with_object(Hash.new(0)) { |genre, counts| counts[genre] += 1 }
+    sorted_genres = genre_counts.select { |genre, count| count > 1 }.sort_by { |genre, count| -count }.map(&:first)
+    sorted_genres.take(limit)
   end
 
   def create_playlist(playlist_name, playlist_description = '')
@@ -253,7 +255,7 @@ class WorkoutPlaylistGenerator
       - The playlist must be as long as the whole workout. This is a hard requirement, the playlist must never, ever be shorter than the workout. Just to be safe, add 10 more minutes or so of additional cooldown songs at the end. 
       - The user can't skip, extend or shorten the workout intervals to match the duration of the songs.
       - The user can't control the Spotify player during the workout, so it's very important that the intensity and duration of the songs match the structure of the workout as closely as possible, because the user can't fast forward, rewind, repeat, loop, fade out, or skip tracks.
-      - The user's most-listened genres are: #{get_top_genres.join(", ")}. Prioritize these genres, but don't limit yourself to them, the most important thing is that the songs match the intensity and duration of the workout's intervals as closely as possible.
+      - The user's most-listened genres are: #{get_top_genres.join(", ")}. You may use this information to guide your choices, but don't limit yourself to these genres; you may stray from this list as long as it fits within the playlist and fulfills the needs of the workout.
       - Come up with a name for the playlist that is creative and catchy, but also informative and descriptive.
       - Compose a description for the playlist, which should be a summary of the workout. The description must not be longer than 300 characters.
       - Generate a detailed prompt to create, using Dall-E, a playlist cover image that visually represents the workout and the playlist in a creative way, but avoid anything that may cause content policy violations in Dall-E or get flagged by OpenAI's safety systems.
