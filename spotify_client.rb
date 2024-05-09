@@ -99,6 +99,7 @@ class SpotifyClient
   def set_playlist_cover(playlist_id, png_data)
     jpg_data = png_to_jpg(png_data)
 
+    return if jpg_data.nil?
     options = {
       headers: { "Authorization" => "Bearer #{@access_token}", "Content-Type" => "image/jpeg" },
       body: Base64.strict_encode64(jpg_data)
@@ -149,5 +150,7 @@ class SpotifyClient
     end
 
     jpeg_data
+  rescue
+    nil
   end
 end
