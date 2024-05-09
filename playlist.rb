@@ -23,6 +23,8 @@ class PlaylistGenerator
 
     puts "\nGenerating a cover for your playlist: #{chatgpt_response['cover_prompt']}"
     image_url = @dalle.generate(chatgpt_response['cover_prompt'])
+    image_filename = "playlist_#{playlist_id}.png"
+    save_image_to_file(image_url, image_filename)
     @spotify.set_playlist_cover(playlist_id, image_url)
   end
 
@@ -53,6 +55,20 @@ class PlaylistGenerator
         ]
       }
     CHATGPT
+  end
+
+  def save_image_to_file(image_url, filename)
+    response = HTTParty.get(image_url)
+    if response.success?
+      File.open(filename, 'wb') do |file|
+        file.write(response.body)
+      end
+      puts "Image saved as #{filename}"
+    else
+      puts "Failed to download the image: HTTP Status #{response.code}"
+    end
+  rescue => e
+    puts "An error occurred while saving the image: #{e.message}"
   end
 end
 
