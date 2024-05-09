@@ -97,7 +97,7 @@ class SpotifyClient
   end
 
   def set_playlist_cover(playlist_id, url)
-    jpg_data = png_to_jpeg(url)
+    jpg_data = png_to_jpg(url)
 
     return if jpg_data.nil?
     options = {
