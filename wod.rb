@@ -43,8 +43,8 @@ class WorkoutPlaylistGenerator
       @spotify.replace_playlist_tracks(playlist_id, track_uris)
 
       puts "\nGenerating a cover for your playlist: #{chatgpt_response['cover_prompt']}"
-      png_data = @dalle.generate(chatgpt_response['cover_prompt'])
-      @spotify.set_playlist_cover(playlist_id, png_data)
+      image_url = @dalle.generate(chatgpt_response['cover_prompt'])
+      @spotify.set_playlist_cover(playlist_id, image_url)
     end
   end
 

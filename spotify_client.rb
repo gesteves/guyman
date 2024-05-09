@@ -96,8 +96,8 @@ class SpotifyClient
     HTTParty.put("#{SPOTIFY_API_URL}/playlists/#{playlist_id}/tracks", options)
   end
 
-  def set_playlist_cover(playlist_id, png_data)
-    jpg_data = png_to_jpg(png_data)
+  def set_playlist_cover(playlist_id, url)
+    jpg_data = png_to_jpeg(url)
 
     return if jpg_data.nil?
     options = {
@@ -133,24 +133,31 @@ class SpotifyClient
     response.parsed_response['id']
   end
 
-  def png_to_jpg(png_data)
-    png = Base64.decode64(png_data)
-    image = MiniMagick::Image.read(png)
-    image.format("jpeg")
-    image.resize("640x640")
-    quality = 80
-    image.quality(quality)
-    jpeg_data = image.to_blob
-
-    # Reduce the quality until the file size is less than MAX_IMAGE_FILE_SIZE
-    while jpeg_data.length > MAX_IMAGE_FILE_SIZE && quality > MIN_IMAGE_QUALITY
-      quality -= 5
+  def png_to_jpg(image_url)
+    response = HTTParty.get(image_url)
+    if response.success?
+      image_data = response.body
+      image = MiniMagick::Image.read(image_data)
+      image.format("jpeg")
+      image.resize("640x640")
+      quality = 80
       image.quality(quality)
       jpeg_data = image.to_blob
-    end
 
-    jpeg_data
-  rescue
+      # Reduce the quality until the file size is less than MAX_IMAGE_FILE_SIZE
+      while jpeg_data.length > MAX_IMAGE_FILE_SIZE && quality > MIN_IMAGE_QUALITY
+        quality -= 5
+        image.quality(quality)
+        jpeg_data = image.to_blob
+      end
+
+      jpeg_data
+    else
+      puts "Failed to fetch image: HTTP Status #{response.code}"
+      nil
+    end
+  rescue => e
+    puts "Failed to convert image: #{e.message}"
     nil
   end
 end
