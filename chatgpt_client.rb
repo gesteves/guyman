@@ -15,7 +15,7 @@ class ChatgptClient
     options = {
       headers: { "Authorization" => "Bearer #{ENV['OPENAI_API_KEY']}", "Content-Type" => "application/json" },
       body: {
-        model: 'gpt-4-turbo-preview',
+        model: 'gpt-4o',
         response_format: { type: "json_object" },
         messages: [
           {
