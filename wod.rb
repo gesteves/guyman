@@ -20,7 +20,13 @@ class WorkoutPlaylistGenerator
     workouts = get_workouts
     workouts.each do |workout|
       workout_name = workout.summary.split(' - ').last.strip
-      search_term = workout.summary.include?("Run") ? "Today’s Running Workout:" : "Today’s Cycling Workout:"
+      search_term = if workout.summary.include?("Run")
+              "Today’s Running Workout:"
+            elsif workout.summary.include?("Swim")
+              "Today’s Swimming Workout:"
+            else
+              "Today’s Cycling Workout:"
+            end
       playlist_name = "#{search_term} #{workout_name}"
 
       puts "\nGenerating your playlist for \"#{workout_name}\", please wait…\n\n"
@@ -56,7 +62,7 @@ class WorkoutPlaylistGenerator
     calendar = calendars.first
   
     today = Time.current.in_time_zone('America/Denver').to_date
-    calendar.events.select { |e| e.dtstart.value.to_date == today}.reject { |e| e.summary.include?("Swim") }
+    calendar.events.select { |e| e.dtstart.value.to_date == today && e.summary.match?(/^\d{1}:\d{2}/) }
   end
 
   def chatgpt_system_prompt
