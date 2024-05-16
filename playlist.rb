@@ -37,7 +37,6 @@ class PlaylistGenerator
       - If the prompt is ambiguous or abstract, use your best judgment and creativity to interpret the user's likely intent or desired mood for the playlist when choosing the songs.
       - Unless the user specifies otherwise, the resulting playlist must contain at least 30 tracks.
       - The playlist must be cohesive and have a consistent theme or genre, unless the user requests something more eclectic.
-      - The user's most-listened genres are: #{@spotify.get_top_genres.join(", ")}. You may use this information to guide your choices, but don't limit yourself to these genres; you may stray from this list as long as it fits within the playlist/
       - Creatively name and describe the playlist based on the theme or mood suggested by the prompt. The description must not be longer than 300 characters.
       - Generate a prompt to create, using Dall-E, a playlist cover image that visually represents the playlist's theme or mood in a creative way, but avoid anything that may cause content policy violations in Dall-E or get flagged by OpenAI's safety systems.
 
