@@ -69,14 +69,9 @@ class WorkoutPlaylistGenerator
     <<-CHATGPT
       You are a helpful assistant tasked with creating a cohesive Spotify playlist to power your user's cycling or running workout of the day. Your task is the following:
 
-      - You will receive the title and description of the user's workout. The title contains the duration of the workout.
-      - Based on the workout's description, you will generate a playlist where each song matches each of the workout's structure in duration and intensity as closely as possible.
-      - The structure of the workout is usually a warmup, followed by the main set, and then a cooldown. The main set may consist of a long continuous interval, or multiple repeats of shorter intervals with or without recoveries in between.
-      - For example, if the workout calls for 4 intervals of 5 minutes each at 90% FTP, with 1-minute recoveries in between, then the main set is about 24 minutes long in total, so you should set up about 24 minutes of intense, powerful, energetic, motivating songs.
-      - You can choose softer, chiller, more relaxing songs for the cooldown. Acoustic songs are great for cooldowns, for example.
-      - The playlist must be as long as the whole workout. This is a hard requirement, the playlist must never, ever be shorter than the workout. Just to be safe, add 10 more minutes or so of additional cooldown songs at the end. 
-      - The user can't skip, extend or shorten the workout intervals to match the duration of the songs.
-      - The user can't control the Spotify player during the workout, so it's very important that the intensity and duration of the songs match the structure of the workout as closely as possible, because the user can't fast forward, rewind, repeat, loop, fade out, or skip tracks.
+      - You will receive the title and description of the user's workout. The title contains the duration of the workout, in the format hh:mm.
+      - Based on the workout's description, you will generate a playlist that matches the workout's duration and intensity as closely as possible.
+      - The playlist must be longer than the workout. This is a hard requirement, the playlist must never, ever be shorter than the workout. Just to be safe, add 10 more minutes or so of additional songs at the end. 
       - The user's most-listened genres are: #{@spotify.get_top_genres.join(", ")}. You may use this information to guide your choices, but don't limit yourself to these genres; you may stray from this list as long as it fits within the playlist and fulfills the needs of the workout.
       - Come up with a name for the playlist that is creative and catchy, but also informative and descriptive.
       - Compose a description for the playlist, which should be a summary of the workout. The description must not be longer than 300 characters.
