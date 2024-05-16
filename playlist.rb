@@ -23,8 +23,6 @@ class PlaylistGenerator
 
     puts "\nGenerating a cover for your playlist: #{chatgpt_response['cover_prompt']}"
     image_url = @dalle.generate(chatgpt_response['cover_prompt'])
-    image_filename = "playlist_#{playlist_id}.png"
-    save_image_to_file(image_url, image_filename)
     @spotify.set_playlist_cover(playlist_id, image_url)
   end
 
