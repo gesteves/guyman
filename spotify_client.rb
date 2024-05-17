@@ -93,6 +93,7 @@ class SpotifyClient
     while retries > 0
       response = HTTParty.put("#{SPOTIFY_API_URL}/playlists/#{playlist_id}/images", options)
       break if response.success?
+      puts [response.code, response.body].reject(&:blank).join(": ")
       sleep backoff
       backoff *= 2
       retries -= 1
