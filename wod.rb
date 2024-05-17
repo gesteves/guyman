@@ -10,6 +10,9 @@ require_relative 'dalle_client'
 Dotenv.load
 
 class WorkoutPlaylistGenerator
+  RECENTLY_ADDED_TRACKS_FILE = 'recently_added_tracks.txt'
+  MAX_TRACKS = 100
+
   def initialize
     @spotify = SpotifyClient.new
     @chatgpt = ChatgptClient.new
@@ -20,6 +23,8 @@ class WorkoutPlaylistGenerator
 
   def generate_playlist
     workouts = get_workouts
+    recently_added_tracks = load_recently_added_tracks
+
     workouts.each do |workout|
       next if workout.summary.include?("Swim")
       workout_duration = extract_workout_duration(workout.summary)
@@ -33,7 +38,7 @@ class WorkoutPlaylistGenerator
 
       puts "\nGenerating your playlist for \"#{workout_name}\", please wait…\n\n"
 
-      chatgpt_response = @chatgpt.ask_for_json(@chatgpt_prompt, "#{workout.summary}\n\n#{workout.description}")
+      chatgpt_response = @chatgpt.ask_for_json(modified_chatgpt_prompt(recently_added_tracks), "#{workout.summary}\n\n#{workout.description}")
       return puts "Oops, failed to generate a playlist. Please try again!" if chatgpt_response.nil?
 
       playlist_id = @spotify.search_playlists(search_term)
@@ -53,6 +58,7 @@ class WorkoutPlaylistGenerator
         track_info = @spotify.search_tracks(track['track'], track['artist'])
         if track_info
           track_uris << track_info['uri']
+          recently_added_tracks << "#{track['artist']} - #{track['track']}"
           total_duration += track_info['duration_ms']
         end
         break if total_duration >= workout_duration
@@ -64,6 +70,8 @@ class WorkoutPlaylistGenerator
       image_url = @dalle.generate(chatgpt_response['cover_prompt'])
       @spotify.set_playlist_cover(playlist_id, image_url)
     end
+
+    save_recently_added_tracks(recently_added_tracks)
   end
 
   private
@@ -85,6 +93,22 @@ class WorkoutPlaylistGenerator
     duration_str = summary.split(' - ').first.strip
     hours, minutes = duration_str.split(':').map(&:to_i)
     (hours * 60 + minutes) * 60 * 1000 # Convert to milliseconds
+  end
+
+  def load_recently_added_tracks
+    return [] unless File.exist?(RECENTLY_ADDED_TRACKS_FILE)
+    File.read(RECENTLY_ADDED_TRACKS_FILE).split("\n").map(&:strip)
+  end
+
+  def save_recently_added_tracks(recently_added_tracks)
+    File.open(RECENTLY_ADDED_TRACKS_FILE, 'w') do |file|
+      file.puts(recently_added_tracks.last(MAX_TRACKS))
+    end
+  end
+
+  def modified_chatgpt_prompt(recently_added_tracks)
+    exclusions = recently_added_tracks.any? ? "Please exclude the following tracks from the playlist: #{recently_added_tracks.join(', ')}." : ""
+    "#{@chatgpt_prompt}\n\n#{exclusions}"
   end
 end
 
