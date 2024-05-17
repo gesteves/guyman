@@ -54,11 +54,11 @@ class WorkoutPlaylistGenerator
       total_duration = 0
       track_uris = []
       chatgpt_response['tracks'].each do |track|
-        track_info = @spotify.search_tracks(track['track'], track['artist'])
-        if track_info
-          track_uris << track_info['uri']
+        spotify_track = @spotify.search_tracks(track['track'], track['artist'])
+        if spotify_track
           @recently_added_tracks << "#{track['artist']} - #{track['track']}"
-          total_duration += track_info['duration_ms']
+          track_uris << spotify_track['uri']
+          total_duration += spotify_track['duration_ms']
         end
         break if total_duration >= workout_duration
       end
