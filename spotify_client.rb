@@ -15,23 +15,6 @@ class SpotifyClient
     @user_id = get_spotify_user_id
   end
 
-  def get_top_artists(limit = 10, time_range = 'long_term')
-    response = HTTParty.get("#{SPOTIFY_API_URL}/me/top/artists", query: { limit: limit, time_range: time_range }, headers: { "Authorization" => "Bearer #{@access_token}" })
-    if response.success?
-      response.parsed_response['items']
-    else
-      []
-    end
-  end
-
-  def get_top_genres(limit = 50, time_range = 'long_term')
-    top_artists = get_top_artists(50)
-    genres = top_artists.map { |artist| artist['genres'] }.flatten
-    genre_counts = genres.each_with_object(Hash.new(0)) { |genre, counts| counts[genre] += 1 }
-    sorted_genres = genre_counts.select { |genre, count| count > 1 }.sort_by { |genre, count| -count }.map(&:first)
-    sorted_genres.take(limit)
-  end
-
   def create_playlist(playlist_name, playlist_description = '')
     options = {
       headers: { "Authorization" => "Bearer #{@access_token}", "Content-Type" => "application/json" },
