@@ -107,7 +107,7 @@ class WorkoutPlaylistGenerator
   end
 
   def modified_chatgpt_prompt(recently_added_tracks)
-    exclusions = recently_added_tracks.any? ? "Do not include the following tracks from the playlist: #{recently_added_tracks.join(', ')}." : ""
+    exclusions = recently_added_tracks.any? ? "Do not include the following tracks in the playlist: #{recently_added_tracks.join(', ')}." : ""
     "#{@chatgpt_prompt}\n\n#{exclusions}"
   end
 end
