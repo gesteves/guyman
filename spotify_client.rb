@@ -81,7 +81,7 @@ class SpotifyClient
     if response.parsed_response['tracks'] && response.parsed_response['tracks']['items'].any?
       artists = response.parsed_response['tracks']['items'].first['artists'].map { |artist| artist['name'] }.join(", ")
       puts "#{artists} – #{response.parsed_response['tracks']['items'].first['name']}"
-      response.parsed_response['tracks']['items'].first['uri']
+      response.parsed_response['tracks']['items'].first
     else
       puts "Searched for: #{artist_name} – #{track_name}, found nothing."
       nil
