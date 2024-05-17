@@ -97,7 +97,7 @@ class WorkoutPlaylistGenerator
 
   def save_recently_added_tracks
     File.open(RECENTLY_ADDED_TRACKS_FILE, 'w') do |file|
-      file.puts(@recently_added_tracks.last(MAX_TRACKS))
+      file.puts(@recently_added_tracks.uniq.last(MAX_TRACKS))
     end
   end
 
