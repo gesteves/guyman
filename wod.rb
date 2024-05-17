@@ -18,12 +18,11 @@ class WorkoutPlaylistGenerator
     @chatgpt = ChatgptClient.new
     @dalle = DalleClient.new
     @calendar_url = ENV['ICAL_FEED_URL']
-    @chatgpt_prompt = File.read('prompts/wod.txt')
   end
 
   def generate_playlist
     workouts = get_workouts
-    recently_added_tracks = load_recently_added_tracks
+    @recently_added_tracks = load_recently_added_tracks
 
     workouts.each do |workout|
       next if workout.summary.include?("Swim")
@@ -38,7 +37,7 @@ class WorkoutPlaylistGenerator
 
       puts "\nGenerating your playlist for \"#{workout_name}\", please wait…\n\n"
 
-      chatgpt_response = @chatgpt.ask_for_json(modified_chatgpt_prompt(recently_added_tracks), "#{workout.summary}\n\n#{workout.description}")
+      chatgpt_response = @chatgpt.ask_for_json(chatgpt_system_prompt, "#{workout.summary}\n\n#{workout.description}")
       return puts "Oops, failed to generate a playlist. Please try again!" if chatgpt_response.nil?
 
       playlist_id = @spotify.search_playlists(search_term)
@@ -58,7 +57,7 @@ class WorkoutPlaylistGenerator
         track_info = @spotify.search_tracks(track['track'], track['artist'])
         if track_info
           track_uris << track_info['uri']
-          recently_added_tracks << "#{track['artist']} - #{track['track']}"
+          @recently_added_tracks << "#{track['artist']} - #{track['track']}"
           total_duration += track_info['duration_ms']
         end
         break if total_duration >= workout_duration
@@ -71,7 +70,7 @@ class WorkoutPlaylistGenerator
       @spotify.set_playlist_cover(playlist_id, image_url)
     end
 
-    save_recently_added_tracks(recently_added_tracks)
+    save_recently_added_tracks
   end
 
   private
@@ -85,10 +84,6 @@ class WorkoutPlaylistGenerator
     calendar.events.select { |e| e.dtstart.value.to_date == today && e.summary.match?(/^\d{1}:\d{2}/) }
   end
 
-  def chatgpt_system_prompt
-    @chatgpt_prompt
-  end
-
   def extract_workout_duration(summary)
     duration_str = summary.split(' - ').first.strip
     hours, minutes = duration_str.split(':').map(&:to_i)
@@ -100,15 +95,19 @@ class WorkoutPlaylistGenerator
     File.read(RECENTLY_ADDED_TRACKS_FILE).split("\n").map(&:strip)
   end
 
-  def save_recently_added_tracks(recently_added_tracks)
+  def save_recently_added_tracks
     File.open(RECENTLY_ADDED_TRACKS_FILE, 'w') do |file|
-      file.puts(recently_added_tracks.last(MAX_TRACKS))
+      file.puts(@recently_added_tracks.last(MAX_TRACKS))
     end
   end
 
-  def modified_chatgpt_prompt(recently_added_tracks)
-    exclusions = recently_added_tracks.any? ? "Do not include the following tracks in the playlist: #{recently_added_tracks.join(', ')}." : ""
-    "#{@chatgpt_prompt}\n\n#{exclusions}"
+  def chatgpt_system_prompt
+    prompt = File.read('prompts/wod.txt')
+
+    exclusions = @recently_added_tracks.any? ? "- Do not include the following recently-used tracks in the playlist: #{@recently_added_tracks.join(', ')}." : ""
+    prompt.gsub('%%EXCLUSIONS%%', exclusions)
+    
+    prompt
   end
 end
 
