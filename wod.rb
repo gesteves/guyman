@@ -37,7 +37,7 @@ class WorkoutPlaylistGenerator
 
       puts "\nGenerating your playlist for \"#{workout_name}\", please wait…\n\n"
 
-      chatgpt_response = @chatgpt.ask_for_json(chatgpt_system_prompt, "#{workout.summary}\n\n#{workout.description}")
+      chatgpt_response = @chatgpt.ask_for_json(chatgpt_system_prompt, chatgpt_user_prompt(workout))
       return puts "Oops, failed to generate a playlist. Please try again!" if chatgpt_response.nil?
 
       playlist_id = @spotify.search_playlists(search_term)
@@ -102,12 +102,22 @@ class WorkoutPlaylistGenerator
   end
 
   def chatgpt_system_prompt
-    prompt = File.read('prompts/wod.txt')
+    File.read('prompts/wod.txt')
+  end
 
-    exclusions = @recently_added_tracks.any? ? "- Do not include the following recently-used tracks in the playlist: #{@recently_added_tracks.join(', ')}." : ""
-    prompt.gsub('%%EXCLUSIONS%%', exclusions)
-    
-    prompt
+  def chatgpt_user_prompt(workout)
+    preferences = File.read('prompts/preferences.txt')
+    exclusions = @recently_added_tracks.any? ? "Do not include the following recently-played tracks in the playlist: #{@recently_added_tracks.join(', ')}." : ""
+
+    <<~PROMPT
+      Today's workout is: "#{workout.summary.split(' - ').last.strip}"
+      #{workout.description.strip}
+
+      #{preferences}
+      #{exclusions}
+
+      Please generate a playlist for this workout.
+    PROMPT
   end
 end
 
