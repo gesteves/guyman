@@ -66,7 +66,7 @@ class SpotifyClient
       puts "#{artists} – #{response.parsed_response['tracks']['items'].first['name']}"
       response.parsed_response['tracks']['items'].first
     else
-      puts "Searched for: #{artist_name} – #{track_name}, found nothing."
+      puts "  No results for: #{artist_name} – #{track_name}."
       nil
     end
   end
@@ -93,7 +93,7 @@ class SpotifyClient
     while retries > 0
       response = HTTParty.put("#{SPOTIFY_API_URL}/playlists/#{playlist_id}/images", options)
       break if response.success?
-      puts [response.code, response.body].reject(&:blank).join(": ")
+      puts [response.code, response.body].reject { |i| i.size == 0 }.join(": ")
       sleep backoff
       backoff *= 2
       retries -= 1
