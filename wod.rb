@@ -21,12 +21,11 @@ class WorkoutPlaylistGenerator
   def generate_playlist
     workouts = get_workouts
     workouts.each do |workout|
+      next if workout.summary.include?("Swim")
       workout_duration = extract_workout_duration(workout.summary)
       workout_name = workout.summary.split(' - ').last.strip
       search_term = if workout.summary.include?("Run")
                       "Today’s Running Workout:"
-                    elsif workout.summary.include?("Swim")
-                      "Today’s Swimming Workout:"
                     else
                       "Today’s Cycling Workout:"
                     end
