@@ -1,5 +1,5 @@
 class ProcessUsersWorkoutsWorker < ApplicationWorker
-  queue_as :default
+  queue_as :high
 
   def perform
     User.includes(:preference).where.not(preferences: { id: nil }).find_each do |user|

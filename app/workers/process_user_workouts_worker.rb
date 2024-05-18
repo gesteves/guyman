@@ -1,5 +1,5 @@
 class ProcessUserWorkoutsWorker < ApplicationWorker
-  queue_as :default
+  queue_as :high
 
   def perform(user_id)
     user = User.find(user_id)

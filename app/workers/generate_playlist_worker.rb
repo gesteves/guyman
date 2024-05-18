@@ -1,5 +1,5 @@
 class GeneratePlaylistWorker < ApplicationWorker
-  queue_as :default
+  queue_as :high
 
   def perform(user_id, workout_name, workout_description, workout_type, workout_duration)
     user = User.find(user_id)
