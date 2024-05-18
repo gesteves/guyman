@@ -15,7 +15,7 @@ class ChatgptClient
       body: {
         model: 'gpt-4o',
         response_format: { type: "json_object" },
-        user: @user_id,
+        user: @user_id.to_s,
         messages: [
           {
             role: 'system',

@@ -18,7 +18,7 @@ class DalleClient
         size: "1024x1024",
         response_format: "url",
         quality: 'hd',
-        user: @user_id
+        user: @user_id.to_s
       }.to_json
     }
     response = HTTParty.post("#{OPENAI_API_URL}/images/generations", options)
