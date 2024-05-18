@@ -43,7 +43,7 @@ class GeneratePlaylistWorker < ApplicationWorker
   # - We want a playlist that matches the workout's duration,
   #   but ChatGPT is notoriously bad at generating playlists of the right duration
   #   because it can't actually do math to add up the song lengths.
-  #   Instead, we ask it to generate at least 100 songs and then build the playlist manually until it's the right length.
+  #   Instead, we ask it to generate at least 200 songs and then build the playlist manually until it's the right length.
   # - Because we're using the `json_object` response format in the API call to ChatGPT,
   #   we MUST specify in the prompt that it must return a JSON object with the given structure we expect.
   def chatgpt_system_prompt
@@ -54,7 +54,7 @@ class GeneratePlaylistWorker < ApplicationWorker
       - Based on the workout's description, you will generate a playlist that matches the workout's intensity as closely as possible.
       - The intensity is provided usually in terms of cycling power zones or percentages of FTP for cycling workouts, or RPE for swim and running workouts.
       - Lower intensity workouts should have softer, chiller songs. Higher intensity workouts should have more intense, energetic songs.
-      - The playlist must contain at least 100 songs. 
+      - The playlist must contain at least 200 songs. 
       - The user may specify genres and bands they like. You may use this information to guide your choices.
       - The user may also specify genres, bands, or specific tracks they want to avoid. Do not include them in the playlist.
       - The playlist should have variety; try to avoid repeating the same artist.
