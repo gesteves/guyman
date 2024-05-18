@@ -12,7 +12,7 @@ class GeneratePlaylistWorker < ApplicationWorker
 
     playlist_tracks = response['tracks']
     dalle_prompt = response['cover_prompt']
-    playlist_name = "Today’s #{workout_type} Workout: #{workout_name}"
+    playlist_name = "#{Time.current.in_time_zone(preference.timezone).strftime('%B %-d, %Y')}: #{workout_name}"
 
     # Create a new playlist with the workout details and the response from ChatGPT.
     playlist = user.playlists.create!(

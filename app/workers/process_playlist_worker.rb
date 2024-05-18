@@ -6,10 +6,8 @@ class ProcessPlaylistWorker < ApplicationWorker
     playlist = Playlist.find(playlist_id)
     spotify_client = SpotifyClient.new(user.authentications.find_by(provider: 'spotify').refresh_token)
 
-    # We don't want to end with hundreds of playlists, so whenever possible, we'll reuse an existing playlist
-    # for each workout type.
-    search_term = "Today’s #{playlist.workout_type} Workout:"
-    spotify_playlist_id = spotify_client.search_playlists(search_term)
+    # We don't want to end with hundreds of playlists, so whenever possible, we'll reuse an existing playlist.
+    spotify_playlist_id = spotify_client.search_playlists(playlist.name)
 
     # If we couldn't find a playlist for this workout type, create a new one.
     # Otherwise, we'll update the title and description of the existing one.
