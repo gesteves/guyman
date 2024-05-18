@@ -21,6 +21,6 @@ class User < ApplicationRecord
   end
 
   def unique_tracks
-    playlists.joins(:tracks).distinct.pluck('tracks.title', 'tracks.artist')
+    playlists.joins(:tracks).distinct.pluck('tracks.artist', 'tracks.title')
   end
 end
