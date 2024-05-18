@@ -6,9 +6,13 @@ class ProcessPlaylistWorker < ApplicationWorker
     playlist = Playlist.find(playlist_id)
     spotify_client = SpotifyClient.new(user.authentications.find_by(provider: 'spotify').refresh_token)
 
+    # We don't want to end with hundreds of playlists, so whenever possible, we'll reuse an existing playlist
+    # for each workout type.
     search_term = "Today’s #{playlist.workout_type} Workout:"
     spotify_playlist_id = spotify_client.search_playlists(search_term)
 
+    # If we couldn't find a playlist for this workout type, create a new one.
+    # Otherwise, we'll uodate the title and description of the existing one.
     if spotify_playlist_id.nil?
       spotify_playlist_id = spotify_client.create_playlist(playlist.name, playlist.description)
     else
@@ -21,6 +25,9 @@ class ProcessPlaylistWorker < ApplicationWorker
 
     added_tracks = []
 
+    # Search tracks by title and artist in Spotify,
+    # and add them to the playlist.
+    # Stop until the total duration of the tracks is greater than or equal to the workout duration.
     playlist.tracks.each do |track|
       spotify_track = spotify_client.search_tracks(track.title, track.artist)
       next unless spotify_track
@@ -32,9 +39,13 @@ class ProcessPlaylistWorker < ApplicationWorker
       break if total_duration >= workout_duration_ms
     end
 
+    # Replace the tracks in the Spotify playlist with the ones we found.
     spotify_client.replace_playlist_tracks(spotify_playlist_id, track_uris)
+
+    # Remove the tracks that were not added to the Spotify playlist from our playlist.
     playlist.tracks.where.not(id: added_tracks.map(&:id)).destroy_all
 
+    # Enqueue a job to generate a cover image for the playlist using Dall-E.
     GenerateCoverImageWorker.perform_async(user.id, spotify_playlist_id, playlist.cover_dalle_prompt)
   end
 end

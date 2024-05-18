@@ -108,7 +108,8 @@ class SpotifyClient
     response = HTTParty.get("#{SPOTIFY_API_URL}/me", headers: { "Authorization" => "Bearer #{@access_token}" })
     handle_response(response)['id']
   end
-
+  
+  # Dall-E returns images in PNG format, but Spotify only accepts JPEG images with a maximum file size of 256 KB.
   def png_to_jpg(image_url)
     response = HTTParty.get(image_url)
     if response.success?
