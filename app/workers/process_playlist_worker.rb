@@ -36,6 +36,9 @@ class ProcessPlaylistWorker < ApplicationWorker
       spotify_track = spotify_client.search_tracks(track.title, track.artist)
       # Skip tracks that we couldn't find on Spotify.
       next unless spotify_track
+      
+      # Skip if we already added the track to the playlist.
+      next if track_uris.include?(spotify_track['uri'])
 
       track_uris << spotify_track['uri']
       total_duration += spotify_track['duration_ms']
