@@ -2,6 +2,8 @@ class User < ApplicationRecord
   devise :rememberable, :omniauthable, omniauth_providers: %i[spotify]
 
   has_many :authentications, dependent: :destroy
+  has_one :preference, dependent: :destroy
+  has_many :playlists, dependent: :destroy
 
   def self.from_omniauth(auth)
     authentication = Authentication.where(provider: auth.provider, uid: auth.uid).first_or_initialize
@@ -16,5 +18,9 @@ class User < ApplicationRecord
     authentication.refresh_token = auth.credentials.refresh_token
     authentication.save!
     authentication.user
+  end
+
+  def unique_tracks
+    playlists.joins(:tracks).distinct.pluck('tracks.name', 'tracks.artist')
   end
 end

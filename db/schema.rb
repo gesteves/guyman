@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_05_18_143622) do
+ActiveRecord::Schema[7.1].define(version: 2024_05_18_152832) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -23,6 +23,39 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_18_143622) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_authentications_on_user_id"
+  end
+
+  create_table "playlists", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "name"
+    t.text "description"
+    t.text "workout_description"
+    t.string "workout_type"
+    t.string "workout_name"
+    t.string "cover_dalle_prompt"
+    t.integer "workout_duration"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_playlists_on_user_id"
+  end
+
+  create_table "preferences", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.text "likes"
+    t.text "dislikes"
+    t.string "calendar_url"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_preferences_on_user_id"
+  end
+
+  create_table "tracks", force: :cascade do |t|
+    t.bigint "playlist_id", null: false
+    t.string "title"
+    t.string "artist"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["playlist_id"], name: "index_tracks_on_playlist_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -38,4 +71,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_18_143622) do
   end
 
   add_foreign_key "authentications", "users"
+  add_foreign_key "playlists", "users"
+  add_foreign_key "preferences", "users"
+  add_foreign_key "tracks", "playlists"
 end

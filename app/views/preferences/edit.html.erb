@@ -1,0 +1,22 @@
+<h1>Edit Your Preferences</h1>
+
+<%= form_with model: @preference, url: preference_path, method: :patch, local: true do |form| %>
+  <div class="field">
+    <%= form.label :likes %>
+    <%= form.text_area :likes %>
+  </div>
+
+  <div class="field">
+    <%= form.label :dislikes %>
+    <%= form.text_area :dislikes %>
+  </div>
+
+  <div class="field">
+    <%= form.label :calendar_url %>
+    <%= form.text_field :calendar_url %>
+  </div>
+
+  <div class="actions">
+    <%= form.submit "Update Preferences" %>
+  </div>
+<% end %>

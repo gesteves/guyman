@@ -2,7 +2,19 @@
 
 <% if user_signed_in? %>
   <p>Hello, <%= current_user.email %>!</p>
-  <%= button_to 'Logout', users_sign_out_path, method: :delete %>
+  <%= link_to 'Logout', users_sign_out_path, method: :delete %>
+
+  <h2>Your Preferences</h2>
+  <% if @preference %>
+    <p><strong>Likes:</strong> <%= @preference.likes %></p>
+    <p><strong>Dislikes:</strong> <%= @preference.dislikes %></p>
+    <p><strong>Calendar URL:</strong> <%= @preference.calendar_url %></p>
+    <%= link_to 'Edit Preferences', edit_preference_path %>
+  <% else %>
+    <p>You have not set your preferences yet.</p>
+    <%= link_to 'Set Preferences', edit_preference_path %>
+  <% end %>
+
 <% else %>
   <%= button_to 'Sign in with Spotify', user_spotify_omniauth_authorize_path, method: :post, data: { turbo: false } %>
 <% end %>
