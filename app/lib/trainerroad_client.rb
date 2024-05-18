@@ -9,19 +9,34 @@ class TrainerroadClient
   end
 
   def get_workouts_for_today
-    calendar_data = HTTParty.get(@calendar_url).body
-    calendars = Icalendar::Calendar.parse(calendar_data)
-    calendar = calendars.first
+    response = HTTParty.get(@calendar_url)
 
-    today = Time.current.in_time_zone(@timezone).to_date
-    workouts = calendar.events.select do |event|
-      event.dtstart.to_date == today && valid_workout?(event.summary)
+    if response.success?
+      calendar_data = response.body
+      calendars = Icalendar::Calendar.parse(calendar_data)
+      calendar = calendars.first
+
+      today = Time.current.in_time_zone(@timezone).to_date
+      workouts = calendar.events.select do |event|
+        event.dtstart.to_date == today && valid_workout?(event.summary)
+      end
+
+      parse_workouts(workouts)
+    else
+      handle_response_error(response)
     end
-
-    parse_workouts(workouts)
   end
 
   private
+
+  def handle_response_error(response)
+    case response.code
+    when 500..599
+      raise "TrainerRoad API request failed with status code #{response.code}: #{response.message}"
+    else
+      []
+    end
+  end
 
   def valid_workout?(summary)
     duration_present?(summary) && !summary.include?("Swim")
