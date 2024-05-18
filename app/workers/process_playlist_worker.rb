@@ -19,17 +19,22 @@ class ProcessPlaylistWorker < ApplicationWorker
     total_duration = 0
     workout_duration_ms = playlist.workout_duration * 60 * 1000 # Convert workout duration from minutes to milliseconds
 
+    added_tracks = []
+
     playlist.tracks.each do |track|
       spotify_track = spotify_client.search_tracks(track.title, track.artist)
       next unless spotify_track
 
       track_uris << spotify_track['uri']
       total_duration += spotify_track['duration_ms']
+      added_tracks << track
 
       break if total_duration >= workout_duration_ms
     end
 
     spotify_client.replace_playlist_tracks(spotify_playlist_id, track_uris)
+    playlist.tracks.where.not(id: added_tracks.map(&:id)).destroy_all
+
     GenerateCoverImageWorker.perform_async(user.id, spotify_playlist_id, playlist.cover_dalle_prompt)
   end
 end
