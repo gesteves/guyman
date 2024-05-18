@@ -57,6 +57,8 @@ class GeneratePlaylistWorker < ApplicationWorker
       - The playlist must contain at least 100 songs. 
       - The user may specify genres and bands they like. You may use this information to guide your choices.
       - The user may also specify genres, bands, or specific tracks they want to avoid. Do not include them in the playlist.
+      - The playlist should have variety; try to avoid repeating the same artist.
+      - Since we want playlists to vary from day to day, you may also receive a list of previously-used songs. Do not include these in the playlist.
       - Come up with a name for the playlist that is creative and catchy, but also informative and descriptive.
       - Compose a description for the playlist, which should be a summary of the workout. The description must not be longer than 300 characters.
       - Generate a detailed prompt to create, using Dall-E, a playlist cover image that visually represents the workout and the playlist in a creative way, but avoid anything that may cause content policy violations in Dall-E or get flagged by OpenAI's safety systems.
@@ -80,7 +82,7 @@ class GeneratePlaylistWorker < ApplicationWorker
   # then tell it to avoid using those songs in the current playlist.
   # It sorta works, but also makes the prompts much more expensive.
   def chatgpt_user_prompt(workout_name, workout_description, workout_type, preference, existing_tracks)
-    exclusions = existing_tracks.any? ? "The following tracks have already been used in other playlists, please don't include them: #{existing_tracks.map { |t| "#{t.first} - #{t.last}"}.join(', ')}." : ""
+    exclusions = existing_tracks.any? ? "The following songs have already been used in other playlists, please don't include them: #{existing_tracks.map { |t| "#{t.first} - #{t.last}"}.join(', ')}." : ""
 
     <<~PROMPT
       Today's workout is called: "#{workout_name}"
