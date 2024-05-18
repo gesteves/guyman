@@ -12,7 +12,7 @@ class ProcessPlaylistWorker < ApplicationWorker
     spotify_playlist_id = spotify_client.search_playlists(search_term)
 
     # If we couldn't find a playlist for this workout type, create a new one.
-    # Otherwise, we'll uodate the title and description of the existing one.
+    # Otherwise, we'll update the title and description of the existing one.
     if spotify_playlist_id.nil?
       spotify_playlist_id = spotify_client.create_playlist(playlist.name, playlist.description)
     else
