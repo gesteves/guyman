@@ -1,0 +1,13 @@
+:concurrency: <%= ENV.fetch("SIDEKIQ_CONCURRENCY") { 10 }.to_i %>
+:queues:
+  - high
+  - default
+  - low
+:scheduler:
+  :schedule:
+    process_users_workouts_job:
+      every: '1h'
+      class: 'ProcessUsersWorkoutsWorker'
+    cleanup_old_playlists_job:
+      cron: '0 0 * * *' # Runs every day at midnight
+      class: 'CleanupOldPlaylistsWorker'

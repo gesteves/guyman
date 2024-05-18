@@ -1,12 +1,15 @@
 Rails.application.routes.draw do
-  get 'preferences/new'
-  get 'preferences/create'
-  get 'preferences/edit'
-  get 'preferences/update'
   devise_for :users, controllers: { omniauth_callbacks: 'users/omniauth_callbacks' }
   devise_scope :user do
     delete "/users/sign_out" => "devise/sessions#destroy"
   end
+
+  require 'sidekiq/web'
+  require 'sidekiq-scheduler/web'
+  authenticate :user, lambda { |u| u.present? } do
+    mount Sidekiq::Web => '/sidekiq'
+  end
+
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

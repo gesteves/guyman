@@ -1,8 +1,5 @@
 require 'httparty'
-require 'dotenv'
 require 'json'
-
-Dotenv.load
 
 class ChatgptClient
   OPENAI_API_URL = 'https://api.openai.com/v1'
@@ -30,6 +27,10 @@ class ChatgptClient
       }.to_json
     }
     response = HTTParty.post("#{OPENAI_API_URL}/chat/completions", options)
-    JSON.parse(response.parsed_response['choices'].first['message']['content']) if response.success?
+    if response.success?
+      JSON.parse(response.parsed_response['choices'].first['message']['content'])
+    else
+      raise "ChatGPT API request failed with status code #{response.code}: #{response.message}"
+    end
   end
 end

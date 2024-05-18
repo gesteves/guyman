@@ -8,6 +8,7 @@ class PreferencesController < ApplicationController
   def update
     @preference = current_user.preference || current_user.build_preference
     if @preference.update(preference_params)
+      ProcessUserWorkoutsWorker.perform_async(current_user.id)
       redirect_to root_path, notice: 'Preferences updated successfully.'
     else
       render :edit
@@ -17,6 +18,6 @@ class PreferencesController < ApplicationController
   private
 
   def preference_params
-    params.require(:preference).permit(:likes, :dislikes, :calendar_url)
+    params.require(:preference).permit(:musical_tastes, :calendar_url, :timezone)
   end
 end

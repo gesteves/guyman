@@ -1,7 +1,4 @@
 require 'httparty'
-require 'dotenv'
-
-Dotenv.load
 
 class DalleClient
   OPENAI_API_URL = 'https://api.openai.com/v1'
@@ -23,8 +20,10 @@ class DalleClient
       }.to_json
     }
     response = HTTParty.post("#{OPENAI_API_URL}/images/generations", options)
-    return unless response.success?
-
-    response.parsed_response['data']&.first['url']
+    if response.success?
+      response.parsed_response['data']&.first['url']
+    else
+      raise "DALL-E API request failed with status code #{response.code}: #{response.message}"
+    end
   end
 end

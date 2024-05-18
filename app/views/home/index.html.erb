@@ -6,9 +6,9 @@
 
   <h2>Your Preferences</h2>
   <% if @preference %>
-    <p><strong>Likes:</strong> <%= @preference.likes %></p>
-    <p><strong>Dislikes:</strong> <%= @preference.dislikes %></p>
+    <p><strong>Musical Tastes:</strong> <%= @preference.musical_tastes %></p>
     <p><strong>Calendar URL:</strong> <%= @preference.calendar_url %></p>
+    <p><strong>Timezone:</strong> <%= @preference.timezone %></p>
     <%= link_to 'Edit Preferences', edit_preference_path %>
   <% else %>
     <p>You have not set your preferences yet.</p>

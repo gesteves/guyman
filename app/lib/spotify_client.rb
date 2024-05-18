@@ -1,16 +1,14 @@
 require 'httparty'
-require 'dotenv'
 require 'base64'
 require 'mini_magick'
-
-Dotenv.load
 
 class SpotifyClient
   SPOTIFY_API_URL = 'https://api.spotify.com/v1'
   MAX_IMAGE_FILE_SIZE = 256 * 1024
   MIN_IMAGE_QUALITY = 10
 
-  def initialize
+  def initialize(refresh_token)
+    @refresh_token = refresh_token
     @access_token = refresh_access_token
     @user_id = get_spotify_user_id
   end
@@ -21,7 +19,7 @@ class SpotifyClient
       body: { name: playlist_name, description: playlist_description, public: true }.to_json
     }
     response = HTTParty.post("#{SPOTIFY_API_URL}/users/#{@user_id}/playlists", options)
-    response.parsed_response['id']
+    handle_response(response)['id']
   end
 
   def modify_playlist(playlist_id, name, description)
@@ -30,7 +28,7 @@ class SpotifyClient
       body: { name: name, description: description }.to_json
     }
     response = HTTParty.put("#{SPOTIFY_API_URL}/playlists/#{playlist_id}", options)
-    response.success?
+    handle_response(response)
   end
 
   def search_playlists(search_string)
@@ -39,13 +37,13 @@ class SpotifyClient
       query: { limit: 50, offset: 0 }
     }
     response = HTTParty.get("#{SPOTIFY_API_URL}/users/#{@user_id}/playlists", options)
-    playlist_id = find_playlist_id(response.parsed_response['items'], search_string)
+    playlist_id = find_playlist_id(handle_response(response)['items'], search_string)
     return playlist_id unless playlist_id.nil?
 
     while response.parsed_response['next']
       next_url = response.parsed_response['next']
       response = HTTParty.get(next_url, headers: { "Authorization" => "Bearer #{@access_token}" })
-      playlist_id = find_playlist_id(response.parsed_response['items'], search_string)
+      playlist_id = find_playlist_id(handle_response(response)['items'], search_string)
       return playlist_id unless playlist_id.nil?
     end
 
@@ -61,14 +59,7 @@ class SpotifyClient
     return if track_name.nil? || artist_name.nil?
     query = "#{track_name} artist:#{artist_name}"
     response = HTTParty.get("#{SPOTIFY_API_URL}/search", query: { type: 'track', limit: 1, q: query }, headers: { "Authorization" => "Bearer #{@access_token}" })
-    if response.parsed_response['tracks'] && response.parsed_response['tracks']['items'].any?
-      artists = response.parsed_response['tracks']['items'].first['artists'].map { |artist| artist['name'] }.join(", ")
-      puts "#{artists} – #{response.parsed_response['tracks']['items'].first['name']}"
-      response.parsed_response['tracks']['items'].first
-    else
-      puts "  No results for: #{artist_name} – #{track_name}."
-      nil
-    end
+    handle_response(response)['tracks']['items'].first
   end
 
   def replace_playlist_tracks(playlist_id, track_uris)
@@ -76,45 +67,46 @@ class SpotifyClient
       headers: { "Authorization" => "Bearer #{@access_token}", "Content-Type" => "application/json" },
       body: { uris: track_uris }.to_json
     }
-    HTTParty.put("#{SPOTIFY_API_URL}/playlists/#{playlist_id}/tracks", options)
+    response = HTTParty.put("#{SPOTIFY_API_URL}/playlists/#{playlist_id}/tracks", options)
+    handle_response(response)
   end
 
   def set_playlist_cover(playlist_id, url)
     jpg_data = png_to_jpg(url)
-
     return if jpg_data.nil?
+
     options = {
       headers: { "Authorization" => "Bearer #{@access_token}", "Content-Type" => "image/jpeg" },
       body: Base64.strict_encode64(jpg_data)
     }
-    response = nil
-    retries = 5
-    backoff = 1
-    while retries > 0
-      response = HTTParty.put("#{SPOTIFY_API_URL}/playlists/#{playlist_id}/images", options)
-      break if response.success?
-      puts [response.code, response.body].reject { |i| i.size == 0 }.join(": ")
-      sleep backoff
-      backoff *= 2
-      retries -= 1
-    end
-    puts (response.success? ? "Playlist cover image saved." : "Sorry! I couldn't save the playlist cover image.")
+    
+    response = HTTParty.put("#{SPOTIFY_API_URL}/playlists/#{playlist_id}/images", options)
+
+    raise "Failed to set playlist cover image" unless response.success?
   end
 
   private
 
+  def handle_response(response)
+    if response.success?
+      response.parsed_response
+    else
+      raise "Spotify API request failed with status code #{response.code}: #{response.message}"
+    end
+  end
+
   def refresh_access_token
     options = {
-      body: { grant_type: 'refresh_token', refresh_token: ENV['SPOTIFY_REFRESH_TOKEN'] },
+      body: { grant_type: 'refresh_token', refresh_token: @refresh_token },
       headers: { "Authorization" => "Basic " + Base64.strict_encode64("#{ENV['SPOTIFY_CLIENT_ID']}:#{ENV['SPOTIFY_CLIENT_SECRET']}"), "Content-Type" => "application/x-www-form-urlencoded" }
     }
     response = HTTParty.post("https://accounts.spotify.com/api/token", options)
-    response.parsed_response['access_token']
+    handle_response(response)['access_token']
   end
 
   def get_spotify_user_id
     response = HTTParty.get("#{SPOTIFY_API_URL}/me", headers: { "Authorization" => "Bearer #{@access_token}" })
-    response.parsed_response['id']
+    handle_response(response)['id']
   end
 
   def png_to_jpg(image_url)
@@ -137,11 +129,9 @@ class SpotifyClient
 
       jpeg_data
     else
-      puts "Failed to fetch image: HTTP Status #{response.code}"
-      nil
+      raise "Failed to fetch image: HTTP Status #{response.code}"
     end
   rescue => e
-    puts "Failed to convert image: #{e.message}"
-    nil
+    raise "Failed to convert image: #{e.message}"
   end
 end
