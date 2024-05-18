@@ -72,12 +72,12 @@ class SpotifyClient
   end
 
   def set_playlist_cover(playlist_id, url)
-    jpg_data = png_to_jpg(url)
+    jpg_data = png_to_base64_jpg(url)
     return if jpg_data.nil?
 
     options = {
       headers: { "Authorization" => "Bearer #{@access_token}", "Content-Type" => "image/jpeg" },
-      body: Base64.strict_encode64(jpg_data)
+      body: jpg_data
     }
     
     response = HTTParty.put("#{SPOTIFY_API_URL}/playlists/#{playlist_id}/images", options)
@@ -109,8 +109,8 @@ class SpotifyClient
     handle_response(response)['id']
   end
   
-  # Dall-E returns images in PNG format, but Spotify only accepts JPEG images with a maximum file size of 256 KB.
-  def png_to_jpg(image_url)
+  # Dall-E returns images in PNG format, but Spotify only accepts base-64-encoded JPEG images with a maximum file size of 256 KB.
+  def png_to_base64_jpg(image_url)
     response = HTTParty.get(image_url)
     if response.success?
       image_data = response.body
@@ -120,15 +120,19 @@ class SpotifyClient
       quality = 80
       image.quality(quality)
       jpeg_data = image.to_blob
-
-      # Reduce the quality until the file size is less than MAX_IMAGE_FILE_SIZE
-      while jpeg_data.length > MAX_IMAGE_FILE_SIZE && quality > MIN_IMAGE_QUALITY
+  
+      base64_image = Base64.strict_encode64(jpeg_data)
+  
+      # Reduce the quality until the base64 size is less than MAX_IMAGE_FILE_SIZE
+      while base64_image.bytesize > MAX_IMAGE_FILE_SIZE && quality > MIN_IMAGE_QUALITY
         quality -= 5
         image.quality(quality)
         jpeg_data = image.to_blob
+        base64_image = Base64.strict_encode64(jpeg_data)
       end
-
-      jpeg_data
+  
+      return if quality <= MIN_IMAGE_QUALITY
+      base64_image
     else
       raise "Failed to fetch image: HTTP Status #{response.code}"
     end
