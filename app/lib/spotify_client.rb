@@ -82,7 +82,7 @@ class SpotifyClient
     
     response = HTTParty.put("#{SPOTIFY_API_URL}/playlists/#{playlist_id}/images", options)
 
-    raise "Failed to set playlist cover image" unless response.success?
+    handle_response(response)
   end
 
   private
