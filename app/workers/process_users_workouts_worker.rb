@@ -5,9 +5,9 @@ class ProcessUsersWorkoutsWorker < ApplicationWorker
     User.includes(:preference).where.not(preferences: { id: nil }).find_each do |user|
       preference = user.preference
 
-      current_workouts = TrainerroadClient.new(preference.calendar_url, preference.timezone).get_workouts_for_today
+      todays_workouts = TrainerroadClient.new(preference.calendar_url, preference.timezone).get_workouts_for_today
 
-      current_workouts.each do |workout|
+      todays_workouts.each do |workout|
         current_date = Time.current.in_time_zone(preference.timezone).to_date
 
         existing_playlist = user.playlists.where(workout_name: workout[:name])
