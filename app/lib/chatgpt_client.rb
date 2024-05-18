@@ -4,8 +4,9 @@ require 'json'
 class ChatgptClient
   OPENAI_API_URL = 'https://api.openai.com/v1'
 
-  def initialize
+  def initialize(user_id)
     @api_key = ENV['OPENAI_API_KEY']
+    @user_id = user_id
   end
 
   def ask_for_json(system_prompt, user_prompt)
@@ -14,6 +15,7 @@ class ChatgptClient
       body: {
         model: 'gpt-4o',
         response_format: { type: "json_object" },
+        user: @user_id,
         messages: [
           {
             role: 'system',

@@ -7,7 +7,7 @@ class GeneratePlaylistWorker < ApplicationWorker
 
     existing_tracks = user.unique_tracks
     prompt = chatgpt_user_prompt(workout_name, workout_description, workout_type, preference, existing_tracks)
-    response = ChatgptClient.new.ask_for_json(chatgpt_system_prompt, prompt)
+    response = ChatgptClient.new(user_id).ask_for_json(chatgpt_system_prompt, prompt)
     playlist_tracks = response['tracks']
     dalle_prompt = response['cover_prompt']
 
@@ -69,7 +69,7 @@ class GeneratePlaylistWorker < ApplicationWorker
       #{workout_description}
 
       #{preference.musical_tastes}
-      
+
       #{exclusions}
 
       Please generate a playlist for this workout.

@@ -3,8 +3,9 @@ require 'httparty'
 class DalleClient
   OPENAI_API_URL = 'https://api.openai.com/v1'
 
-  def initialize
+  def initialize(user_id)
     @api_key = ENV['OPENAI_API_KEY']
+    @user_id = user_id
   end
 
   def generate(prompt)
@@ -16,7 +17,8 @@ class DalleClient
         n: 1,
         size: "1024x1024",
         response_format: "url",
-        quality: 'hd'
+        quality: 'hd',
+        user: @user_id
       }.to_json
     }
     response = HTTParty.post("#{OPENAI_API_URL}/images/generations", options)
