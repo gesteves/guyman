@@ -62,13 +62,14 @@ class GeneratePlaylistWorker < ApplicationWorker
   end
 
   def chatgpt_user_prompt(workout_name, workout_description, workout_type, preference, existing_tracks)
-    exclusions = existing_tracks.any? ? "Do not include the following tracks: #{existing_tracks.map { |t| "#{t.first} - #{t.last}"}.join(', ')}." : ""
+    exclusions = existing_tracks.any? ? "The following tracks have already been used in other playlists, please don't include them: #{existing_tracks.map { |t| "#{t.first} - #{t.last}"}.join(', ')}." : ""
 
     <<~PROMPT
       Today's workout is called: "#{workout_name}"
       #{workout_description}
 
       #{preference.musical_tastes}
+      
       #{exclusions}
 
       Please generate a playlist for this workout.
