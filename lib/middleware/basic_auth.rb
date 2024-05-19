@@ -5,7 +5,6 @@ class BasicAuth
 
   def call(env)
     if ENV['BASIC_AUTH_USERNAME'].present? && ENV['BASIC_AUTH_PASSWORD'].present?
-      request = Rack::Request.new(env)
       auth = Rack::Auth::Basic::Request.new(env)
 
       if auth.provided? && auth.basic? && auth.credentials && auth.credentials == [ENV['BASIC_AUTH_USERNAME'], ENV['BASIC_AUTH_PASSWORD']]
