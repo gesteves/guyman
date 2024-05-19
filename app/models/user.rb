@@ -29,7 +29,7 @@ class User < ApplicationRecord
              .pluck('tracks.artist', 'tracks.title')
   end
 
-  def playlist_for_workout_today(workout_name)
+  def playlist_for_workout(workout_name)
     current_date = Time.current.in_time_zone(preference.timezone).to_date
     playlists.where(workout_name: workout_name)
              .where(created_at: current_date.beginning_of_day..current_date.end_of_day)
