@@ -60,7 +60,7 @@ class SpotifyClient
     handle_response(response)
   end
 
-  # Follows a playlist with the given ID. This is equivalent to "adding" the playlist to the user's library.
+  # Follows a playlist with the given ID. This adds the playlist to the user's library.
   #
   # @param playlist_id [String] The ID of the playlist to follow.
   # @raise [RuntimeError] If following the playlist fails.
