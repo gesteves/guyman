@@ -10,7 +10,7 @@ class ProcessUsersWorkoutsJob < ApplicationJob
 
       todays_workouts.each do |workout|
         # Find any playlists already created for this workout today.
-        existing_playlist = user.playlist_for_workout(workout[:name])
+        existing_playlist = user.playlist_for_todays_workout(workout[:name])
 
         # If a playlist has already been created for this workout today, skip it.
         next if existing_playlist.present?
