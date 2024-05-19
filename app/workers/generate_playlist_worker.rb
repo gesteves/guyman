@@ -10,8 +10,9 @@ class GeneratePlaylistWorker < ApplicationWorker
     prompt = chatgpt_user_prompt(workout_name, workout_description, preference.musical_tastes, recent_tracks)
     response = ChatgptClient.new(user_id).ask_for_json(chatgpt_system_prompt, prompt)
 
-    playlist_tracks = response['tracks']
     dalle_prompt = response['cover_prompt']
+    playlist_tracks = response['tracks']
+    playlist_description = response['description']
     playlist_name = "#{Time.current.in_time_zone(preference.timezone).strftime('%B %-d, %Y')}: #{workout_name}"
 
     if playlist_id.present?
@@ -19,7 +20,7 @@ class GeneratePlaylistWorker < ApplicationWorker
       playlist = user.playlists.find(playlist_id)
       playlist.update!(
         name: playlist_name,
-        description: response['description'],
+        description: playlist_description,
         workout_description: workout_description,
         workout_type: workout_type,
         workout_name: workout_name,
@@ -33,7 +34,7 @@ class GeneratePlaylistWorker < ApplicationWorker
       # Create a new playlist
       playlist = user.playlists.create!(
         name: playlist_name,
-        description: response['description'],
+        description: playlist_description,
         workout_description: workout_description,
         workout_type: workout_type,
         workout_name: workout_name,
