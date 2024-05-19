@@ -82,17 +82,20 @@ class GeneratePlaylistWorker < ApplicationWorker
   # then tell it to avoid using those songs in the current playlist.
   # It sorta works, but also makes the prompts much more expensive.
   def chatgpt_user_prompt(workout_name, workout_description, workout_type, preference, recent_tracks)
-    exclusions = recent_tracks.any? ? "The following songs have already been used in other playlists, please don't include them: #{recent_tracks.map { |t| "#{t.first} - #{t.last}"}.join(', ')}." : ""
-
+    exclusions = if recent_tracks.any?
+                   "The following songs have already been used in previous playlists, please don't include them:\n" +
+                   recent_tracks.map { |t| "- #{t.first} - #{t.last}" }.join("\n")
+                 else
+                   ""
+                 end
+  
     <<~PROMPT
-      Today's workout is called: "#{workout_name}"
+      #{workout_name}
       #{workout_description}
-
+  
       #{preference.musical_tastes}
-
+  
       #{exclusions}
-
-      Please generate a playlist for this workout.
     PROMPT
   end
 end
