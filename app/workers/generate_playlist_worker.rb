@@ -10,6 +10,8 @@ class GeneratePlaylistWorker < ApplicationWorker
     prompt = chatgpt_user_prompt(workout_name, workout_description, preference.musical_tastes, recent_tracks)
     response = ChatgptClient.new(user_id).ask_for_json(chatgpt_system_prompt, prompt)
 
+    return if response['tracks'].blank? || response['cover_prompt'].blank? || response['description'].blank?
+    
     dalle_prompt = response['cover_prompt']
     playlist_tracks = response['tracks']
     playlist_description = response['description']

@@ -34,5 +34,7 @@ class ChatgptClient
     else
       raise "ChatGPT API request failed with status code #{response.code}: #{response.message}"
     end
+  rescue JSON::ParserError
+    {}
   end
 end
