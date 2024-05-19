@@ -6,8 +6,8 @@ class User < ApplicationRecord
   has_many :playlists, dependent: :destroy
 
   # Sets the number of tracks that should not be reused in playlists.
-  # Kinda guessing at the number here, but a 2-hour playlist has around 30 tracks.
-  # So 180 tracks should be enough for 12 hours of training, enough for a week.
+  # Kinda guessing at the number here, but a 2-hour playlist has around 30 tracks,
+  # so 180 tracks should be enough for 12 hours, or a week, of training, without reusing songs.
   NON_REUSABLE_TRACK_COUNT = ENV.fetch('NON_REUSABLE_TRACK_COUNT', 180)
 
   def self.from_omniauth(auth)
