@@ -1,4 +1,5 @@
 :concurrency: <%= ENV.fetch("SIDEKIQ_CONCURRENCY") { 10 }.to_i %>
+:max_retries: 7
 :queues:
   - high
   - default
