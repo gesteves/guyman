@@ -47,7 +47,7 @@ class GeneratePlaylistWorker < ApplicationWorker
       playlist.tracks.create!(title: track['track'], artist: track['artist'])
     end
 
-    # Enqueue a job to create the playlist in Spotify.
+    # Enqueue a job to create or update the playlist in Spotify.
     ProcessPlaylistWorker.perform_async(user.id, playlist.id)
   end
 
