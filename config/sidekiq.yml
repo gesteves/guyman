@@ -10,6 +10,6 @@
       class: "ProcessUsersWorkoutsWorker"
       queue: high
     clean_up_spotify_playlists_worker:
-      cron: "5 * * * *" # Every hour at 5 minutes past the top of the hour
+      cron: "0 * * * *" # Every hour at the top of the hour
       class: "CleanUpSpotifyPlaylistsWorker"
       queue: low
