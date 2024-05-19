@@ -1,7 +1,7 @@
 class GeneratePlaylistWorker < ApplicationWorker
   queue_as :high
 
-  def perform(user_id, workout_name, workout_description, workout_type, workout_duration)
+  def perform(user_id, workout_name, workout_description, workout_type, workout_duration, playlist_id = nil)
     user = User.find(user_id)
     preference = user.preference
 
@@ -14,16 +14,33 @@ class GeneratePlaylistWorker < ApplicationWorker
     dalle_prompt = response['cover_prompt']
     playlist_name = "#{Time.current.in_time_zone(preference.timezone).strftime('%B %-d, %Y')}: #{workout_name}"
 
-    # Create a new playlist with the workout details and the response from ChatGPT.
-    playlist = user.playlists.create!(
-      name: playlist_name,
-      description: response['description'],
-      workout_description: workout_description,
-      workout_type: workout_type,
-      workout_name: workout_name,
-      cover_dalle_prompt: dalle_prompt,
-      workout_duration: workout_duration
-    )
+    if playlist_id.present?
+      # Update the existing playlist
+      playlist = user.playlists.find(playlist_id)
+      playlist.update!(
+        name: playlist_name,
+        description: response['description'],
+        workout_description: workout_description,
+        workout_type: workout_type,
+        workout_name: workout_name,
+        cover_dalle_prompt: dalle_prompt,
+        workout_duration: workout_duration
+      )
+
+      # Remove existing tracks
+      playlist.tracks.destroy_all
+    else
+      # Create a new playlist
+      playlist = user.playlists.create!(
+        name: playlist_name,
+        description: response['description'],
+        workout_description: workout_description,
+        workout_type: workout_type,
+        workout_name: workout_name,
+        cover_dalle_prompt: dalle_prompt,
+        workout_duration: workout_duration
+      )
+    end
 
     # Add the tracks ChatGPT generated to the playlist.
     playlist_tracks.each do |track|
