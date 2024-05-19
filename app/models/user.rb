@@ -28,9 +28,27 @@ class User < ApplicationRecord
     playlists.joins(:tracks)
              .where.not(tracks: { spotify_uri: nil })
              .select('DISTINCT ON (tracks.spotify_uri) tracks.spotify_uri, tracks.artist, tracks.title, tracks.created_at')
-             .order('tracks.spotify_uri, tracks.created_at DESC')
+             .order('tracks.created_at DESC')
              .limit(count)
              .pluck('tracks.artist', 'tracks.title')
+  end
+
+  # Retrieves the recent track URIs from other playlists.
+  #
+  # This method returns an array of track URIs from playlists other than the specified playlist.
+  # The tracks are ordered by their creation date in descending order.
+  #
+  # @param playlist_id [Integer] The ID of the playlist to exclude from the results.
+  # @param count [Integer] The maximum number of track URIs to retrieve.
+  # @return [Array<String>] An array of track URIs.
+  def recent_track_uris_from_other_playlists(playlist_id, count = 500)
+    playlists.joins(:tracks)
+             .where.not(id: playlist_id)
+             .where.not(tracks: { spotify_uri: nil })
+             .select('DISTINCT ON (tracks.spotify_uri) tracks.spotify_uri, tracks.created_at')
+             .order('tracks.created_at DESC')
+             .limit(count)
+             .pluck('tracks.spotify_uri')
   end
 
   # Get the playlist for a specific workout scheduled for today.

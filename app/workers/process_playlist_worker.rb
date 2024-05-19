@@ -21,21 +21,21 @@ class ProcessPlaylistWorker < ApplicationWorker
     total_duration = 0
     workout_duration_ms = playlist.workout_duration * 60 * 1000 # Convert workout duration from minutes to milliseconds
 
-    added_tracks = []
-
-    # Collect all track titles and artists from the user's other playlists
-    existing_tracks = user.playlists.where.not(id: playlist_id).joins(:tracks).pluck('tracks.title', 'tracks.artist')
+    # Collect all track URIs from the user's other playlists
+    recent_track_uris = user.recent_track_uris_from_other_playlists(playlist.id)
 
     playlist.tracks.each do |track|
-      # Skip tracks that are already in other playlists
-      # This prevents adding the same track multiple times across different playlists
-      next if existing_tracks.include?([track.title, track.artist])
-
       # Search for the track in Spotify using its title and artist
       spotify_track = spotify_client.search_tracks(track.title, track.artist)
       
       # If the track was not found on Spotify, skip to the next track
-      next unless spotify_track
+      next if spotify_track.blank?
+
+      # Skip tracks that are already in other playlists
+      next if recent_track_uris.include?(spotify_track['uri'])
+
+      # Skip the track if it is already in the Spotify playlist
+      next if track_uris.include?(spotify_track['uri'])
 
       # Store the Spotify track URI in the track record for future reference
       track.update(spotify_uri: spotify_track['uri'])
@@ -45,9 +45,6 @@ class ProcessPlaylistWorker < ApplicationWorker
       
       # Increment the total duration of the tracks in the playlist
       total_duration += spotify_track['duration_ms']
-      
-      # Keep track of the added tracks to remove any that were not added later
-      added_tracks << track
 
       # If the total duration of the tracks is greater than or equal to the workout duration,
       # stop adding more tracks
@@ -58,7 +55,7 @@ class ProcessPlaylistWorker < ApplicationWorker
     spotify_client.update_playlist_tracks(spotify_playlist_id, track_uris)
 
     # Remove the tracks that were not added to the Spotify playlist from our playlist.
-    playlist.tracks.where.not(id: added_tracks.map(&:id)).destroy_all
+    playlist.tracks.where(spotify_uri: nil).destroy_all
 
     # Enqueue a job to generate a cover image for the playlist using Dall-E.
     GenerateCoverImageWorker.perform_async(user.id, spotify_playlist_id, playlist.cover_dalle_prompt)
