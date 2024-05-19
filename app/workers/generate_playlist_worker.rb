@@ -11,11 +11,11 @@ class GeneratePlaylistWorker < ApplicationWorker
     response = ChatgptClient.new(user_id).ask_for_json(chatgpt_system_prompt, prompt)
 
     return if response['tracks'].blank? || response['cover_prompt'].blank? || response['description'].blank?
-    
+
     dalle_prompt = response['cover_prompt']
     playlist_tracks = response['tracks']
     playlist_description = response['description']
-    playlist_name = "#{Time.current.in_time_zone(preference.timezone).strftime('%B %-d, %Y')}: #{workout_name}"
+    playlist_name = "#{workout_type}: #{workout_name}"
 
     if playlist_id.present?
       # Update the existing playlist

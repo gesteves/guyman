@@ -51,7 +51,7 @@ class TrainerroadClient
       summary_parts = event.summary.split(' - ')
       duration = summary_parts[0].strip
       name = summary_parts[1].strip
-      type = summary_parts[1].include?("Run") ? "Running" : "Cycling"
+      type = summary_parts[1].include?("Run") ? "Run" : "Cycling"
       duration_in_minutes = convert_duration_to_minutes(duration)
 
       {
