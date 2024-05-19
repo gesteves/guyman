@@ -6,11 +6,11 @@ class Playlist < ApplicationRecord
   validates :workout_name, presence: true
   validates :workout_type, presence: true
 
-  before_destroy :schedule_spotify_playlist_unfollow, if: :spotify_playlist_id?
+  before_destroy :unfollow_spotify_playlist, if: :spotify_playlist_id?
 
   private
 
-  def schedule_spotify_playlist_unfollow
+  def unfollow_spotify_playlist
     UnfollowSpotifyPlaylistWorker.perform_async(user.id, spotify_playlist_id)
   end
 end
