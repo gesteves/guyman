@@ -46,6 +46,9 @@ class GeneratePlaylistJob < ApplicationJob
     end
 
     # Add the tracks ChatGPT generated to the playlist.
+    # It's important that we store the track names and artists returned by ChatGPT,
+    # not the ones from Spotify, because we'll use them in future prompts,
+    # and Spotify's terms of use forbid passing Spotify data to ChatGPT.
     playlist_tracks.each do |track|
       playlist.tracks.create!(title: track['track'], artist: track['artist'])
     end
@@ -66,6 +69,7 @@ class GeneratePlaylistJob < ApplicationJob
   #   Instead, we ask it to generate at least 100 songs and then build the playlist manually until it's the right length.
   # - Because we're using the `json_object` response format in the API call to ChatGPT,
   #   we MUST specify in the prompt that it must return a JSON object with the given structure we expect.
+  # - Spotify's terms of use forbid passing Spotify data to ChatGPT, so it's important that we never do that in the prompt.
   def chatgpt_system_prompt
     <<~PROMPT
       You are a helpful assistant tasked with creating a cohesive Spotify playlist to power your user's workout of the day. Your task is the following:
@@ -102,6 +106,9 @@ class GeneratePlaylistJob < ApplicationJob
   # To try to work around this, we store in the database the songs that have already been used in other playlists,
   # then tell it to avoid using those songs in the current playlist.
   # It sorta works, but also makes the prompts much more expensive.
+  #
+  # Note that Spotify's terms of use forbid passing Spotify data to ChatGPT, so it's important that we never do that in the prompt.
+  # We avoid that by storing the song names and artists from the ChatGPT response, and using that in this prompt.
   def chatgpt_user_prompt(workout_name, workout_description, musical_tastes, recent_tracks)
     exclusions = if recent_tracks.any?
                    "The following songs have already been used in previous playlists, please don't include them:\n" +
