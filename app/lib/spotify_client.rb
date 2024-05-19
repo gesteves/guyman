@@ -4,7 +4,7 @@ require 'mini_magick'
 
 class SpotifyClient
   SPOTIFY_API_URL = 'https://api.spotify.com/v1'
-  MAX_IMAGE_FILE_SIZE = 256 * 1024
+  MAX_IMAGE_FILE_SIZE = 250 * 1024
   MIN_IMAGE_QUALITY = 10
 
   def initialize(refresh_token)
