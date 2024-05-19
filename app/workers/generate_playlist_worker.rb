@@ -6,8 +6,8 @@ class GeneratePlaylistWorker < ApplicationWorker
     preference = user.preference
 
     # Find the tracks already used in other playlists for this user.
-    existing_tracks = user.unique_tracks
-    prompt = chatgpt_user_prompt(workout_name, workout_description, workout_type, preference, existing_tracks)
+    recent_tracks = user.recent_tracks
+    prompt = chatgpt_user_prompt(workout_name, workout_description, workout_type, preference, recent_tracks)
     response = ChatgptClient.new(user_id).ask_for_json(chatgpt_system_prompt, prompt)
 
     playlist_tracks = response['tracks']
@@ -81,8 +81,8 @@ class GeneratePlaylistWorker < ApplicationWorker
   # To try to work around this, we store in the database the songs that have already been used in other playlists,
   # then tell it to avoid using those songs in the current playlist.
   # It sorta works, but also makes the prompts much more expensive.
-  def chatgpt_user_prompt(workout_name, workout_description, workout_type, preference, existing_tracks)
-    exclusions = existing_tracks.any? ? "The following songs have already been used in other playlists, please don't include them: #{existing_tracks.map { |t| "#{t.first} - #{t.last}"}.join(', ')}." : ""
+  def chatgpt_user_prompt(workout_name, workout_description, workout_type, preference, recent_tracks)
+    exclusions = recent_tracks.any? ? "The following songs have already been used in other playlists, please don't include them: #{recent_tracks.map { |t| "#{t.first} - #{t.last}"}.join(', ')}." : ""
 
     <<~PROMPT
       Today's workout is called: "#{workout_name}"

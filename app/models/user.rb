@@ -20,7 +20,7 @@ class User < ApplicationRecord
     authentication.user
   end
 
-  def unique_tracks
-    playlists.joins(:tracks).distinct.pluck('tracks.artist', 'tracks.title')
+  def recent_tracks(count = 500)
+    playlists.joins(:tracks).distinct.order(created_at: :asc).pluck('tracks.artist', 'tracks.title').last(count)
   end
 end
