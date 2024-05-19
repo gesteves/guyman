@@ -18,7 +18,7 @@ class TrainerroadClient
 
       today = Time.current.in_time_zone(@timezone).to_date
       workouts = calendar.events.select do |event|
-        event.dtstart.to_date == today && duration_present?(summary)
+        event.dtstart.to_date == today && duration_present?(event.summary)
       end
 
       parse_workouts(workouts)
