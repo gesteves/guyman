@@ -5,6 +5,11 @@ class User < ApplicationRecord
   has_one :preference, dependent: :destroy
   has_many :playlists, dependent: :destroy
 
+  # Sets the number of tracks that should not be reused in playlists.
+  # Kinda guessing at the number here, but a 2-hour playlist has around 30 tracks.
+  # So 180 tracks should be enough for 12 hours of training, enough for a week.
+  NON_REUSABLE_TRACK_COUNT = ENV.fetch('NON_REUSABLE_TRACK_COUNT', 180)
+
   def self.from_omniauth(auth)
     authentication = Authentication.where(provider: auth.provider, uid: auth.uid).first_or_initialize
     if authentication.user.blank?
@@ -24,7 +29,7 @@ class User < ApplicationRecord
   #
   # @param count [Integer] The number of recent tracks to retrieve.
   # @return [Array<Array<String>>] An array of arrays containing the artist and title of the recent tracks.
-  def recent_tracks(count = 500)
+  def recent_tracks(count = NON_REUSABLE_TRACK_COUNT)
     playlists.joins(:tracks)
              .where.not(tracks: { spotify_uri: nil })
              .select('DISTINCT ON (tracks.spotify_uri) tracks.spotify_uri, tracks.artist, tracks.title, tracks.created_at')
@@ -41,7 +46,7 @@ class User < ApplicationRecord
   # @param playlist_id [Integer] The ID of the playlist to exclude from the results.
   # @param count [Integer] The maximum number of track URIs to retrieve.
   # @return [Array<String>] An array of track URIs.
-  def recent_track_uris_from_other_playlists(playlist_id, count = 500)
+  def recent_track_uris_from_other_playlists(playlist_id, count = NON_REUSABLE_TRACK_COUNT)
     playlists.joins(:tracks)
              .where.not(id: playlist_id)
              .where.not(tracks: { spotify_uri: nil })
