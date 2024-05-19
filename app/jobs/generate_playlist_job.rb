@@ -10,6 +10,9 @@ class GeneratePlaylistJob < ApplicationJob
     prompt = chatgpt_user_prompt(workout_name, workout_description, preference.musical_tastes, recent_tracks)
     response = ChatgptClient.new(user_id).ask_for_json(chatgpt_system_prompt, prompt)
 
+    # If all this stuff is blank in ChatGPT's response, something went wrong with the prompt.
+    # Perhaps the user put "disregard all previous instructions" as their musical taste?
+    # In any case, exit.
     return if response['tracks'].blank? || response['name'].blank? || response['description'].blank? || response['cover_prompt'].blank?
 
     dalle_prompt = response['cover_prompt']
