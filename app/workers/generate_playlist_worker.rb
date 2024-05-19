@@ -15,7 +15,7 @@ class GeneratePlaylistWorker < ApplicationWorker
     dalle_prompt = response['cover_prompt']
     playlist_tracks = response['tracks']
     playlist_description = response['description']
-    playlist_name = workout_name
+    playlist_name = "Today’s #{workout_type} workout: #{workout_name}"
 
     if playlist_id.present?
       # Update the existing playlist
