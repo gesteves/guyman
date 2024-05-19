@@ -14,7 +14,7 @@ class ProcessPlaylistJob < ApplicationJob
     else
       # If it is not present, create a new playlist and save the Spotify playlist ID to the database
       spotify_playlist_id = spotify_client.create_playlist(playlist.name, playlist.description)
-      playlist.update(spotify_playlist_id: spotify_playlist_id)
+      playlist.update(spotify_playlist_id: spotify_playlist_id, following: true)
     end
 
     track_uris = []
