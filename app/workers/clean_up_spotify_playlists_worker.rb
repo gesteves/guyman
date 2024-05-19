@@ -7,8 +7,7 @@ class CleanUpSpotifyPlaylistsWorker < ApplicationWorker
       next unless preference
 
       current_date = Time.current.in_time_zone(preference.timezone)
-      trainerroad_client = TrainerroadClient.new(preference.calendar_url, preference.timezone)
-      todays_workouts = trainerroad_client.get_workouts_for_today
+      todays_workouts = TrainerroadClient.new(preference.calendar_url, preference.timezone).get_workouts_for_today
       workout_names = todays_workouts.map { |workout| workout[:name] }
 
       # Unfollow any Spotify playlists created before the current day
