@@ -25,6 +25,18 @@ class User < ApplicationRecord
     authentication.user
   end
 
+  # Returns an array of playlists for today's workouts.
+  #
+  # @return [Array<Playlist>] An array of playlists created today.
+  def todays_playlists
+    if preference
+      current_date = Time.current.in_time_zone(preference.timezone)
+      playlists.where(created_at: current_date.beginning_of_day..current_date.end_of_day)
+    else
+      []
+    end
+  end
+
   # Get the most recent unique tracks from across all of the user's playlists.
   #
   # @param count [Integer] The number of recent tracks to retrieve.
