@@ -1,20 +1,20 @@
 class ProcessPlaylistWorker < ApplicationWorker
-  queue_as :high
+  queue_as :default
 
   def perform(user_id, playlist_id)
     user = User.find(user_id)
     playlist = Playlist.find(playlist_id)
     spotify_client = SpotifyClient.new(user.authentications.find_by(provider: 'spotify').refresh_token)
 
-    # Reuse the Spotify playlist if one already exists for this workout on this day.
-    spotify_playlist_id = spotify_client.search_playlists(playlist.name)
-
-    # If we couldn't find a playlist for this workout, create a new one.
-    # Otherwise, we'll update the title and description of the existing one.
-    if spotify_playlist_id.nil?
-      spotify_playlist_id = spotify_client.create_playlist(playlist.name, playlist.description)
-    else
+    # Check if the Spotify playlist ID is already present in the database
+    if playlist.spotify_playlist_id.present?
+      # If it is present, update the existing playlist
+      spotify_playlist_id = playlist.spotify_playlist_id
       spotify_client.modify_playlist(spotify_playlist_id, playlist.name, playlist.description)
+    else
+      # If it is not present, create a new playlist and save the Spotify playlist ID to the database
+      spotify_playlist_id = spotify_client.create_playlist(playlist.name, playlist.description)
+      playlist.update(spotify_playlist_id: spotify_playlist_id)
     end
 
     track_uris = []
@@ -32,11 +32,10 @@ class ProcessPlaylistWorker < ApplicationWorker
     playlist.tracks.each do |track|
       # Skip tracks that are already in other playlists
       next if existing_tracks.include?([track.title, track.artist])
-
-      spotify_track = spotify_client.search_tracks(track.title, track.artist)
+      
       # Skip tracks that we couldn't find on Spotify.
       next unless spotify_track
-      
+            
       # Skip if we already added the track to the playlist.
       next if track_uris.include?(spotify_track['uri'])
 
