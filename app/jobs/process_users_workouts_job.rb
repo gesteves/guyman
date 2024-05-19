@@ -2,6 +2,7 @@ class ProcessUsersWorkoutsJob < ApplicationJob
   queue_as :high
 
   def perform
+    return unless Rails.env.production?
     User.includes(:preference).where.not(preferences: { id: nil }).find_each do |user|
       preference = user.preference
 

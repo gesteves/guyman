@@ -2,6 +2,7 @@ class CleanUpSpotifyPlaylistsJob < ApplicationJob
   queue_as :low
 
   def perform
+    return unless Rails.env.production?
     User.includes(:preference, :playlists).find_each do |user|
       preference = user.preference
       next unless preference
