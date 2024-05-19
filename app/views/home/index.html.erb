@@ -15,7 +15,7 @@
     <%= link_to 'Set Preferences', edit_preference_path %>
   <% end %>
 
-  <% if current.user.admin? %>
+  <% if current_user.admin? %>
     <%= link_to 'Sidekiq', "/sidekiq", target: "_blank" %>
   <% end %>
 
