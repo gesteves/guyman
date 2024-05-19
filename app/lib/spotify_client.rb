@@ -46,6 +46,20 @@ class SpotifyClient
     handle_response(response)
   end
 
+  # Replaces the tracks in a playlist with the given track URIs.
+  #
+  # @param playlist_id [String] The ID of the playlist to modify.
+  # @param track_uris [Array<String>] An array of track URIs.
+  # @return [Hash] The modified playlist object.
+  def update_playlist_tracks(playlist_id, track_uris)
+    options = {
+      headers: { "Authorization" => "Bearer #{@access_token}", "Content-Type" => "application/json" },
+      body: { uris: track_uris }.to_json
+    }
+    response = HTTParty.put("#{SPOTIFY_API_URL}/playlists/#{playlist_id}/tracks", options)
+    handle_response(response)
+  end
+
   # Unfollows a playlist with the given ID. This is equivalent to "deleting" the playlist from the user's library.
   #
   # @param playlist_id [String] The ID of the playlist to unfollow.
@@ -70,20 +84,6 @@ class SpotifyClient
     query = "#{track_name} artist:#{artist_name}"
     response = HTTParty.get("#{SPOTIFY_API_URL}/search", query: { type: 'track', limit: 1, q: query }, headers: { "Authorization" => "Bearer #{@access_token}" })
     handle_response(response)['tracks']['items'].first
-  end
-
-  # Replaces the tracks in a playlist with the given track URIs.
-  #
-  # @param playlist_id [String] The ID of the playlist to modify.
-  # @param track_uris [Array<String>] An array of track URIs.
-  # @return [Hash] The modified playlist object.
-  def replace_playlist_tracks(playlist_id, track_uris)
-    options = {
-      headers: { "Authorization" => "Bearer #{@access_token}", "Content-Type" => "application/json" },
-      body: { uris: track_uris }.to_json
-    }
-    response = HTTParty.put("#{SPOTIFY_API_URL}/playlists/#{playlist_id}/tracks", options)
-    handle_response(response)
   end
 
   # Sets the cover image of a playlist with the given ID.

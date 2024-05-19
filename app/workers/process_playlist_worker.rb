@@ -55,7 +55,7 @@ class ProcessPlaylistWorker < ApplicationWorker
     end
 
     # Replace the tracks in the Spotify playlist with the ones we found.
-    spotify_client.replace_playlist_tracks(spotify_playlist_id, track_uris)
+    spotify_client.update_playlist_tracks(spotify_playlist_id, track_uris)
 
     # Remove the tracks that were not added to the Spotify playlist from our playlist.
     playlist.tracks.where.not(id: added_tracks.map(&:id)).destroy_all
