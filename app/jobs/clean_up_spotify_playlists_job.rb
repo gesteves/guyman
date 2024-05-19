@@ -22,7 +22,7 @@ class CleanUpSpotifyPlaylistsJob < ApplicationJob
       # These playlists probably reference a workout that was previously scheduled for today and has since been removed
       # from the calendar, probably because the user either deleted it, rescheduled it, or replaced it with an alternate.
       # In this case we DO want to delete the playlist from the database so we can reuse its songs in future playlists,
-      # since playlist was likely never used.
+      # since the playlist was likely never used.
       # Note that destroying the playlist will also unfollow it in Spotify.
       user.playlists.where(created_at: current_date.beginning_of_day..current_date.end_of_day).find_each do |playlist|
         playlist.destroy unless workout_names.include?(playlist.workout_name)
