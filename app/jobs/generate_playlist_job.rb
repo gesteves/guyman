@@ -1,4 +1,4 @@
-class GeneratePlaylistWorker < ApplicationWorker
+class GeneratePlaylistJob < ApplicationJob
   queue_as :high
 
   def perform(user_id, workout_name, workout_description, workout_type, workout_duration, playlist_id = nil)
@@ -51,7 +51,7 @@ class GeneratePlaylistWorker < ApplicationWorker
     end
 
     # Enqueue a job to create or update the playlist in Spotify.
-    ProcessPlaylistWorker.perform_async(user.id, playlist.id)
+    ProcessPlaylistJob.perform_async(user.id, playlist.id)
   end
 
   private

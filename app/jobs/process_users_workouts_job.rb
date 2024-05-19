@@ -1,4 +1,4 @@
-class ProcessUsersWorkoutsWorker < ApplicationWorker
+class ProcessUsersWorkoutsJob < ApplicationJob
   queue_as :high
 
   def perform
@@ -15,7 +15,7 @@ class ProcessUsersWorkoutsWorker < ApplicationWorker
         next if existing_playlist.present?
 
         # Otherwise, enqueue a job to generate the playlist with ChatGPT.
-        GeneratePlaylistWorker.perform_async(user.id, workout[:name], workout[:description], workout[:type], workout[:duration])
+        GeneratePlaylistJob.perform_async(user.id, workout[:name], workout[:description], workout[:type], workout[:duration])
       end
     end
   end

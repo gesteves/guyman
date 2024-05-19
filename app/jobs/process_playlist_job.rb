@@ -1,4 +1,4 @@
-class ProcessPlaylistWorker < ApplicationWorker
+class ProcessPlaylistJob < ApplicationJob
   queue_as :default
 
   def perform(user_id, playlist_id)
@@ -58,6 +58,6 @@ class ProcessPlaylistWorker < ApplicationWorker
     playlist.tracks.where(spotify_uri: nil).destroy_all
 
     # Enqueue a job to generate a cover image for the playlist using Dall-E.
-    GenerateCoverImageWorker.perform_async(user.id, spotify_playlist_id, playlist.cover_dalle_prompt)
+    GenerateCoverImageJob.perform_async(user.id, spotify_playlist_id, playlist.cover_dalle_prompt)
   end
 end

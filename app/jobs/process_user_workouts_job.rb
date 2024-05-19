@@ -1,4 +1,4 @@
-class ProcessUserWorkoutsWorker < ApplicationWorker
+class ProcessUserWorkoutsJob < ApplicationJob
   queue_as :high
 
   # This job regenerates the playlists for today's workouts for a given user.
@@ -11,7 +11,7 @@ class ProcessUserWorkoutsWorker < ApplicationWorker
       # Find any playlists already created for this workout today.
       existing_playlist = user.playlist_for_workout(workout[:name])
 
-      GeneratePlaylistWorker.perform_async(user.id, workout[:name], workout[:description], workout[:type], workout[:duration], existing_playlist&.id)
+      GeneratePlaylistJob.perform_async(user.id, workout[:name], workout[:description], workout[:type], workout[:duration], existing_playlist&.id)
     end
   end
 end

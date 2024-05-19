@@ -1,4 +1,4 @@
-class UnfollowSpotifyPlaylistWorker < ApplicationWorker
+class UnfollowSpotifyPlaylistJob < ApplicationJob
   queue_as :low
 
   def perform(user_id, spotify_playlist_id = nil)
