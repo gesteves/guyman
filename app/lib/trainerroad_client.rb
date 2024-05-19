@@ -19,34 +19,30 @@ class TrainerroadClient
   def get_workouts_for_today
     response = HTTParty.get(@calendar_url)
 
-    if response.success?
-      calendar_data = response.body
-      calendars = Icalendar::Calendar.parse(calendar_data)
-      calendar = calendars.first
+    calendar_data = handle_response(response)
+    calendars = Icalendar::Calendar.parse(calendar_data)
+    calendar = calendars.first
 
-      today = Time.current.in_time_zone(@timezone).to_date
-      workouts = calendar.events.select do |event|
-        event.dtstart.to_date == today && valid_workout?(event.summary)
-      end
-
-      parse_workouts(workouts)
-    else
-      handle_response_error(response)
+    today = Time.current.in_time_zone(@timezone).to_date
+    workouts = calendar.events.select do |event|
+      event.dtstart.to_date == today && valid_workout?(event.summary)
     end
+
+    parse_workouts(workouts)
   end
 
   private
 
-  # Handles the error response from the TrainerRoad API.
+  # Handles the response from the TrainerRoad calendar.
   #
-  # @param response [HTTParty::Response] The HTTP response object.
-  # @return [Array] An empty array.
-  def handle_response_error(response)
-    case response.code
-    when 500..599
-      raise "TrainerRoad API request failed with status code #{response.code}: #{response.message}"
+  # @param response [HTTParty::Response] The response object.
+  # @return [Hash] The response body if the request was successful.
+  # @raise [RuntimeError] If the request failed.
+  def handle_response(response)
+    if response.success?
+      response.body
     else
-      []
+      raise "TrainerRoad calendar request failed with status code #{response.code}: #{response.message}"
     end
   end
 
