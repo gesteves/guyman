@@ -6,7 +6,7 @@ class Playlist < ApplicationRecord
   validates :workout_name, presence: true
   validates :workout_type, presence: true
 
-  before_destroy :unfollow_spotify_playlist
+  before_destroy :unfollow_spotify_playlist, if: :spotify_playlist_id?
 
   private
 
