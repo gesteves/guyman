@@ -31,28 +31,14 @@ class SpotifyClient
     handle_response(response)
   end
 
-  def search_playlists(search_string)
+  def unfollow_playlist(playlist_id)
     options = {
-      headers: { "Authorization" => "Bearer #{@access_token}" },
-      query: { limit: 50, offset: 0 }
+      headers: { "Authorization" => "Bearer #{@access_token}" }
     }
-    response = HTTParty.get("#{SPOTIFY_API_URL}/users/#{@user_id}/playlists", options)
-    playlist_id = find_playlist_id(handle_response(response)['items'], search_string)
-    return playlist_id unless playlist_id.nil?
-
-    while response.parsed_response['next']
-      next_url = response.parsed_response['next']
-      response = HTTParty.get(next_url, headers: { "Authorization" => "Bearer #{@access_token}" })
-      playlist_id = find_playlist_id(handle_response(response)['items'], search_string)
-      return playlist_id unless playlist_id.nil?
+    response = HTTParty.delete("#{SPOTIFY_API_URL}/playlists/#{playlist_id}/followers", options)
+    unless response.success?
+      raise "Failed to unfollow Spotify playlist with ID #{playlist_id}: #{response.message}"
     end
-
-    nil
-  end
-
-  def find_playlist_id(playlists, search_string)
-    playlist = playlists.find { |p| p['name'].downcase.include?(search_string.downcase) }
-    playlist['id'] if playlist
   end
 
   def search_tracks(track_name, artist_name)
