@@ -21,6 +21,11 @@ class User < ApplicationRecord
   end
 
   def recent_tracks(count = 500)
-    playlists.joins(:tracks).distinct.order(created_at: :asc).pluck('tracks.artist', 'tracks.title').last(count)
+    playlists.joins(:tracks)
+             .where.not(tracks: { spotify_uri: nil })
+             .select('DISTINCT ON (tracks.spotify_uri) tracks.spotify_uri, tracks.artist, tracks.title, tracks.created_at')
+             .order('tracks.spotify_uri, tracks.created_at DESC')
+             .limit(count)
+             .pluck('tracks.artist', 'tracks.title')
   end
 end
