@@ -15,7 +15,7 @@ class CleanUpSpotifyPlaylistsJob < ApplicationJob
       # to avoid cluttering the user's Spotify account, but we don't want to delete them
       # from the database so we don't reuse their songs in future playlists.
       user.playlists.where('created_at < ?', current_date.beginning_of_day).find_each do |playlist|
-        UnfollowSpotifyPlaylistJob.perform_async(user.id, playlist.spotify_playlist_id) if playlist.spotify_playlist_id.present?
+        UnfollowSpotifyPlaylistJob.perform_async(user.id, playlist.spotify_playlist_id)
       end
 
       # Unfollow and delete from the database any Spotify playlists created today that don't match today's workouts.
