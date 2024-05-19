@@ -26,23 +26,31 @@ class ProcessPlaylistWorker < ApplicationWorker
     # Collect all track titles and artists from the user's other playlists
     existing_tracks = user.playlists.where.not(id: playlist_id).joins(:tracks).pluck('tracks.title', 'tracks.artist')
 
-    # Search tracks by title and artist in Spotify,
-    # and add them to the playlist.
-    # Stop until the total duration of the tracks is greater than or equal to the workout duration.
     playlist.tracks.each do |track|
       # Skip tracks that are already in other playlists
+      # This prevents adding the same track multiple times across different playlists
       next if existing_tracks.include?([track.title, track.artist])
-      
-      # Skip tracks that we couldn't find on Spotify.
-      next unless spotify_track
-            
-      # Skip if we already added the track to the playlist.
-      next if track_uris.include?(spotify_track['uri'])
 
+      # Search for the track in Spotify using its title and artist
+      spotify_track = spotify_client.search_tracks(track.title, track.artist)
+      
+      # If the track was not found on Spotify, skip to the next track
+      next unless spotify_track
+
+      # Store the Spotify track URI in the track record for future reference
+      track.update(spotify_uri: spotify_track['uri'])
+
+      # Add the Spotify track URI to the list of URIs to be added to the Spotify playlist
       track_uris << spotify_track['uri']
+      
+      # Increment the total duration of the tracks in the playlist
       total_duration += spotify_track['duration_ms']
+      
+      # Keep track of the added tracks to remove any that were not added later
       added_tracks << track
 
+      # If the total duration of the tracks is greater than or equal to the workout duration,
+      # stop adding more tracks
       break if total_duration >= workout_duration_ms
     end
 
