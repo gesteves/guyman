@@ -60,6 +60,20 @@ class SpotifyClient
     handle_response(response)
   end
 
+  # Follows a playlist with the given ID. This is equivalent to "adding" the playlist to the user's library.
+  #
+  # @param playlist_id [String] The ID of the playlist to follow.
+  # @raise [RuntimeError] If following the playlist fails.
+  def follow_playlist(playlist_id)
+    options = {
+      headers: { "Authorization" => "Bearer #{@access_token}" }
+    }
+    response = HTTParty.put("#{SPOTIFY_API_URL}/playlists/#{playlist_id}/followers", options)
+    unless response.success?
+      raise "Failed to follow Spotify playlist with ID #{playlist_id}: #{response.message}"
+    end
+  end
+
   # Unfollows a playlist with the given ID. This is equivalent to "deleting" the playlist from the user's library.
   #
   # @param playlist_id [String] The ID of the playlist to unfollow.
