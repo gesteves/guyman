@@ -1,14 +1,23 @@
 require 'httparty'
 require 'json'
 
+# Represents a client for interacting with the ChatGPT API.
 class ChatgptClient
   OPENAI_API_URL = 'https://api.openai.com/v1'
 
+  # Initializes a new instance of the ChatgptClient class.
+  #
+  # @param user_id [String] The user ID.
   def initialize(user_id)
     @api_key = ENV['OPENAI_API_KEY']
     @user_id = user_id
   end
 
+  # Sends a request to the ChatGPT API and returns the response as a JSON object.
+  #
+  # @param system_prompt [String] The system prompt.
+  # @param user_prompt [String] The user prompt.
+  # @return [Hash] The response as a JSON object.
   def ask_for_json(system_prompt, user_prompt)
     options = {
       headers: { "Authorization" => "Bearer #{ENV['OPENAI_API_KEY']}", "Content-Type" => "application/json" },

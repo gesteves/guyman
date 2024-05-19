@@ -1,6 +1,7 @@
 class ProcessUserWorkoutsWorker < ApplicationWorker
   queue_as :high
 
+  # This job regenerates the playlists for today's workouts for a given user.
   def perform(user_id)
     user = User.find(user_id)
     preference = user.preference

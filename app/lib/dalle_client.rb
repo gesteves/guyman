@@ -1,13 +1,22 @@
 require 'httparty'
 
+# Represents a client for interacting with the DALL-E API.
 class DalleClient
   OPENAI_API_URL = 'https://api.openai.com/v1'
 
+  # Initializes a new instance of the DalleClient class.
+  #
+  # @param user_id [String] The user ID.
   def initialize(user_id)
     @api_key = ENV['OPENAI_API_KEY']
     @user_id = user_id
   end
 
+  # Generates an image using the DALL-E API.
+  #
+  # @param prompt [String] The prompt for generating the image.
+  # @return [String] The URL of the generated image.
+  # @raise [RuntimeError] If the DALL-E API request fails.
   def generate(prompt)
     options = {
       headers: { "Authorization" => "Bearer #{ENV['OPENAI_API_KEY']}", "Content-Type" => "application/json" },

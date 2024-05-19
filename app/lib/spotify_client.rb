@@ -2,17 +2,26 @@ require 'httparty'
 require 'base64'
 require 'mini_magick'
 
+# A class that interacts with the Spotify API to perform various operations such as creating playlists, modifying playlists, searching tracks, and more.
 class SpotifyClient
   SPOTIFY_API_URL = 'https://api.spotify.com/v1'
   MAX_IMAGE_FILE_SIZE = 250 * 1024
   MIN_IMAGE_QUALITY = 10
 
+  # Initializes a new instance of the SpotifyClient class.
+  #
+  # @param refresh_token [String] The refresh token used to obtain an access token.
   def initialize(refresh_token)
     @refresh_token = refresh_token
     @access_token = refresh_access_token
     @user_id = get_spotify_user_id
   end
 
+  # Creates a new playlist with the given name and description.
+  #
+  # @param playlist_name [String] The name of the playlist.
+  # @param playlist_description [String] The description of the playlist (optional).
+  # @return [String] The ID of the created playlist.
   def create_playlist(playlist_name, playlist_description = '')
     options = {
       headers: { "Authorization" => "Bearer #{@access_token}", "Content-Type" => "application/json" },
@@ -22,6 +31,12 @@ class SpotifyClient
     handle_response(response)['id']
   end
 
+  # Modifies an existing playlist with the given ID by updating its name and description.
+  #
+  # @param playlist_id [String] The ID of the playlist to modify.
+  # @param name [String] The new name of the playlist.
+  # @param description [String] The new description of the playlist.
+  # @return [Hash] The modified playlist object.
   def modify_playlist(playlist_id, name, description)
     options = {
       headers: { "Authorization" => "Bearer #{@access_token}", "Content-Type" => "application/json" },
@@ -31,6 +46,10 @@ class SpotifyClient
     handle_response(response)
   end
 
+  # Unfollows a playlist with the given ID. This is equivalent to "deleting" the playlist from the user's library.
+  #
+  # @param playlist_id [String] The ID of the playlist to unfollow.
+  # @raise [RuntimeError] If unfollowing the playlist fails.
   def unfollow_playlist(playlist_id)
     options = {
       headers: { "Authorization" => "Bearer #{@access_token}" }
@@ -41,6 +60,11 @@ class SpotifyClient
     end
   end
 
+  # Searches for a track with the given name and artist name.
+  #
+  # @param track_name [String] The name of the track.
+  # @param artist_name [String] The name of the artist.
+  # @return [Hash] The first matching track object.
   def search_tracks(track_name, artist_name)
     return if track_name.nil? || artist_name.nil?
     query = "#{track_name} artist:#{artist_name}"
@@ -48,6 +72,11 @@ class SpotifyClient
     handle_response(response)['tracks']['items'].first
   end
 
+  # Replaces the tracks in a playlist with the given track URIs.
+  #
+  # @param playlist_id [String] The ID of the playlist to modify.
+  # @param track_uris [Array<String>] An array of track URIs.
+  # @return [Hash] The modified playlist object.
   def replace_playlist_tracks(playlist_id, track_uris)
     options = {
       headers: { "Authorization" => "Bearer #{@access_token}", "Content-Type" => "application/json" },
@@ -57,6 +86,11 @@ class SpotifyClient
     handle_response(response)
   end
 
+  # Sets the cover image of a playlist with the given ID.
+  #
+  # @param playlist_id [String] The ID of the playlist to modify.
+  # @param url [String] The URL of the image to set as the cover.
+  # @return [Hash] The modified playlist object.
   def set_playlist_cover(playlist_id, url)
     jpg_data = png_to_base64_jpg(url)
     return if jpg_data.nil?
@@ -73,6 +107,11 @@ class SpotifyClient
 
   private
 
+  # Handles the response from the Spotify API.
+  #
+  # @param response [HTTParty::Response] The response object.
+  # @return [Hash] The parsed response body if the request was successful.
+  # @raise [RuntimeError] If the request failed.
   def handle_response(response)
     if response.success?
       response.parsed_response
@@ -81,6 +120,9 @@ class SpotifyClient
     end
   end
 
+  # Refreshes the access token using the refresh token.
+  #
+  # @return [String] The new access token.
   def refresh_access_token
     options = {
       body: { grant_type: 'refresh_token', refresh_token: @refresh_token },
@@ -90,12 +132,19 @@ class SpotifyClient
     handle_response(response)['access_token']
   end
 
+  # Retrieves the user ID associated with the access token.
+  #
+  # @return [String] The user ID.
   def get_spotify_user_id
     response = HTTParty.get("#{SPOTIFY_API_URL}/me", headers: { "Authorization" => "Bearer #{@access_token}" })
     handle_response(response)['id']
   end
   
-  # Dall-E returns images in PNG format, but Spotify only accepts base-64-encoded JPEG images with a maximum file size of 256 KB.
+  # Converts a PNG image to a base64-encoded JPEG image, keeping it under the given file size.
+  #
+  # @param image_url [String] The URL of the PNG image.
+  # @return [String] The base64-encoded JPEG image data.
+  # @raise [RuntimeError] If fetching or converting the image fails.
   def png_to_base64_jpg(image_url)
     response = HTTParty.get(image_url)
     if response.success?
