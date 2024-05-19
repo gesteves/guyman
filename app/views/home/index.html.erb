@@ -2,21 +2,27 @@
 
 <% if user_signed_in? %>
   <p>Hello, <%= current_user.email %>!</p>
-  <%= link_to 'Logout', users_sign_out_path, method: :delete %>
+  <p><%= link_to 'Logout', users_sign_out_path, method: :delete %></p>
 
   <h2>Your Preferences</h2>
   <% if @preference %>
-    <p><strong>Musical Tastes:</strong> <%= @preference.musical_tastes %></p>
-    <p><strong>Calendar URL:</strong> <%= @preference.calendar_url %></p>
-    <p><strong>Timezone:</strong> <%= @preference.timezone %></p>
-    <%= link_to 'Edit Preferences', edit_preference_path %>
+    <h3>Musical Tastes</h3>
+    <%= simple_format(@preference.musical_tastes) %>
+
+    <h3>Calendar URL</h3>
+    <%= simple_format(@preference.calendar_url) %>
+
+    <h3>Time Zone</h3>
+    <%= simple_format(@preference.timezone) %>
+
+    <p><%= link_to 'Edit Preferences', edit_preference_path %></p>
   <% else %>
     <p>You have not set your preferences yet.</p>
-    <%= link_to 'Set Preferences', edit_preference_path %>
+    <p><%= link_to 'Set Preferences', edit_preference_path %></p>
   <% end %>
 
   <% if current_user.admin? %>
-    <%= link_to 'Sidekiq', "/sidekiq", target: "_blank" %>
+    <p><%= link_to 'Sidekiq', "/sidekiq", target: "_blank" %></p>
   <% end %>
 
 <% else %>
