@@ -14,7 +14,7 @@ class CleanUpSpotifyPlaylistsWorker < ApplicationWorker
       # Unfollow any Spotify playlists created before the current day
       user.playlists.where('created_at < ?', current_date.beginning_of_day).find_each do |playlist|
         if playlist.spotify_playlist_id.present?
-          UnfollowSpotifyPlaylistJob.perform_now(user.id, playlist.spotify_playlist_id)
+          UnfollowSpotifyPlaylistWorker.perform_async(user.id, playlist.spotify_playlist_id)
         end
       end
 

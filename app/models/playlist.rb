@@ -11,6 +11,6 @@ class Playlist < ApplicationRecord
   private
 
   def schedule_spotify_playlist_unfollow
-    UnfollowSpotifyPlaylistJob.perform_later(user.id, spotify_playlist_id)
+    UnfollowSpotifyPlaylistWorker.perform_async(user.id, spotify_playlist_id)
   end
 end
