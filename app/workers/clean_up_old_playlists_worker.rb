@@ -1,4 +1,4 @@
-class CleanupOldPlaylistsWorker < ApplicationWorker
+class CleanUpOldPlaylistsWorker < ApplicationWorker
   queue_as :low
 
   def perform
