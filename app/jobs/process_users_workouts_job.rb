@@ -13,19 +13,21 @@ class ProcessUsersWorkoutsJob < ApplicationJob
         # Find any playlists already created for this workout today.
         playlist = user.playlist_for_todays_workout(workout[:name])
 
-        # If a playlist has already been created for this workout today, skip it.
-        next if playlist.present?
+        # If a playlist has already been created for this workout today and has tracks, skip it.
+        next if playlist.present? && playlist.tracks.any?
 
-        # Otherwise, create the playlist...
-        playlist = user.playlists.create!(
-          name: workout[:name],
-          workout_name: workout[:name],
-          workout_description: workout[:description],
-          workout_type: workout[:type],
-          workout_duration: workout[:duration]
-        )
+        # Otherwise, create the playlist if it doesn't exist.
+        if playlist.blank?
+          playlist = user.playlists.create!(
+            name: workout[:name],
+            workout_name: workout[:name],
+            workout_description: workout[:description],
+            workout_type: workout[:type],
+            workout_duration: workout[:duration]
+          )
+        end
 
-        # ...and enqueue a job to generate the rest of the details with ChatGPT.
+        # Enqueue a job to generate the rest of the details with ChatGPT.
         GeneratePlaylistJob.perform_async(user.id, playlist.id)
       end
     end
