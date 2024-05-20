@@ -1,16 +1,18 @@
 class GeneratePlaylistJob < ApplicationJob
   queue_as :high
 
-  def perform(user_id, workout_name, workout_description, workout_type, workout_duration, playlist_id = nil)
+  def perform(user_id, playlist_id)
     user = User.find(user_id)
+    playlist = user.playlists.find(playlist_id)
     preference = user.preference
+
 
     # Find the tracks already used in other playlists for this user.
     recent_tracks = user.recent_tracks
-    prompt = chatgpt_user_prompt(workout_name, workout_description, preference.musical_tastes, recent_tracks)
+    prompt = chatgpt_user_prompt(playlist.workout_name, playlist.workout_description, preference.musical_tastes, recent_tracks)
     response = ChatgptClient.new(user_id).ask_for_json(chatgpt_system_prompt, prompt)
 
-    # If all this stuff is blank in ChatGPT's response, something went wrong with the prompt.
+    # If this stuff is blank in ChatGPT's response, something went wrong with the prompt.
     # Perhaps the user put "disregard all previous instructions" as their musical taste?
     # In any case, exit.
     return if response['tracks'].blank? || response['name'].blank? || response['description'].blank? || response['cover_prompt'].blank?
@@ -20,33 +22,15 @@ class GeneratePlaylistJob < ApplicationJob
     playlist_description = response['description']
     playlist_name = response['name']
 
-    if playlist_id.present?
-      # Update the existing playlist
-      playlist = user.playlists.find(playlist_id)
-      playlist.update!(
-        name: playlist_name,
-        description: playlist_description,
-        workout_description: workout_description,
-        workout_type: workout_type,
-        workout_name: workout_name,
-        cover_dalle_prompt: dalle_prompt,
-        workout_duration: workout_duration
-      )
+    # Update the existing playlist
+    playlist.update!(
+      name: playlist_name,
+      description: playlist_description,
+      cover_dalle_prompt: dalle_prompt
+    )
 
-      # Remove existing tracks
-      playlist.tracks.destroy_all
-    else
-      # Create a new playlist
-      playlist = user.playlists.create!(
-        name: playlist_name,
-        description: playlist_description,
-        workout_description: workout_description,
-        workout_type: workout_type,
-        workout_name: workout_name,
-        cover_dalle_prompt: dalle_prompt,
-        workout_duration: workout_duration
-      )
-    end
+    # Remove existing tracks
+    playlist.tracks.destroy_all
 
     # Add the tracks ChatGPT generated to the playlist.
     # It's important that we store the track names and artists returned by ChatGPT,
@@ -62,7 +46,7 @@ class GeneratePlaylistJob < ApplicationJob
 
   private
 
-  # A few things worth nothing about this system prompt:
+  # A few things worth noting about this system prompt:
   # - Ideally we'd want to generate a playlist that matches the workout's intensity;
   #   but ChatGPT is pretty bad at that, so despite specifying it in the prompt,
   #   it rarely works.
