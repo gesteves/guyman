@@ -13,9 +13,7 @@ class GeneratePlaylistJob < ApplicationJob
     prompt = chatgpt_user_prompt(playlist.workout_name, playlist.workout_description, preference.musical_tastes, recent_tracks)
     response = ChatgptClient.new(user_id).ask_for_json(chatgpt_system_prompt, prompt)
 
-    # If this stuff is blank in ChatGPT's response, something went wrong with the prompt.
-    # Perhaps the user put "disregard all previous instructions" as their musical taste?
-    return if response['tracks'].blank? || response['name'].blank? || response['description'].blank? || response['cover_prompt'].blank?
+    validate_response(response)
 
     dalle_prompt = response['cover_prompt']
     playlist_tracks = response['tracks']
@@ -45,6 +43,23 @@ class GeneratePlaylistJob < ApplicationJob
   end
 
   private
+
+  # ChatGPT's JSON mode doesn't guarantee that the response will match the structure specified in the prompt,
+  # only that it's valid JSON, so we must validate it.
+  # This also guards against prompt injection, e.g. if someone enters "disregard all previous instructions"
+  # as their musical taste.
+  def validate_response(response)
+    required_keys = ['name', 'description', 'cover_prompt', 'tracks']
+    missing_keys = required_keys.select { |key| response[key].blank? }
+
+    if missing_keys.any?
+      raise "Invalid response from ChatGPT: Missing keys: #{missing_keys.join(', ')}"
+    end
+
+    unless response['tracks'].is_a?(Array) && response['tracks'].all? { |track| track.is_a?(Hash) && track['artist'].present? && track['track'].present? }
+      raise "Invalid response from ChatGPT: 'tracks' must be an array of hashes with 'artist' and 'track' keys."
+    end
+  end
 
   # A few things worth noting about this system prompt:
   # - Ideally we'd want to generate a playlist that matches the workout's intensity;
