@@ -7,7 +7,6 @@ class DalleClient
   # Initializes a new instance of the DalleClient class.
   def initialize
     @api_key = ENV['OPENAI_API_KEY']
-    @user_id = user_id
   end
 
   # Generates an image using the DALL-E API.
