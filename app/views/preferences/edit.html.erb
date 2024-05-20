@@ -1,6 +1,18 @@
 <h1>Edit Your Preferences</h1>
 
 <%= form_with model: @preference, url: preference_path, method: :patch, local: true do |form| %>
+  <% if preference.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(preference.errors.count, "error") %> prohibited this preference from being saved:</h2>
+
+      <ul>
+        <% preference.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
   <div class="field">
     <%= form.label :musical_tastes %>
     <%= form.text_area :musical_tastes %>
@@ -14,6 +26,11 @@
   <div class="field">
     <%= form.label :timezone %>
     <%= form.time_zone_select :timezone, ActiveSupport::TimeZone.all, { default: @preference.timezone || "UTC" } %>
+  </div>
+
+  <div class="field">
+    <%= form.label :automatically_clean_up_old_playlists, "Automatically clean up older playlists" %>
+    <%= form.check_box :automatically_clean_up_old_playlists %>
   </div>
 
   <div class="actions">
