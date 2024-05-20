@@ -1,12 +1,12 @@
 <h1>Edit Your Preferences</h1>
 
 <%= form_with model: @preference, url: preference_path, method: :patch, local: true do |form| %>
-  <% if preference.errors.any? %>
+  <% if @preference.errors.any? %>
     <div id="error_explanation">
-      <h2><%= pluralize(preference.errors.count, "error") %> prohibited this preference from being saved:</h2>
+      <h2><%= pluralize(@preference.errors.count, "error") %> prohibited this preference from being saved:</h2>
 
       <ul>
-        <% preference.errors.full_messages.each do |message| %>
+        <% @preference.errors.full_messages.each do |message| %>
           <li><%= message %></li>
         <% end %>
       </ul>
