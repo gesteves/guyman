@@ -6,25 +6,23 @@ class ChatgptClient
   OPENAI_API_URL = 'https://api.openai.com/v1'
 
   # Initializes a new instance of the ChatgptClient class.
-  #
-  # @param user_id [String] The user ID.
-  def initialize(user_id)
+  def initialize
     @api_key = ENV['OPENAI_API_KEY']
-    @user_id = user_id
   end
 
   # Sends a request to the ChatGPT API and returns the response as a JSON object.
   #
   # @param system_prompt [String] The system prompt.
   # @param user_prompt [String] The user prompt.
+  # @param user_id [Int] The ID of the user making the request
   # @return [Hash] The response as a JSON object.
-  def ask_for_json(system_prompt, user_prompt)
+  def ask_for_json(system_prompt, user_prompt, user_id)
     options = {
       headers: { "Authorization" => "Bearer #{ENV['OPENAI_API_KEY']}", "Content-Type" => "application/json" },
       body: {
         model: 'gpt-4o',
         response_format: { type: "json_object" },
-        user: @user_id.to_s,
+        user: user_id.to_s,
         messages: [
           {
             role: 'system',
