@@ -1,3 +1,3 @@
 # Workout Playlist Generator
 
-Proof of concept for using ChatGPT to generate a Spotify playlist tailored to the TrainerRoad cycling and running workouts of the day.
+Proof of concept for using ChatGPT to generate a Spotify playlist tailored to the TrainerRoad workouts of the day.
