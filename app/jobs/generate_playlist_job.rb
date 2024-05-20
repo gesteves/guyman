@@ -6,15 +6,15 @@ class GeneratePlaylistJob < ApplicationJob
     playlist = user.playlists.find(playlist_id)
     preference = user.preference
 
-
-    # Find the tracks already used in other playlists for this user.
+    # Find the tracks recently used in other playlists for this user.
     recent_tracks = user.recent_tracks
+
+    # Ask ChatGPT to produce a playlist using the workout details and user's music preferences.
     prompt = chatgpt_user_prompt(playlist.workout_name, playlist.workout_description, preference.musical_tastes, recent_tracks)
     response = ChatgptClient.new(user_id).ask_for_json(chatgpt_system_prompt, prompt)
 
     # If this stuff is blank in ChatGPT's response, something went wrong with the prompt.
     # Perhaps the user put "disregard all previous instructions" as their musical taste?
-    # In any case, exit.
     return if response['tracks'].blank? || response['name'].blank? || response['description'].blank? || response['cover_prompt'].blank?
 
     dalle_prompt = response['cover_prompt']
