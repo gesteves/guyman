@@ -17,6 +17,9 @@ class ProcessPlaylistJob < ApplicationJob
       playlist.update(spotify_playlist_id: spotify_playlist_id, following: true)
     end
 
+    # Enqueue a job to generate a cover image for the playlist using Dall-E.
+    GenerateCoverImageJob.perform_async(user.id, spotify_playlist_id, playlist.cover_dalle_prompt)
+
     track_uris = []
     total_duration = 0
     workout_duration_ms = playlist.workout_duration * 60 * 1000 # Convert workout duration from minutes to milliseconds
@@ -60,8 +63,5 @@ class ProcessPlaylistJob < ApplicationJob
 
     # Remove the tracks that were not added to the Spotify playlist from our playlist.
     playlist.tracks.where(spotify_uri: nil).destroy_all
-
-    # Enqueue a job to generate a cover image for the playlist using Dall-E.
-    GenerateCoverImageJob.perform_async(user.id, spotify_playlist_id, playlist.cover_dalle_prompt)
   end
 end
