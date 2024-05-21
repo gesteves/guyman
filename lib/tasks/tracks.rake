@@ -1,7 +1,7 @@
 namespace :tracks do
   desc "Populate position attribute on existing tracks"
-  task populate_positions: :environment do
-    say "Starting to populate positions for existing tracks..."
+  task :populate_positions => :environment do
+    puts "Starting to populate positions for existing tracks..."
     
     Playlist.find_each do |playlist|
       playlist.tracks.order(:created_at).each_with_index do |track, index|
@@ -9,6 +9,6 @@ namespace :tracks do
       end
     end
     
-    say "Finished populating positions for existing tracks."
+    puts "Finished populating positions for existing tracks."
   end
 end
