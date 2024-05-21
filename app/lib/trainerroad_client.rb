@@ -25,7 +25,7 @@ class TrainerroadClient
 
     today = Time.current.in_time_zone(@timezone).to_date
     workouts = calendar.events.select do |event|
-      event.dtstart.to_date == today && valid_workout?(event.summary)
+      event.dtstart.to_date == today && duration_present?(event.summary)
     end
 
     parse_workouts(workouts)
@@ -44,19 +44,6 @@ class TrainerroadClient
     else
       raise "TrainerRoad calendar request failed with status code #{response.code}: #{response.message}"
     end
-  end
-
-  # Checks if a workout is valid based on its summary.
-  #
-  # A workout is considered valid if:
-  # 1. It has a duration present (the TrainerRoad calendar includes events and annotations, which don't include
-  #    a duration in the summary, in the H:MM format). I don't need playlists for those.
-  # 2. It doesn't include "Swim" in the summary (swims aren't valid workouts because how am I gonna listen to the playlist?)
-  #
-  # @param summary [String] the summary of the workout
-  # @return [Boolean] true if the workout is valid, false otherwise
-  def valid_workout?(summary)
-    duration_present?(summary) && !summary.include?("Swim")
   end
 
   # Checks if the workout duration is present in the summary.
