@@ -7,7 +7,7 @@
   :schedule:
     process_users_workouts_worker:
       cron: "*/5 * * * *" # Every 5 minutes
-      class: "ProcessUsersWorkoutsJob"
+      class: "ProcessAllWorkoutsJob"
       queue: high
 
     clean_up_spotify_playlists_worker:

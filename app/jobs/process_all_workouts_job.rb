@@ -1,4 +1,4 @@
-class ProcessUsersWorkoutsJob < ApplicationJob
+class ProcessAllWorkoutsJob < ApplicationJob
   queue_as :high
 
   # This job generates the playlists for today's workouts for every user, if one hasn't been created yet.
