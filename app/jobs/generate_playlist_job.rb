@@ -7,6 +7,8 @@ class GeneratePlaylistJob < ApplicationJob
     playlist = user.playlists.find(playlist_id)
     preference = user.preference
 
+    return if playlist.processing?
+    
     playlist.update!(processing: true)
 
     # Find the tracks recently used in other playlists for this user.
