@@ -37,14 +37,14 @@ class ProcessPlaylistTracksJob < ApplicationJob
       # Skip the track if it is already in the Spotify playlist
       next if track_uris.include?(spotify_track['uri'])
 
-      # Store the Spotify track URI in the track record for future reference
-      track.update(spotify_uri: spotify_track['uri'])
-
-      # Add the Spotify track URI to the list of URIs to be added to the Spotify playlist.
+      # Store the Spotify track URI in the track record for future reference.
       # It's important that we DON'T store the track names and artists returned by Spotify,
       # because we'll use them in future prompts,
       # and Spotify's terms of use forbid passing Spotify data to ChatGPT.
       # We'll only use the Spotify track URIs for track deduplication, as seen above.
+      track.update(spotify_uri: spotify_track['uri'])
+
+      # Add the Spotify track URI to the list of URIs we've added to the Spotify playlist.
       track_uris << spotify_track['uri']
       
       # Increment the total duration of the tracks in the playlist
