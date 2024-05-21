@@ -1,5 +1,6 @@
 class SetSpotifyPlaylistCoverJob < ApplicationJob
   queue_as :default
+  sidekiq_options retry_for: 1.hour
 
   def perform(user_id, spotify_playlist_id, image_url)
     user = User.find(user_id)
