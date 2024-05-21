@@ -34,8 +34,8 @@ class GeneratePlaylistJob < ApplicationJob
     # It's important that we store the track names and artists returned by ChatGPT,
     # not the ones from Spotify, because we'll use them in future prompts,
     # and Spotify's terms of use forbid passing Spotify data to ChatGPT.
-    playlist_tracks.each do |track|
-      playlist.tracks.create!(title: track['track'], artist: track['artist'])
+    playlist_tracks.each_with_index do |track, index|
+      playlist.tracks.create!(title: track['track'], artist: track['artist'], position: index + 1)
     end
 
     # Enqueue a job to create or update the playlist in Spotify.
