@@ -13,8 +13,8 @@ class ProcessAllWorkoutsJob < ApplicationJob
         # Find any playlists already created for this workout today.
         playlist = user.playlist_for_todays_workout(workout[:name])
 
-        # If a playlist has already been created for this workout today and has tracks, skip it.
-        next if playlist.present? && playlist.tracks.any?
+        # If a playlist has already been created for this workout today and has tracks, or is being processed, skip it.
+        next if playlist&.tracks&.any? || playlist&.processing?
 
         # Otherwise, create the playlist if it doesn't exist.
         if playlist.blank?
