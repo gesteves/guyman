@@ -1,6 +1,17 @@
 class ProcessPlaylistTracksJob < ApplicationJob
   queue_as :high
 
+  # This job processes the tracks for a given playlist. It performs the following steps:
+  # 1. Collects the Spotify URIs of tracks already present in the user's other playlists to avoid duplicates.
+  # 2. Iterates over the tracks in the playlist and searches for them on Spotify using their title and artist.
+  # 3. Filters out tracks that:
+  #    - Are not found on Spotify.
+  #    - Are already present in other playlists.
+  #    - Are already in the current playlist.
+  # 4. Stores the Spotify URI for each valid track and updates the total duration of the playlist.
+  # 5. Stops adding tracks once the total duration meets or exceeds the workout duration.
+  # 6. Removes any leftover tracks.
+  # 7. Enqueues a job to update the Spotify playlist with the remaining tracks.
   def perform(user_id, playlist_id)
     user = User.find(user_id)
     playlist = Playlist.find(playlist_id)
@@ -47,6 +58,8 @@ class ProcessPlaylistTracksJob < ApplicationJob
     # Remove the tracks that were not added to the Spotify playlist from our playlist.
     playlist.tracks.where(spotify_uri: nil).destroy_all
 
+    # Now that our playlist is ready, enqueue a job to update the tracks
+    # on the Spotify playlist.
     UpdateSpotifyPlaylistTracksJob.perform_async(user.id, playlist.id)
   end
 end

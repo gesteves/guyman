@@ -1,4 +1,4 @@
-class SetPlaylistCoverJob < ApplicationJob
+class SetSpotifyPlaylistCoverJob < ApplicationJob
   queue_as :default
 
   def perform(user_id, spotify_playlist_id, image_url)
