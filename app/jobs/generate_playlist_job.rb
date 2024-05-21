@@ -41,7 +41,7 @@ class GeneratePlaylistJob < ApplicationJob
 
     # Enqueue a job to create or update the playlist in Spotify
     # with the name and description ChatGPT generated.
-    UpdateOrCreateSpotifyPlaylistJob.perform_async(user.id, playlist.id)
+    SetUpSpotifyPlaylistJob.perform_async(user.id, playlist.id)
   end
 
   private

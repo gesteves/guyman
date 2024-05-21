@@ -1,4 +1,4 @@
-class UpdateOrCreateSpotifyPlaylistJob < ApplicationJob
+class SetUpSpotifyPlaylistJob < ApplicationJob
   queue_as :high
 
   def perform(user_id, playlist_id)
