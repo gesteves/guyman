@@ -1,4 +1,4 @@
-class CleanUpSpotifyPlaylistsJob < ApplicationJob
+class CleanUpPlaylistsJob < ApplicationJob
   queue_as :low
 
   def perform

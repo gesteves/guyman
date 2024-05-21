@@ -12,5 +12,5 @@
 
     clean_up_spotify_playlists_worker:
       cron: "*/5 * * * *" # Every 5 minutes
-      class: "CleanUpSpotifyPlaylistsJob"
+      class: "CleanUpPlaylistsJob"
       queue: low
