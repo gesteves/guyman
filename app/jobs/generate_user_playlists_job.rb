@@ -1,4 +1,4 @@
-class ProcessUserWorkoutsJob < ApplicationJob
+class GenerateUserPlaylistsJob < ApplicationJob
   queue_as :high
 
   # This job regenerates the playlists for today's workouts for a given user.
