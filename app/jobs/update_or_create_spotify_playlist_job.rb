@@ -18,7 +18,7 @@ class UpdateOrCreateSpotifyPlaylistJob < ApplicationJob
     end
 
     # Process the tracks
-    ProcessPlaylistTracksJob.perform_async(user.id, playlist_id)
+    ProcessPlaylistTracksJob.perform_async(user.id, playlist.id)
 
     # Enqueue a job to generate a cover image for the playlist using Dall-E.
     GenerateCoverImageJob.perform_async(user.id, spotify_playlist_id, playlist.cover_dalle_prompt)
