@@ -39,7 +39,7 @@ class GeneratePlaylistJob < ApplicationJob
     end
 
     # Enqueue a job to create or update the playlist in Spotify.
-    ProcessPlaylistJob.perform_async(user.id, playlist.id)
+    UpdateOrCreateSpotifyPlaylistJob.perform_async(user.id, playlist.id)
   end
 
   private
