@@ -1,5 +1,6 @@
 class GeneratePlaylistJob < ApplicationJob
   queue_as :high
+  sidekiq_options retry_for: 5.minutes
 
   def perform(user_id, playlist_id)
     user = User.find(user_id)
