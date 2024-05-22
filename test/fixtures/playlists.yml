@@ -5,7 +5,7 @@ one:
   name: MyString
   description: MyText
   workout_description: MyText
-  workout_type: MyString
+  sport: MyString
   workout_name: MyString
   cover_dalle_prompt: MyString
   workout_duration: 1
@@ -15,7 +15,7 @@ two:
   name: MyString
   description: MyText
   workout_description: MyText
-  workout_type: MyString
+  sport: MyString
   workout_name: MyString
   cover_dalle_prompt: MyString
   workout_duration: 1

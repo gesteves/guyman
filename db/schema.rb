@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_05_21_221939) do
+ActiveRecord::Schema[7.1].define(version: 2024_05_22_002426) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -30,7 +30,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_21_221939) do
     t.string "name"
     t.text "description"
     t.text "workout_description"
-    t.string "workout_type"
+    t.string "sport"
     t.string "workout_name"
     t.string "cover_dalle_prompt"
     t.integer "workout_duration"
