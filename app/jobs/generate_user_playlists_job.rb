@@ -19,7 +19,8 @@ class GenerateUserPlaylistsJob < ApplicationJob
         workout_duration: workout[:duration]
       )
 
-      next if playlist.processing?
+      # Skip if is being processed or is locked.
+      next if playlist.processing? || playlist.locked?
 
       # ...and then enqueue a job to generate the rest of the details with ChatGPT.
       GeneratePlaylistJob.perform_async(user.id, playlist.id)

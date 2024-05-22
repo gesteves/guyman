@@ -6,6 +6,8 @@ class GeneratePlaylistJob < ApplicationJob
     user = User.find(user_id)
     playlist = user.playlists.find(playlist_id)
 
+    return if playlist.locked?
+
     playlist.update!(processing: true)
 
     # Ask ChatGPT to produce a playlist using the workout details and user's music preferences.
