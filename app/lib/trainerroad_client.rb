@@ -15,7 +15,7 @@ class TrainerroadClient
 
   # Retrieves the workouts for today from the TrainerRoad calendar.
   #
-  # @return [Array<Hash>] An array of workout hashes, each containing the workout name, description, type, and duration.
+  # @return [Array<Hash>] An array of workout hashes, each containing the workout name, description, and duration.
   def get_workouts_for_today
     response = HTTParty.get(@calendar_url)
 
@@ -57,25 +57,17 @@ class TrainerroadClient
   # Parses the workout events and converts them into a structured format.
   #
   # @param events [Array<Icalendar::Event>] An array of Icalendar::Event objects representing the workouts.
-  # @return [Array<Hash>] An array of workout hashes, each containing the workout name, description, type, and duration.
+  # @return [Array<Hash>] An array of workout hashes, each containing the workout name, description, and duration.
   def parse_workouts(events)
     events.map do |event|
       summary_parts = event.summary.split(' - ')
       duration = summary_parts[0].strip
       name = summary_parts[1].strip
-      type = if summary_parts[1].include?("Run")
-        "Run"
-      elsif summary_parts[1].include?("Swim")
-        "Swim"
-      else
-        "Cycling"
-      end
       duration_in_minutes = convert_duration_to_minutes(duration)
 
       {
         name: name,
         description: event.description.to_s,
-        type: type,
         duration: duration_in_minutes
       }
     end

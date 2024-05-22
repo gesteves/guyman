@@ -16,7 +16,6 @@ class GenerateUserPlaylistsJob < ApplicationJob
         name: workout[:name],
         workout_name: workout[:name],
         workout_description: workout[:description],
-        workout_type: workout[:type],
         workout_duration: workout[:duration]
       )
 
