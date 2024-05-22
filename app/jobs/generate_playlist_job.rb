@@ -5,17 +5,11 @@ class GeneratePlaylistJob < ApplicationJob
   def perform(user_id, playlist_id)
     user = User.find(user_id)
     playlist = user.playlists.find(playlist_id)
-    preference = user.preference
-
-    return if playlist.processing?
 
     playlist.update!(processing: true)
 
-    # Find the tracks recently used in other playlists for this user.
-    recent_tracks = user.recent_tracks
-
     # Ask ChatGPT to produce a playlist using the workout details and user's music preferences.
-    prompt = chatgpt_user_prompt(playlist.workout_name, playlist.workout_description, preference.musical_tastes, recent_tracks)
+    prompt = chatgpt_user_prompt(user, playlist)
     response = ChatgptClient.new.ask_for_json(chatgpt_system_prompt, prompt, user_id)
 
     validate_response(response)
@@ -110,28 +104,22 @@ class GeneratePlaylistJob < ApplicationJob
     PROMPT
   end
 
+  # In the user prompt, we pass the workout name and description, along with the musical preferences the user specified. 
   # ChatGPT is not super original at creating playlists, and tends to return the same songs over and over.
   # To try to work around this, we store in the database the songs that have already been used in other playlists,
   # then tell it to avoid using those songs in the current playlist.
   # It sorta works, but also makes the prompts much more expensive.
   #
   # Note that Spotify's terms of use forbid passing Spotify data to ChatGPT, so it's important that we never do that in the prompt.
-  # We avoid that by storing the song names and artists from the ChatGPT response, and using that in this prompt.
-  def chatgpt_user_prompt(workout_name, workout_description, musical_tastes, recent_tracks)
-    exclusions = if recent_tracks.any?
-                   "The following songs have already been used in previous playlists, please don't include them:\n" +
-                   recent_tracks.map { |t| "- #{t.first} - #{t.last}" }.join("\n")
-                 else
-                   ""
-                 end
-  
+  # We avoid that by using the song names and artists from previous ChatGPT responses, not ones from the Spotify API.
+  def chatgpt_user_prompt(user, playlist)  
     <<~PROMPT
-      #{workout_name}
-      #{workout_description}
+      #{playlist.workout_name}
+      #{playlist.workout_description}
   
-      #{musical_tastes}
+      #{user.preference.musical_tastes}
   
-      #{exclusions}
+      #{user.excluded_tracks_string}
     PROMPT
   end
 end
