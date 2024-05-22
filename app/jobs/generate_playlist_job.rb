@@ -92,7 +92,7 @@ class GeneratePlaylistJob < ApplicationJob
       - The user may also specify genres, bands, or specific tracks they want to avoid. Do not include them in the playlist.
       - The playlist should have variety; try to avoid adding the same artist more than once.
       - Since we want playlists to vary from day to day, you may also receive a list of songs used in previous playlists. Do not include these in the playlist.
-      - Come up with a name for the playlist following this exact format: "[name_of_the_workout]: [very_short_description_of_the_workout]"
+      - Come up with a name for the playlist following this exact format: "[name_of_the_workout]: [very_short_description_of_the_playlist"
       - Summarize the workout in 300 characters or less, so the user can read what it consists of at a glance.
       - Generate a detailed prompt to create, using Dall-E, a playlist cover image that visually represents the workout and the playlist in a creative way, but avoid anything that may cause content policy violations in Dall-E or get flagged by OpenAI's safety systems.
       
