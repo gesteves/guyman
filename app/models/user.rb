@@ -56,7 +56,7 @@ class User < ApplicationRecord
   # @param count [Integer] The number of recent tracks to retrieve for exclusion.
   # @return [String] A formatted string listing the tracks to be excluded from the playlist.
   def excluded_tracks_string(count = NON_REUSABLE_TRACK_COUNT)
-    if user.recent_tracks.any?
+    if recent_tracks.any?
       "The following songs have already been used in previous playlists, please don't include them:\n" +
       recent_tracks(count).map { |track| "- #{track[1]} - #{track[2]}" }.join("\n")
     else
