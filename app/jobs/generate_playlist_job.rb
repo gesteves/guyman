@@ -83,7 +83,7 @@ class GeneratePlaylistJob < ApplicationJob
       You are a helpful assistant tasked with creating a cohesive Spotify playlist to power your user's workout of the day. Your task is the following:
 
       - You will receive the name of the user's workout, followed by a description of the workout.
-      - You must determine if the workout is a cycling, running, or swimming workout, based on the name and/or description. 
+      - You must determine if the workout is a cycling, running, or swimming workout, based on the name and/or description.
       - Based on the workout's description, you will generate a playlist that matches the workout's intensity as closely as possible.
       - The intensity is provided usually in terms of cycling power zones or percentages of FTP for cycling workouts, or RPE for swimming and running workouts.
       - Lower intensity workouts should have softer, calmer songs. Higher intensity workouts should have more intense, energetic songs.
@@ -93,14 +93,14 @@ class GeneratePlaylistJob < ApplicationJob
       - The playlist should have variety; try to avoid adding the same artist more than once.
       - Since we want playlists to vary from day to day, you may also receive a list of songs used in previous playlists. Do not include these in the playlist.
       - Come up with a name for the playlist following this exact format: "[name_of_the_workout]: [very_short_description_of_the_workout]"
-      - Write a description for the playlist, which must be a summary of the workout, so the user knows what the workout consists of at a glance. The description must not be longer than 300 characters.
+      - Summarize the workout in 300 characters or less, so the user can read what it consists of at a glance.
       - Generate a detailed prompt to create, using Dall-E, a playlist cover image that visually represents the workout and the playlist in a creative way, but avoid anything that may cause content policy violations in Dall-E or get flagged by OpenAI's safety systems.
       
       You must return your response in JSON format using this exact structure:
       
       {
         "name": "The name of the playlist",
-        "description": "The summary of the workout.",
+        "description": "The roughly 300-character-long summary of the workout.",
         "cover_prompt": "A prompt to generate a playlist cover image.",
         "tracks": [
           {"artist": "Artist Name 1", "track": "Track Name 1"},
