@@ -8,7 +8,7 @@ class GeneratePlaylistJob < ApplicationJob
     preference = user.preference
 
     return if playlist.processing?
-    
+
     playlist.update!(processing: true)
 
     # Find the tracks recently used in other playlists for this user.
@@ -83,8 +83,9 @@ class GeneratePlaylistJob < ApplicationJob
       You are a helpful assistant tasked with creating a cohesive Spotify playlist to power your user's workout of the day. Your task is the following:
 
       - You will receive the name of the user's workout, followed by a description of the workout.
+      - You must determine if the workout is a cycling, running, or swimming workout, based on the name and/or description. 
       - Based on the workout's description, you will generate a playlist that matches the workout's intensity as closely as possible.
-      - The intensity is provided usually in terms of cycling power zones or percentages of FTP for cycling workouts, or RPE for swim and running workouts.
+      - The intensity is provided usually in terms of cycling power zones or percentages of FTP for cycling workouts, or RPE for swimming and running workouts.
       - Lower intensity workouts should have softer, calmer songs. Higher intensity workouts should have more intense, energetic songs.
       - The playlist must contain at least 100 songs. 
       - The user may specify genres and bands they like. You may use this information to guide your choices.
