@@ -43,29 +43,28 @@ class User < ApplicationRecord
   # @return [Array<Array<String>>] An array of arrays containing the artist and title of the recent tracks.
   def recent_tracks(count = NON_REUSABLE_TRACK_COUNT)
     playlists.joins(:tracks)
-             .where.not(tracks: { spotify_uri: nil })
-             .select('DISTINCT ON (tracks.spotify_uri) tracks.spotify_uri, tracks.artist, tracks.title, tracks.created_at')
-             .order('tracks.created_at DESC')
-             .limit(count)
-             .pluck('tracks.artist', 'tracks.title')
+            .where.not(tracks: { spotify_uri: nil })
+            .select('tracks.artist, tracks.title, tracks.created_at')
+            .order('tracks.created_at DESC')
+            .limit(count)
+            .pluck('tracks.artist', 'tracks.title')
+            .uniq
   end
 
-  # Retrieves the recent track URIs from other playlists.
+  # Get the most recent unique track URIs from the user's playlists, excluding a specified playlist.
   #
-  # This method returns an array of track URIs from playlists other than the specified playlist.
-  # The tracks are ordered by their creation date in descending order.
-  #
-  # @param playlist_id [Integer] The ID of the playlist to exclude from the results.
-  # @param count [Integer] The maximum number of track URIs to retrieve.
-  # @return [Array<String>] An array of track URIs.
+  # @param playlist_id [Integer] The ID of the playlist to exclude.
+  # @param count [Integer] The number of recent track URIs to retrieve.
+  # @return [Array<String>] An array of recent unique track URIs.
   def recent_track_uris_from_other_playlists(playlist_id, count = NON_REUSABLE_TRACK_COUNT)
     playlists.joins(:tracks)
-             .where.not(id: playlist_id)
-             .where.not(tracks: { spotify_uri: nil })
-             .select('DISTINCT ON (tracks.spotify_uri) tracks.spotify_uri, tracks.created_at')
-             .order('tracks.created_at DESC')
-             .limit(count)
-             .pluck('tracks.spotify_uri')
+            .where.not(id: playlist_id)
+            .where.not(tracks: { spotify_uri: nil })
+            .select('tracks.spotify_uri, tracks.created_at')
+            .order('tracks.created_at DESC')
+            .limit(count)
+            .pluck('tracks.spotify_uri')
+            .uniq
   end
 
   # Get the playlist for a specific workout scheduled for today.
