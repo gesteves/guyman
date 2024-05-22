@@ -41,7 +41,9 @@ class ProcessPlaylistTracksJob < ApplicationJob
       # It's important that we DON'T store the track names and artists returned by Spotify,
       # because we'll use them in future prompts,
       # and Spotify's terms of use forbid passing Spotify data to ChatGPT.
-      # We'll only use the Spotify track URIs for track deduplication, as seen above.
+      # We only need to store the Spotify track URIs for track deduplication, as seen above,
+      # and to add the tracks to the Spotify playlist.
+      # We shouldn't store any other data from the Spotify API.
       track.update(spotify_uri: spotify_track['uri'])
 
       # Add the Spotify track URI to the list of URIs we've added to the Spotify playlist.
