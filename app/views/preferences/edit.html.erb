@@ -29,6 +29,11 @@
   </div>
 
   <div class="field">
+    <%= form.label :public_playlists, "Make playlists public" %>
+    <%= form.check_box :public_playlists %>
+  </div>
+
+  <div class="field">
     <%= form.label :automatically_clean_up_old_playlists, "Automatically clean up older playlists" %>
     <%= form.check_box :automatically_clean_up_old_playlists %>
   </div>

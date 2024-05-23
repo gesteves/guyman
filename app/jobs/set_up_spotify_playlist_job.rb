@@ -13,7 +13,7 @@ class SetUpSpotifyPlaylistJob < ApplicationJob
       spotify_client.modify_playlist(spotify_playlist_id, playlist.name, playlist.description)
     else
       # If it is not present, create a new playlist and save the Spotify playlist ID to the database
-      spotify_playlist_id = spotify_client.create_playlist(playlist.name, playlist.description)
+      spotify_playlist_id = spotify_client.create_playlist(playlist.name, playlist.description, user.preference.public_playlists)
       playlist.update(spotify_playlist_id: spotify_playlist_id, following: true)
     end
 

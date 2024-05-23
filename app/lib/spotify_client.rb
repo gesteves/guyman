@@ -18,14 +18,15 @@ class SpotifyClient
   end
 
   # Creates a new playlist with the given name and description.
-  #
+  # 
   # @param playlist_name [String] The name of the playlist.
   # @param playlist_description [String] The description of the playlist (optional).
+  # @param public [Boolean] Whether the playlist is public or private. Defaults to true.
   # @return [String] The ID of the created playlist.
-  def create_playlist(playlist_name, playlist_description = '')
+  def create_playlist(playlist_name, playlist_description = '', public = true)
     options = {
       headers: { "Authorization" => "Bearer #{@access_token}", "Content-Type" => "application/json" },
-      body: { name: playlist_name, description: playlist_description, public: true }.to_json
+      body: { name: playlist_name, description: playlist_description, public: public }.to_json
     }
     response = HTTParty.post("#{SPOTIFY_API_URL}/users/#{@user_id}/playlists", options)
     handle_response(response)['id']
