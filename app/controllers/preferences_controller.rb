@@ -8,7 +8,7 @@ class PreferencesController < ApplicationController
   def update
     @preference = current_user.preference || current_user.build_preference
     if @preference.update(preference_params)
-      GenerateUserPlaylistsJob.perform_async(current_user.id)
+      GenerateUserPlaylistsJob.perform_async(current_user.id) unless current_user.todays_playlists.any?
       redirect_to root_path, notice: 'Preferences updated successfully.'
     else
       render :edit
