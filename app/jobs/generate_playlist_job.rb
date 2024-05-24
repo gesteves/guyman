@@ -83,11 +83,9 @@ class GeneratePlaylistJob < ApplicationJob
 
       - You will receive the name of the user's workout, followed by a description of the workout.
       - You must determine if the workout is a cycling, running, or swimming workout, based on the name and/or description.
-      - Based on the workout's description, you will generate a playlist that matches the workout's intensity as closely as possible.
-      - The intensity is provided usually in terms of cycling power zones or percentages of FTP for cycling workouts, or RPE for swimming and running workouts.
-      - Lower intensity workouts should have softer, calmer songs. Higher intensity workouts should have more intense, energetic songs.
+      - Based on the workout's description, you will generate a playlist tailored to the workout's structure and intensity.
       - The playlist must contain at least 100 songs. 
-      - The user may specify genres and bands they like. You may use this information to guide your choices.
+      - The user may specify genres and bands they like. Use this information to guide your choices.
       - The user may also specify genres, bands, or specific tracks they want to avoid. Do not include them in the playlist.
       - The playlist should have variety; try to avoid adding the same artist more than once.
       - Since we want playlists to vary from day to day, you may also receive a list of songs used in previous playlists. Do not include these in the playlist.
