@@ -44,7 +44,7 @@ class ProcessPlaylistTracksJob < ApplicationJob
       # We only need to store the Spotify track URIs for track deduplication, as seen above,
       # and to add the tracks to the Spotify playlist.
       # We shouldn't store any other data from the Spotify API.
-      track.update(spotify_uri: spotify_track['uri'])
+      track.update!(spotify_uri: spotify_track['uri'])
 
       # Add the Spotify track URI to the list of URIs we've added to the Spotify playlist.
       track_uris << spotify_track['uri']
