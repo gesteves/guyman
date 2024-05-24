@@ -5,11 +5,6 @@ class User < ApplicationRecord
   has_one :preference, dependent: :destroy
   has_many :playlists, dependent: :destroy
 
-  # Sets the number of tracks that should not be reused in playlists.
-  # Kinda guessing at the number here, but a 2-hour playlist has around 30 tracks,
-  # so 180 tracks should be enough for 12 hours, or a week, of training, without reusing songs.
-  NON_REUSABLE_TRACK_COUNT = ENV.fetch('NON_REUSABLE_TRACK_COUNT', 180)
-
   def self.from_omniauth(auth)
     authentication = Authentication.where(provider: auth.provider, uid: auth.uid).first_or_initialize
     if authentication.user.blank?
@@ -37,49 +32,6 @@ class User < ApplicationRecord
     end
   end
 
-  # Get the most recent unique tracks from across all of the user's playlists.
-  #
-  # @param count [Integer] The number of recent tracks to retrieve.
-  # @return [Array<Array<String>>] An array of arrays containing the spotify_uri, artist, and title of the recent tracks.
-  def recent_tracks(count = NON_REUSABLE_TRACK_COUNT)
-    playlists.joins(:tracks)
-            .where.not(tracks: { spotify_uri: nil })
-            .select('tracks.spotify_uri, tracks.artist, tracks.title, tracks.created_at')
-            .order('tracks.created_at DESC')
-            .limit(count)
-            .pluck('tracks.spotify_uri', 'tracks.artist', 'tracks.title')
-            .uniq { |track| track.first }
-  end
-
-  # Generates a string of tracks to be excluded from the playlist generation prompt.
-  #
-  # @param count [Integer] The number of recent tracks to retrieve for exclusion.
-  # @return [String] A formatted string listing the tracks to be excluded from the playlist.
-  def excluded_tracks_string(count = NON_REUSABLE_TRACK_COUNT)
-    if recent_tracks.any?
-      "The following songs have already been used in previous playlists, please don't include them:\n" +
-      recent_tracks(count).map { |track| "- #{track[1]} - #{track[2]}" }.join("\n")
-    else
-      ""
-    end
-  end
-
-  # Get the most recent unique track URIs from the user's playlists, excluding a specified playlist.
-  #
-  # @param playlist_id [Integer] The ID of the playlist to exclude.
-  # @param count [Integer] The number of recent track URIs to retrieve.
-  # @return [Array<String>] An array of recent unique track URIs.
-  def recent_track_uris_from_other_playlists(playlist_id, count = NON_REUSABLE_TRACK_COUNT)
-    playlists.joins(:tracks)
-            .where.not(id: playlist_id)
-            .where.not(tracks: { spotify_uri: nil })
-            .select('tracks.spotify_uri, tracks.created_at')
-            .order('tracks.created_at DESC')
-            .limit(count)
-            .pluck('tracks.spotify_uri')
-            .uniq
-  end
-
   # Get the playlist for a specific workout scheduled for today.
   #
   # @param workout_name [String] The name of the workout.
@@ -89,5 +41,46 @@ class User < ApplicationRecord
     playlists.where(workout_name: workout_name)
              .where(created_at: current_date.beginning_of_day..current_date.end_of_day)
              .first
+  end
+
+  # Get the most recent unique tracks from across all of the user's playlists.
+  #
+  # @return [Array<Array<String>>] An array of arrays containing the spotify_uri, artist, and title of the recent tracks.
+  def recent_tracks
+    playlists.joins(:tracks)
+            .where.not(tracks: { spotify_uri: nil })
+            .where('tracks.created_at >= ?', 2.weeks.ago)
+            .select('tracks.spotify_uri, tracks.artist, tracks.title, tracks.created_at')
+            .order('tracks.created_at DESC')
+            .pluck('tracks.spotify_uri', 'tracks.artist', 'tracks.title')
+            .uniq { |track| track.first }
+  end
+
+  # Generates a string of tracks to be excluded from the playlist generation prompt.
+  #
+  # @return [String] A formatted string listing the tracks to be excluded from the playlist.
+  def excluded_tracks_string
+    recent_tracks_list = recent_tracks
+    if recent_tracks_list.any?
+      "The following songs have already been used in previous playlists, don't include them:\n" +
+      recent_tracks_list.map { |track| "- #{track[1]} - #{track[2]}" }.join("\n")
+    else
+      ""
+    end
+  end
+
+  # Get the most recent unique track URIs from the user's playlists, excluding a specified playlist.
+  #
+  # @param playlist_id [Integer] The ID of the playlist to exclude.
+  # @return [Array<String>] An array of recent unique track URIs.
+  def recent_track_uris_from_other_playlists(playlist_id)
+    playlists.joins(:tracks)
+            .where.not(id: playlist_id)
+            .where.not(tracks: { spotify_uri: nil })
+            .where('tracks.created_at >= ?', 2.weeks.ago)
+            .select('tracks.spotify_uri, tracks.created_at')
+            .order('tracks.created_at DESC')
+            .pluck('tracks.spotify_uri')
+            .uniq
   end
 end
