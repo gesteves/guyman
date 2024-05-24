@@ -28,13 +28,13 @@ class ProcessPlaylistTracksJob < ApplicationJob
       # Search for the track in Spotify using its title and artist
       spotify_track = spotify_client.search_tracks(track.title, track.artist)
       
-      # If the track was not found on Spotify, skip to the next track
+      # Skip tracks not found on Spotify
       next if spotify_track.blank?
 
       # Skip tracks that are already in other playlists
       next if recent_track_uris.include?(spotify_track['uri'])
 
-      # Skip the track if it is already in the Spotify playlist
+      # Skip tracks that are already in this playlist
       next if track_uris.include?(spotify_track['uri'])
 
       # Store the Spotify track URI in the track record for future reference.
@@ -57,7 +57,7 @@ class ProcessPlaylistTracksJob < ApplicationJob
       break if total_duration >= workout_duration_ms
     end
 
-    # Remove the tracks that were not added to the Spotify playlist from our playlist.
+    # Remove the remaining tracks from our playlist.
     playlist.tracks.where(spotify_uri: nil).destroy_all
 
     # Now that our playlist is ready, enqueue a job to update the tracks
