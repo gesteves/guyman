@@ -16,7 +16,7 @@ class CleanUpPlaylistsJob < ApplicationJob
       # from the database so we don't reuse their songs in future playlists.
       if preference.automatically_clean_up_old_playlists
         user.playlists.where('created_at < ?', current_date.beginning_of_day).where(following: true, locked: false).find_each do |playlist|
-          UnfollowSpotifyPlaylistJob.perform_async(user.id, playlist.spotify_playlist_id)
+          UnfollowSpotifyPlaylistJob.perform_async(user.id, playlist.id)
         end
       end
 
