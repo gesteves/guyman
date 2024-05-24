@@ -87,7 +87,6 @@ class GeneratePlaylistJob < ApplicationJob
       - The playlist must contain at least 100 songs. 
       - The user may specify genres and bands they like; use this information to guide your choices.
       - The user may also specify genres, bands, or specific tracks they want to avoid; do not include them in the playlist.
-      - The playlist should have variety; do not add the same artist more than once.
       - You may also receive a list of songs used in playlists for previous workouts; do not include them in the playlist.
       - Come up with a name for the playlist following this exact format: "[name_of_the_workout]: [very_short_description_of_the_playlist]"
       - Generate a detailed prompt to create, using Dall-E, a playlist cover image that visually represents the workout and the playlist in a creative way, but avoid anything that may cause content policy violations in Dall-E or get flagged by OpenAI's safety systems.
