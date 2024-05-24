@@ -4,6 +4,8 @@ class GenerateUserPlaylistsJob < ApplicationJob
   # This job regenerates the playlists for today's workouts for a given user.
   def perform(user_id)
     user = User.find(user_id)
+    return unless user.has_valid_spotify_token?
+    
     preference = user.preference
     return if preference.blank?
 

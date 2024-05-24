@@ -68,4 +68,19 @@ class User < ApplicationRecord
       ""
     end
   end
+
+  # Checks if the user has a valid Spotify token.
+  #
+  # @return [Boolean] True if the user has a valid Spotify token, false otherwise.
+  def has_valid_spotify_token?
+    spotify_auth = authentications.find_by(provider: 'spotify')
+    return false unless spotify_auth
+
+    begin
+      spotify_client = SpotifyClient.new(spotify_auth.refresh_token)
+      spotify_client.valid_token?
+    rescue
+      false
+    end
+  end
 end

@@ -17,6 +17,14 @@ class SpotifyClient
     @user_id = get_spotify_user_id
   end
 
+  # Checks if the Spotify token is still valid.
+  #
+  # @return [Boolean] True if the token is valid, false otherwise.
+  def valid_token?
+    response = HTTParty.get("#{SPOTIFY_API_URL}/me", headers: { "Authorization" => "Bearer #{@access_token}" })
+    response.success?
+  end
+
   # Creates a new playlist with the given name and description.
   # 
   # @param playlist_name [String] The name of the playlist.

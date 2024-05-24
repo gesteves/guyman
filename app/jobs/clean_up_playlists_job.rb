@@ -4,6 +4,7 @@ class CleanUpPlaylistsJob < ApplicationJob
   def perform
     return unless Rails.env.production?
     User.joins(:preference).includes(:preference, :playlists).find_each do |user|
+      next unless user.has_valid_spotify_token?
       preference = user.preference
 
       current_date = Time.current.in_time_zone(preference.timezone)
