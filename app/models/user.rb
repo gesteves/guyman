@@ -68,19 +68,4 @@ class User < ApplicationRecord
       ""
     end
   end
-
-  # Get the most recent unique track URIs from the user's playlists, excluding a specified playlist.
-  #
-  # @param playlist_id [Integer] The ID of the playlist to exclude.
-  # @return [Array<String>] An array of recent unique track URIs.
-  def recent_track_uris_from_other_playlists(playlist_id)
-    playlists.joins(:tracks)
-            .where.not(id: playlist_id)
-            .where.not(tracks: { spotify_uri: nil })
-            .where('tracks.created_at >= ?', 2.weeks.ago)
-            .select('tracks.spotify_uri, tracks.created_at')
-            .order('tracks.created_at DESC')
-            .pluck('tracks.spotify_uri')
-            .uniq
-  end
 end

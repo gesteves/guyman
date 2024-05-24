@@ -22,7 +22,7 @@ class ProcessPlaylistTracksJob < ApplicationJob
     workout_duration_ms = playlist.workout_duration * 60 * 1000 # Convert workout duration from minutes to milliseconds
 
     # Collect all track URIs from the user's other playlists
-    recent_track_uris = user.recent_track_uris_from_other_playlists(playlist.id)
+    recent_track_uris = playlist.recent_track_uris_from_other_playlists
 
     playlist.tracks.each do |track|
       # Search for the track in Spotify using its title and artist
