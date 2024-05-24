@@ -28,6 +28,6 @@ class Playlist < ApplicationRecord
   private
 
   def unfollow_spotify_playlist
-    UnfollowSpotifyPlaylistJob.perform_async(user.id, id)
+    UnfollowSpotifyPlaylistJob.perform_async(user.id, spotify_playlist_id)
   end
 end
