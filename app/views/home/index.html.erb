@@ -9,7 +9,7 @@
     <% processing = @todays_playlists.any?(&:processing?) %>
     <% all_locked = @todays_playlists.all?(&:locked?) %>
     <% @todays_playlists.each do |playlist| %>
-      <h3><%= playlist.workout_name %></h3>
+      <h3><%= playlist.name %></h3>
       <%= simple_format(playlist.description) %>
       <% if playlist.processing? %>
         <p>Regenerating playlist, please stand by...</p>
