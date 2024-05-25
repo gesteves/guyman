@@ -6,8 +6,6 @@
 
   <h2>Today's Playlists</h2>
   <% if @todays_playlists.any? %>
-    <% processing = @todays_playlists.any?(&:processing?) %>
-    <% all_locked = @todays_playlists.all?(&:locked?) %>
     <% @todays_playlists.each do |playlist| %>
       <h3><%= playlist.name %></h3>
       <%= simple_format(playlist.description) %>
@@ -21,7 +19,7 @@
       <hr>
     <% end %>
     <% if current_user.admin? %>
-      <%= button_to 'Regenerate Playlists', regenerate_all_playlists_path, method: :post, data: { turbo_confirm: 'Are you sure you want to regenerate all unlocked playlists?' }, disabled: processing || all_locked %>
+      <%= button_to 'Regenerate Playlists', regenerate_all_playlists_path, method: :post, data: { turbo_confirm: 'Are you sure you want to regenerate all unlocked playlists?' }, disabled: regenerate_playlists_disabled? %>
     <% end %>
   <% else %>
     <p>You don't have any playlists because you don't have any workouts scheduled for today.</p>
