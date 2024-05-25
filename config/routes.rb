@@ -17,7 +17,7 @@ Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
 
   resource :preference, only: [:create, :edit, :update]
-  resources :playlists do
+  resources :playlists, only: [:index, :show] do
     member do
       post :lock
       post :regenerate
