@@ -52,6 +52,7 @@ gem "omniauth-rails_csrf_protection"
 gem 'icalendar'
 gem 'httparty'
 gem 'mini_magick'
+gem 'public_suffix'
 
 # Background jobs
 gem 'sidekiq'
