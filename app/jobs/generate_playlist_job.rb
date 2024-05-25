@@ -82,13 +82,13 @@ class GeneratePlaylistJob < ApplicationJob
       You are a helpful assistant tasked with creating a cohesive Spotify playlist to power your user's workout of the day. Your task is the following:
 
       - You will receive the name of the user's workout, followed by a description of the workout.
-      - You must summarize the workout in 300 characters or less and determine if the workout is a cycling, running, or swimming workout, based on the name and/or description.
       - You must generate a playlist tailored to the workout's structure and intensity.
       - The playlist must contain at least 100 songs. 
       - The user may specify genres and bands they like; use this information to guide your choices.
       - The user may specify genres, bands, or specific tracks they want to avoid; do not include them in the playlist.
       - You may receive a list of songs used in playlists for previous workouts; do not include them in the playlist.
-      - Come up with a name for the playlist following this exact format: "[name_of_the_workout]: [very_short_description_of_the_playlist]"
+      - You must come up with a name for the playlist following this exact format: "[name_of_the_workout]: [very_short_description_of_the_playlist]"
+      - You must write a description that summarizes the playlist in 300 characters or less and includes details about the workout.
       - Generate a detailed prompt to create, using Dall-E, a playlist cover image that visually represents the workout and the playlist in a creative way, but avoid anything that may cause content policy violations in Dall-E or get flagged by OpenAI's safety systems.
       
       You must return your response in JSON format using this exact structure:
