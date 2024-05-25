@@ -15,7 +15,6 @@ class GenerateUserPlaylistsJob < ApplicationJob
       # Find any playlists already created for this workout today,
       # or create one if it doesn't exist...
       playlist = user.playlist_for_todays_workout(workout[:name]) || user.playlists.create!(
-        name: workout[:name],
         workout_name: workout[:name],
         workout_description: workout[:description],
         workout_duration: workout[:duration]

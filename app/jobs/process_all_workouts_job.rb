@@ -23,7 +23,6 @@ class ProcessAllWorkoutsJob < ApplicationJob
         # Otherwise, create the playlist if it doesn't exist.
         if playlist.blank?
           playlist = user.playlists.create!(
-            name: workout[:name],
             workout_name: workout[:name],
             workout_description: workout[:description],
             workout_duration: workout[:duration]
