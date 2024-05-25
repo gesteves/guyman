@@ -1,11 +1,64 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+# test/fixtures/tracks.yml
 
 one:
-  playlist: one
-  title: MyString
-  artist: MyString
+  playlist: with_tracks
+  title: "Track One"
+  artist: "Artist One"
+  spotify_uri: "spotify:track:one"
+  created_at: <%= 1.month.ago %>
+  updated_at: <%= 1.month.ago %>
+  position: 1
 
 two:
-  playlist: two
-  title: MyString
-  artist: MyString
+  playlist: with_tracks
+  title: "Track Two"
+  artist: "Artist Two"
+  spotify_uri: "spotify:track:two"
+  created_at: <%= 1.month.ago %>
+  updated_at: <%= 1.month.ago %>
+  position: 2
+
+three:
+  playlist: with_tracks
+  title: "Track Three"
+  artist: "Artist Three"
+  spotify_uri: "spotify:track:three"
+  created_at: <%= 1.month.ago %>
+  updated_at: <%= 1.month.ago %>
+  position: 3
+
+four:
+  playlist: with_tracks
+  title: "Track Four"
+  artist: "Artist Four"
+  spotify_uri: "spotify:track:four"
+  created_at: <%= 1.month.ago %>
+  updated_at: <%= 1.month.ago %>
+  position: 4
+
+five:
+  playlist: with_tracks
+  title: "Track Five"
+  artist: "Artist Five"
+  spotify_uri: "spotify:track:five"
+  created_at: <%= 1.month.ago %>
+  updated_at: <%= 1.month.ago %>
+  position: 5
+
+six:
+  playlist: with_tracks
+  title: "Track Six"
+  artist: "Artist Six"
+  spotify_uri: "spotify:track:six"
+  created_at: <%= 1.month.ago %>
+  updated_at: <%= 1.month.ago %>
+  position: 6
+
+seven:
+  playlist: with_tracks
+  title: "Track Seven"
+  artist: "Artist Seven"
+  spotify_uri: "spotify:track:seven"
+  created_at: <%= 1.month.ago %>
+  updated_at: <%= 1.month.ago %>
+  position: 7

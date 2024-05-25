@@ -1,21 +1,43 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+# test/fixtures/playlists.yml
 
 one:
-  user: one
-  name: MyString
-  description: MyText
-  workout_description: MyText
-  sport: MyString
-  workout_name: MyString
-  cover_dalle_prompt: MyString
-  workout_duration: 1
+  user: basic
+  name: "Workout Playlist One"
+  description: "A great playlist for your workout."
+  workout_description: "Cycling workout - moderate intensity"
+  sport: "Cycling"
+  workout_name: "Morning Ride"
+  cover_dalle_prompt: "A cycling workout"
+  workout_duration: 60
+  created_at: <%= Time.now %>
+  updated_at: <%= Time.now %>
+  spotify_playlist_id: "spotify_playlist_id_one"
+  locked: false
 
 two:
-  user: two
-  name: MyString
-  description: MyText
-  workout_description: MyText
-  sport: MyString
-  workout_name: MyString
-  cover_dalle_prompt: MyString
-  workout_duration: 1
+  user: basic
+  name: "Workout Playlist Two"
+  description: "Another great playlist for your workout."
+  workout_description: "Running workout - high intensity"
+  sport: "Running"
+  workout_name: "Evening Run"
+  cover_dalle_prompt: "A running workout"
+  workout_duration: 45
+  created_at: <%= Time.now %>
+  updated_at: <%= Time.now %>
+  spotify_playlist_id: "spotify_playlist_id_two"
+  locked: false
+
+with_tracks:
+  user: basic
+  name: "Playlist With Tracks"
+  description: "Playlist with multiple tracks."
+  workout_description: "Cycling workout - high intensity"
+  sport: "Cycling"
+  workout_name: "Afternoon Ride"
+  cover_dalle_prompt: "A high intensity cycling workout"
+  workout_duration: 90
+  created_at: <%= Time.now %>
+  updated_at: <%= Time.now %>
+  spotify_playlist_id: "spotify_playlist_id_three"
+  locked: false

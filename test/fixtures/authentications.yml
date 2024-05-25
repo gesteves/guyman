@@ -1,15 +1,19 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+# test/fixtures/authentications.yml
 
-one:
-  provider: MyString
-  uid: MyString
-  token: MyString
-  refresh_token: MyString
-  user: one
+basic:
+  provider: spotify
+  uid: "12345"
+  token: "token_one"
+  refresh_token: "refresh_token_one"
+  user: basic
+  created_at: <%= Time.now %>
+  updated_at: <%= Time.now %>
 
-two:
-  provider: MyString
-  uid: MyString
-  token: MyString
-  refresh_token: MyString
-  user: two
+admin:
+  provider: spotify
+  uid: "67890"
+  token: "token_two"
+  refresh_token: "refresh_token_two"
+  user: admin
+  created_at: <%= Time.now %>
+  updated_at: <%= Time.now %>
