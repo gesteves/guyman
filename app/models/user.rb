@@ -20,6 +20,17 @@ class User < ApplicationRecord
     authentication.user
   end
 
+  # Retrieves today's workouts for the user.
+  #
+  # @return [Array] The workouts for today.
+  def todays_workouts
+    if preference&.has_trainerroad_calendar?
+      TrainerroadClient.new(preference.calendar_url, preference.timezone).get_workouts_for_today
+    else
+      []
+    end
+  end
+
   # Returns an array of playlists for today's workouts.
   #
   # @return [Array<Playlist>] An array of playlists created today.

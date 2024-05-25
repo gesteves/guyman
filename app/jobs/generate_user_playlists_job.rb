@@ -6,12 +6,7 @@ class GenerateUserPlaylistsJob < ApplicationJob
     user = User.find(user_id)
     return unless user.has_valid_spotify_token?
     
-    preference = user.preference
-    return if preference.blank?
-
-    todays_workouts = TrainerroadClient.new(preference.calendar_url, preference.timezone).get_workouts_for_today
-    
-    todays_workouts.each do |workout|
+    user.todays_workouts.each do |workout|
       # Find any playlists already created for this workout today,
       # or create one if it doesn't exist...
       playlist = user.playlist_for_todays_workout(workout[:name]) || user.playlists.create!(

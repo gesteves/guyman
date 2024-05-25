@@ -8,8 +8,7 @@ class CleanUpPlaylistsJob < ApplicationJob
       preference = user.preference
 
       current_date = Time.current.in_time_zone(preference.timezone)
-      todays_workouts = TrainerroadClient.new(preference.calendar_url, preference.timezone).get_workouts_for_today
-      workout_names = todays_workouts.map { |workout| workout[:name] }
+      workout_names = user.todays_workouts.map { |workout| workout[:name] }
 
       # If the user has enabled it, unfollow any Spotify playlists created before the current day and are still being followed.
       # These playlists were likely used in a workout, so we want to unfollow them
