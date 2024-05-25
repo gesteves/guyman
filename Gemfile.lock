@@ -160,6 +160,8 @@ GEM
     mini_magick (4.12.0)
     mini_mime (1.1.5)
     minitest (5.23.0)
+    mocha (2.3.0)
+      ruby2_keywords (>= 0.0.5)
     msgpack (1.7.2)
     multi_xml (0.7.1)
       bigdecimal (~> 3.1)
@@ -265,6 +267,7 @@ GEM
       railties (>= 5.2)
     rexml (3.2.8)
       strscan (>= 3.0.9)
+    ruby2_keywords (0.0.5)
     rubyzip (2.3.2)
     rufus-scheduler (3.9.1)
       fugit (~> 1.1, >= 1.1.6)
@@ -340,6 +343,7 @@ DEPENDENCIES
   importmap-rails
   jbuilder
   mini_magick
+  mocha
   omniauth
   omniauth-rails_csrf_protection
   omniauth-spotify
