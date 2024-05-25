@@ -2,7 +2,7 @@
 
 <% if user_signed_in? %>
   <p>Hello, <%= current_user.email %>!</p>
-  <p><%= link_to 'Log out', users_sign_out_path, data: { turbo_method: "delete", turbo_confirm: "Are you sure you want to log out?" %></p>
+  <p><%= link_to 'Log out', users_sign_out_path, data: { turbo_method: "delete", turbo_confirm: "Are you sure you want to log out?" } %></p>
 
   <h2>Today's Playlists</h2>
   <% if @todays_playlists.any? %>
