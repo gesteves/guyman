@@ -4,8 +4,10 @@
   <p>Hello, <%= current_user.email %>!</p>
   <p><%= link_to 'Logout', users_sign_out_path, method: :delete %></p>
 
-  <h2>Today's Workouts</h2>
+  <h2>Today's Playlists</h2>
   <% if @todays_playlists.any? %>
+    <% processing = @todays_playlists.any?(&:processing?) %>
+    <% all_locked = @todays_playlists.all?(&:locked?) %>
     <% @todays_playlists.each do |playlist| %>
       <h3><%= playlist.workout_name %></h3>
       <%= simple_format(playlist.description) %>
@@ -13,13 +15,15 @@
         <p>Regenerating playlist, please stand by...</p>
       <% else %>
         <iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/<%= playlist.spotify_playlist_id %>" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+        <%= button_to (playlist.locked? ? 'Unlock' : 'Lock'), lock_playlist_path(playlist), method: :post, data: { confirm: playlist.locked? ? "This will allow changes to the playlist. Are you sure?" : "This will prevent the playlist from being changed or deleted. Are you sure?" } %>
+        <%= button_to 'Regenerate', regenerate_playlist_path(playlist), method: :post, data: { confirm: 'Are you sure you want to regenerate this playlist?', turbo: false }, disabled: playlist.locked? %>
       <% end %>
     <% end %>
-    <% if current_user.admin? && @todays_playlists.none?(&:processing?) %>
-      <%= button_to 'Regenerate Playlists', regenerate_playlists_path, method: :post, data: { turbo: false } %>
+    <% if current_user.admin? %>
+      <%= button_to 'Regenerate Playlists', regenerate_playlists_path, method: :post, data: { confirm: 'Are you sure you want to regenerate all unlocked playlists?', turbo: false }, disabled: processing || all_locked %>
     <% end %>
   <% else %>
-    <p>No workouts scheduled for today.</p>
+    <p>You don't have any playlists because you don't have any workouts scheduled for today.</p>
   <% end %>
 
   <h2>Your Preferences</h2>

@@ -17,7 +17,16 @@ Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
 
   resource :preference, only: [:create, :edit, :update]
-  post 'regenerate_playlists', to: 'home#regenerate_playlists', as: 'regenerate_playlists'
+  resources :playlists do
+    member do
+      post :lock
+      post :regenerate
+    end
+
+    collection do
+      post :regenerate_all, to: 'playlists#regenerate_all'
+    end
+  end
 
   # Defines the root path route ("/")
   root "home#index"
