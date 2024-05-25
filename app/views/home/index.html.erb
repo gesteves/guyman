@@ -18,6 +18,7 @@
         <%= button_to (playlist.locked? ? 'Unlock' : 'Lock'), lock_playlist_path(playlist), method: :post, data: { confirm: playlist.locked? ? "This will allow changes to the playlist. Are you sure?" : "This will prevent the playlist from being changed or deleted. Are you sure?" } %>
         <%= button_to 'Regenerate', regenerate_playlist_path(playlist), method: :post, data: { confirm: 'Are you sure you want to regenerate this playlist?', turbo: false }, disabled: playlist.locked? %>
       <% end %>
+      <hr>
     <% end %>
     <% if current_user.admin? %>
       <%= button_to 'Regenerate Playlists', regenerate_all_playlists_path, method: :post, data: { confirm: 'Are you sure you want to regenerate all unlocked playlists?', turbo: false }, disabled: processing || all_locked %>
