@@ -20,7 +20,7 @@
       <% end %>
     <% end %>
     <% if current_user.admin? %>
-      <%= button_to 'Regenerate Playlists', regenerate_playlists_path, method: :post, data: { confirm: 'Are you sure you want to regenerate all unlocked playlists?', turbo: false }, disabled: processing || all_locked %>
+      <%= button_to 'Regenerate Playlists', regenerate_all_playlists_path, method: :post, data: { confirm: 'Are you sure you want to regenerate all unlocked playlists?', turbo: false }, disabled: processing || all_locked %>
     <% end %>
   <% else %>
     <p>You don't have any playlists because you don't have any workouts scheduled for today.</p>
