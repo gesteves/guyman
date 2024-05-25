@@ -26,6 +26,8 @@ class User < ApplicationRecord
   def todays_workouts
     if preference&.has_trainerroad_calendar?
       TrainerroadClient.new(preference.calendar_url, preference.timezone).get_workouts_for_today
+    elsif preference&.has_trainingpeaks_calendar?
+      TrainingpeaksClient.new(preference.calendar_url, preference.timezone).get_workouts_for_today
     else
       []
     end
