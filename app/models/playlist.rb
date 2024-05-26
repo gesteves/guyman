@@ -6,6 +6,8 @@ class Playlist < ApplicationRecord
 
   before_destroy :unfollow_spotify_playlist, if: :spotify_playlist_id?
 
+  default_scope { order(created_at: :desc) }
+
   def spotify_uris
     tracks.pluck(:spotify_uri).compact
   end
