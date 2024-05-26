@@ -2,10 +2,10 @@
 
 one:
   prompt: MyText
-  active: false
-  user: one
+  active: true
+  user: basic
 
 two:
   prompt: MyText
-  active: false
-  user: two
+  active: true
+  user: admin
