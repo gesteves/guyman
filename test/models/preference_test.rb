@@ -10,12 +10,6 @@ class PreferenceTest < ActiveSupport::TestCase
     assert @preference.valid?
   end
 
-  test "should be invalid without musical_tastes" do
-    @preference.musical_tastes = nil
-    assert_not @preference.valid?
-    assert_includes @preference.errors[:musical_tastes], "can't be blank"
-  end
-
   test "should be invalid without calendar_url" do
     @preference.calendar_url = nil
     assert_not @preference.valid?

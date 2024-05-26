@@ -2,12 +2,10 @@
 
 basic:
   user: basic
-  musical_tastes: "Rock, Jazz"
   calendar_url: "https://api.trainerroad.com/v1/calendars/1"
   timezone: "UTC"
 
 admin:
   user: admin
-  musical_tastes: "Pop, Classical"
   calendar_url: "https://api.trainerroad.com/v1/calendars/3"
   timezone: "UTC"

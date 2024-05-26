@@ -18,6 +18,6 @@ class PreferencesController < ApplicationController
   private
 
   def preference_params
-    params.require(:preference).permit(:musical_tastes, :calendar_url, :timezone, :automatically_clean_up_old_playlists, :public_playlists)
+    params.require(:preference).permit(:calendar_url, :timezone, :automatically_clean_up_old_playlists, :public_playlists)
   end
 end
