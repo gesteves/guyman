@@ -106,6 +106,7 @@ class User < ApplicationRecord
   end
 
   def regenerate_playlists_disabled?
+    return false if todays_playlists.blank?
     todays_playlists.any?(&:processing?) || todays_playlists.all?(&:locked?)
   end
 
