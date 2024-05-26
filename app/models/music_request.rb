@@ -4,7 +4,7 @@ class MusicRequest < ApplicationRecord
   validates :prompt, presence: true
   validate :no_duplicate_active_prompt, if: :active?
 
-  default_scope { order(active: :desc, created_at: :desc) }
+  default_scope { order(active: :desc, updated_at: :desc) }
 
   before_save :ensure_only_one_active
 

@@ -104,4 +104,12 @@ class User < ApplicationRecord
   def current_music_request
     music_requests.find_by(active: true)
   end
+
+  def regenerate_playlists_disabled?
+    todays_playlists.any?(&:processing?) || todays_playlists.all?(&:locked?)
+  end
+
+  def can_regenerate_playlists?
+    !regenerate_playlists_disabled?
+  end
 end

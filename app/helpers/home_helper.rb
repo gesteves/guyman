@@ -1,8 +1,4 @@
 module HomeHelper
-  def regenerate_playlists_disabled?
-    @todays_playlists.any?(&:processing?) || @todays_playlists.all?(&:locked?)
-  end
-
   def lock_button_confirmation_message(playlist)
     automatically_clean_up_old_playlists = current_user.preference&.automatically_clean_up_old_playlists
     if automatically_clean_up_old_playlists
