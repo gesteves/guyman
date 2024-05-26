@@ -3,8 +3,7 @@
       <a class="navbar-item" href="/">
         <%= render partial: "shared/logo" %>
       </a>
-
-      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
         <span aria-hidden="true"></span>
         <span aria-hidden="true"></span>
         <span aria-hidden="true"></span>
@@ -15,7 +14,6 @@
     <div class="navbar-start">
       
     </div>
-
     <div class="navbar-end">
       <%= link_to_if current_user.admin?, "Sidekiq", "/sidekiq", target: '_blank', class: "navbar-item" %>
       <%= link_to "Settings", settings_path, class: "navbar-item" %>
