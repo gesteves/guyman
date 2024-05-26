@@ -17,7 +17,7 @@
     <div class="navbar-end">
       <%= link_to_if current_user.admin?, "Sidekiq", "/sidekiq", target: '_blank', class: "navbar-item" %>
       <%= link_to "Settings", settings_path, class: "navbar-item" %>
-      <%= link_to 'Sign out', destroy_user_session_path, class: 'navbar-item', data: { turbo_method: "delete", turbo_confirm: "Are you sure you want to log out?" } %>
+      <%= link_to 'Sign out', destroy_user_session_path, class: 'navbar-item', data: { turbo_method: "delete", turbo_confirm: "Are you sure you want to sign out?" } %>
     </div>
   </div>
 </nav>
