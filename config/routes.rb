@@ -1,7 +1,9 @@
 Rails.application.routes.draw do
   devise_for :users, controllers: { omniauth_callbacks: 'users/omniauth_callbacks' }
+
   devise_scope :user do
-    delete "/users/sign_out" => "devise/sessions#destroy"
+    get "/sign-in" => "users/sessions#new", as: :new_user_session
+    delete "/sign-out" => "devise/sessions#destroy", as: :destroy_user_session
   end
 
   require 'sidekiq/web'
@@ -16,7 +18,7 @@ Rails.application.routes.draw do
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check
 
-  resource :preference, only: [:create, :edit, :update]
+  resource :preference, only: [:update]
   resources :playlists, only: [:index, :show] do
     member do
       post :lock
@@ -28,6 +30,7 @@ Rails.application.routes.draw do
     end
   end
 
+  get "/settings", to: "preferences#edit", as: :settings
   # Defines the root path route ("/")
   root "home#index"
 end

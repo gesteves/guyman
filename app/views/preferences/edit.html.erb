@@ -1,44 +1,112 @@
-<h1>Edit Your Preferences</h1>
+<% if @preference.errors.any? %>
+<div class="notification is-danger">
+  <strong>Your changes couldn’t be saved!</strong>
+  <% @preference.errors.full_messages.each do |message| %>
+    <li><%= message %></li>
+  <% end %>
+</div>
+<% end %>
 
-<%= form_with model: @preference, url: preference_path, method: :patch, local: true do |form| %>
-  <% if @preference.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(@preference.errors.count, "error") %> prohibited this preference from being saved:</h2>
+<section class="hero">
+  <div class="hero-body">
+    <h1 class="title">Your Settings</h1>
+  </div>
+</section>
 
-      <ul>
-        <% @preference.errors.full_messages.each do |message| %>
-          <li><%= message %></li>
-        <% end %>
-      </ul>
+<section class="section">
+  <%= form_with model: @preference, url: preference_path, method: :patch, local: true do |form| %>
+
+    <div class="field is-horizontal">
+      <div class="field-label is-normal">
+        <%= form.label :musical_tastes, "Music preferences", class: 'label' %>
+      </div>
+      <div class="field-body">
+        <div class="field">
+          <div class="control">
+            <%= form.text_area :musical_tastes, class: 'textarea' %>
+          </div>
+          <p class="help">In your own words, explain what kind of music, genres and artists do you like and dislike.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="field is-horizontal">
+      <div class="field-label is-normal">
+        <%= form.label :calendar_url, "Calendar URL", class: "label" %>
+      </div>
+      <div class="field-body">
+        <div class="field">
+          <p class="control is-expanded">
+            <%= form.text_field :calendar_url, class: "input" %>
+          </p>
+          <p class="help">
+            Currently supports calendars from TrainerRoad and TrainingPeaks.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="field is-horizontal">
+      <div class="field-label is-normal">
+        <%= form.label :timezone, "Your time zone", class: "label" %>
+      </div>
+      <div class="field-body">
+        <div class="field">
+          <div class="control">
+            <div class="select">
+              <%= form.time_zone_select :timezone, ActiveSupport::TimeZone.all, { default: @preference.timezone || "UTC" } %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <div class="field is-horizontal">
+      <div class="field-label">
+
+      </div>
+      <div class="field-body">
+        <div class="field is-narrow">
+          <div class="control">
+            <%= form.label :public_playlists, class: "checkbox" do %>
+              <%= form.check_box :public_playlists, class: "checkbox"  %> Make my playlists public
+            <% end %>
+          </div>
+          <p class="help">
+            This won’t affect existing playlists.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="field is-horizontal">
+      <div class="field-label">
+        
+      </div>
+      <div class="field-body">
+        <div class="field is-narrow">
+          <div class="control">
+            <%= form.label :automatically_clean_up_old_playlists, class: "checkbox" do %>
+              <%= form.check_box :automatically_clean_up_old_playlists, class: "checkbox"  %> Automatically remove older playlists from my Spotify library
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr>
+    <div class="field is-horizontal">
+      <div class="field-label">
+        <!-- Left empty for spacing -->
+      </div>
+      <div class="field-body">
+        <div class="field">
+          <div class="control">
+            <%= form.submit "Save changes", class: "button is-primary" %>
+          </div>
+        </div>
+      </div>
     </div>
   <% end %>
-
-  <div class="field">
-    <%= form.label :musical_tastes %>
-    <%= form.text_area :musical_tastes %>
-  </div>
-
-  <div class="field">
-    <%= form.label :calendar_url %>
-    <%= form.text_field :calendar_url %>
-  </div>
-
-  <div class="field">
-    <%= form.label :timezone %>
-    <%= form.time_zone_select :timezone, ActiveSupport::TimeZone.all, { default: @preference.timezone || "UTC" } %>
-  </div>
-
-  <div class="field">
-    <%= form.label :public_playlists, "Make playlists public" %>
-    <%= form.check_box :public_playlists %>
-  </div>
-
-  <div class="field">
-    <%= form.label :automatically_clean_up_old_playlists, "Automatically clean up older playlists" %>
-    <%= form.check_box :automatically_clean_up_old_playlists %>
-  </div>
-
-  <div class="actions">
-    <%= form.submit "Update Preferences" %>
-  </div>
-<% end %>
+</section>

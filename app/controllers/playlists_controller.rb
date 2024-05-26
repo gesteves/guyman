@@ -4,27 +4,27 @@ class PlaylistsController < ApplicationController
 
   def lock
     @playlist.update(locked: !@playlist.locked?)
-    redirect_to root_path, notice: "Playlist has been #{@playlist.locked? ? 'locked' : 'unlocked'}."
+    redirect_to root_path, notice: "Your playlist is now #{@playlist.locked? ? 'locked 🔒' : 'unlocked 🔓'}."
   end
 
   def regenerate
     if @playlist.locked?
-      redirect_to root_path, alert: 'Cannot regenerate a locked playlist.'
+      redirect_to root_path, alert: 'Your playlist can’t be regenerated while it’s locked.'
     else
       GeneratePlaylistJob.perform_async(current_user.id, @playlist.id)
       @playlist.update(processing: true)
-      redirect_to root_path, notice: 'Playlist is being regenerated.'
+      redirect_to root_path, notice: 'Your playlist is being regenerated ✨'
     end
   end
 
   def regenerate_all
     if @todays_playlists.any?(&:processing?)
-      redirect_to root_path, alert: "Playlist are already being regenerated."
+      redirect_to root_path, alert: "Your playlists are already being regenerated."
     elsif @todays_playlists.all?(&:locked?)
-      redirect_to root_path, alert: 'All playlists are locked.'
+      redirect_to root_path, alert: 'All playlists are locked and can’t be regenerated.'
     else
       GenerateUserPlaylistsJob.perform_async(current_user.id)
-      redirect_to root_path, notice: 'Playlists are being regenerated.'
+      redirect_to root_path, notice: 'Your playlists are being regenerated ✨'
     end
   end
 
