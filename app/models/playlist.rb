@@ -26,6 +26,10 @@ class Playlist < ApplicationRecord
           .uniq
   end
 
+  def todays?
+    created_at.in_time_zone(user.preference.timezone).today?
+  end
+
   private
 
   def unfollow_spotify_playlist
