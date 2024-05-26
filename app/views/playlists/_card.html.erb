@@ -7,7 +7,7 @@
       <strong><%= playlist.name %></strong><br><%= playlist.description %>
     </div>
     <hr>
-    <div class="field is-grouped is-grouped-right">
+    <div class="buttons is-right">
       <%= button_to lock_playlist_path(playlist), method: :post, data: { turbo_confirm: lock_button_confirmation_message(playlist) }, class: "button" do %>
         <% if playlist.locked? %>
           <span class="icon">
@@ -27,6 +27,6 @@
         </span>
         <span>Regenerate</span>
       <% end %>
-    </div >
+    </div>
   </div>
 </div>

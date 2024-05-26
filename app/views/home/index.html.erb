@@ -6,18 +6,17 @@
   </div>
 </section>
 
-
+<section class="container is-max-desktop">
 <% if @todays_playlists.any? %>
-  <section class="container is-max-desktop">
-    <% @todays_playlists.each do |playlist| %>
-      <% if playlist.processing? %>
-        <%= render partial: 'playlists/processing' %>
-      <% else %>
-        <%= render partial: 'playlists/card', locals: { playlist: playlist } %>
-      <% end %>
+  <% @todays_playlists.each do |playlist| %>
+    <% if playlist.processing? %>
+      <%= render partial: 'playlists/processing' %>
+    <% else %>
+      <%= render partial: 'playlists/card', locals: { playlist: playlist } %>
     <% end %>
+  <% end %>
     <hr>
-    <div class="field is-grouped is-grouped-right">
+    <div class="buttons is-right">
       <%= button_to regenerate_all_playlists_path, method: :post, data: { turbo_confirm: 'Are you sure you want to regenerate all unlocked playlists?' }, disabled: regenerate_playlists_disabled?, class: "button" do %>
         <span class="icon">
           <i class="fa-solid fa-sparkles"></i>
@@ -25,12 +24,21 @@
         <span>Regenerate all</span>
       <% end %>
     </div>
-  </section>
 <% else %>
-  <section class="container">
-    <div class="notification">
-      <strong>You don’t have any workouts scheduled for today.</strong> Why don’t you go add one to your calendar?
+  <div class="card">
+    <div class="card-content">
+      <div class="content has-text-centered">
+        <strong>You don’t have any workouts scheduled for today.</strong> Why don’t you go add one to your calendar?
+      </div>
+      <div class="buttons is-centered">
+        <%= button_to regenerate_all_playlists_path, method: :post, class: "button" do %>
+          <span class="icon">
+            <i class="fa-solid fa-arrows-rotate"></i>
+          </span>
+          <span>Check for new workouts</span>
+        <% end %>
+      </div>
     </div>
-  </section>
+  </div>
 <% end %>
-
+</section>
