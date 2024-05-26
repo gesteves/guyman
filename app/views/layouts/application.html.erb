@@ -7,13 +7,34 @@
     <%= csp_meta_tag %>
 
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <script src="https://kit.fontawesome.com/1d1fdbc6be.js" crossorigin="anonymous"></script>
     <%= javascript_importmap_tags %>
   </head>
 
   <body>
-    <% flash.each do |key, value| %>
-      <div class="flash <%= key %>"><%= value %></div>
-    <% end %>
-    <%= yield %>
+    <nav class="navbar is-spaced has-shadow" role="navigation" aria-label="main navigation">
+      <div id="navbarBasicExample" class="navbar-menu">
+        <div class="navbar-start">
+          <%= link_to "Home", root_path, class: "navbar-item" %>
+        </div>
+        </div>
+
+        <div class="navbar-end">
+          <%= link_to_if current_user.admin?, "Sidekiq", "/sidekiq", target: '_blank', class: "navbar-item" %>
+          <%= link_to "Settings", settings_path, class: "navbar-item" %>
+          <%= link_to 'Sign out', destroy_user_session_path, class: 'navbar-item', data: { turbo_method: "delete", turbo_confirm: "Are you sure you want to log out?" } %>
+        </div>
+      </div>
+    </nav>
+    <div class="container">
+      <section class="section">
+        <% flash.each do |key, value| %>
+          <div class="notification" id="flash-<%= key %>">
+            <%= value %>
+          </div>
+        <% end %>
+        <%= yield %>
+      </section>
+    </div>
   </body>
 </html>
