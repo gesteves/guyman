@@ -6,15 +6,16 @@
   </div>
 </section>
 
-<section class="container is-max-desktop">
+
 <% if @todays_playlists.any? %>
-  <% @todays_playlists.each do |playlist| %>
-    <% if playlist.processing? %>
-      <%= render partial: 'playlists/processing' %>
-    <% else %>
-      <%= render partial: 'playlists/card', locals: { playlist: playlist } %>
+  <section class="container is-max-desktop">
+    <% @todays_playlists.each do |playlist| %>
+      <% if playlist.processing? %>
+        <%= render partial: 'playlists/processing' %>
+      <% else %>
+        <%= render partial: 'playlists/card', locals: { playlist: playlist } %>
+      <% end %>
     <% end %>
-  <% end %>
     <hr>
     <div class="field is-grouped is-grouped-right">
       <%= button_to regenerate_all_playlists_path, method: :post, data: { turbo_confirm: 'Are you sure you want to regenerate all unlocked playlists?' }, disabled: regenerate_playlists_disabled?, class: "button" do %>
@@ -24,9 +25,12 @@
         <span>Regenerate all</span>
       <% end %>
     </div>
+  </section>
 <% else %>
-  <div class="notification">
-    <strong>You don’t have any workouts scheduled for today.</strong> Why don’t you go add one to your calendar?
-  </div>
+  <section class="container">
+    <div class="notification">
+      <strong>You don’t have any workouts scheduled for today.</strong> Why don’t you go add one to your calendar?
+    </div>
+  </section>
 <% end %>
-</section>
+
