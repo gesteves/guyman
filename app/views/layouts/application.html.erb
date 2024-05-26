@@ -15,7 +15,7 @@
     <%= render partial: "shared/navbar" %>
     <section class="section">
       <% flash.each do |key, value| %>
-        <div class="notification" id="flash-<%= key %>">
+        <div class="notification is-light <%= notification_class(key) %>">
           <%= value %>
         </div>
       <% end %>
