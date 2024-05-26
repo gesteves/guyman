@@ -8,6 +8,9 @@ class Playlist < ApplicationRecord
 
   default_scope { order(created_at: :desc) }
 
+  # Returns an array of Spotify URIs for all the tracks in the playlist.
+  #
+  # @return [Array<String>] An array of Spotify URIs.
   def spotify_uris
     tracks.pluck(:spotify_uri).compact
   end
@@ -26,6 +29,9 @@ class Playlist < ApplicationRecord
           .uniq
   end
 
+  # Checks if the playlist was created today in the user's preferred timezone.
+  #
+  # @return [Boolean] true if the playlist was created today, false otherwise.
   def todays?
     created_at.in_time_zone(user.preference.timezone).today?
   end
