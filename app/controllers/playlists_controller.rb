@@ -2,6 +2,11 @@ class PlaylistsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_playlist, only: [:lock, :regenerate]
 
+  def index
+    @playlists = current_user.playlists
+    @page_title = "Playlists"
+  end
+
   def lock
     @playlist.update(locked: !@playlist.locked?)
     redirect_to root_path, notice: "Your playlist is now #{@playlist.locked? ? 'locked 🔒' : 'unlocked 🔓'}"

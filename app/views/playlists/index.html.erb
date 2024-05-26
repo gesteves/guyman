@@ -1,0 +1,34 @@
+<section class="hero is-small">
+  <div class="hero-body">
+    <h1 class="title">Playlists</h1>
+    <hr>
+  </div>
+</section>
+
+<section class="container">
+<% if @playlists.any? %>
+  <table class="table is-striped is-fullwidth is-hoverable">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Created</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @playlists.each do |playlist| %>
+        <tr>
+          <td><%= link_to playlist.name, "https://open.spotify.com/playlist/#{playlist.spotify_playlist_id}", target: "_blank" %></td>
+          <td><%= playlist.description %></td>
+          <td><%= playlist.created_at.in_time_zone(current_user.preference.timezone).today? ? "<strong>Today</strong>".html_safe : playlist.created_at.in_time_zone(current_user.preference.timezone).strftime("%A, %B %d, %Y") %></td>
+        </tr>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <div class="notification">
+    <strong>You don’t have any playlists yet.</strong> Why don’t you go add some workouts to your calendar?
+  </div>
+<% end %>
+</section>

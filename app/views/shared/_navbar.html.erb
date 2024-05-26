@@ -12,7 +12,7 @@
     </div>
   <div class="navbar-menu">
     <div class="navbar-start">
-      
+      <%= link_to "Playlists", playlists_path, class: "navbar-item" %>
     </div>
     <div class="navbar-end">
       <%= link_to_if current_user.admin?, "Sidekiq", "/sidekiq", target: '_blank', class: "navbar-item" %>
