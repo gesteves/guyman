@@ -6,23 +6,27 @@
   </div>
 </section>
 
+<section class="container is-max-desktop">
 <% if @todays_playlists.any? %>
-  <section class="container is-max-desktop">
-    <% @todays_playlists.each do |playlist| %>
-      <% if playlist.processing? %>
-        <%= render partial: 'playlists/processing' %>
-      <% else %>
-        <%= render partial: 'playlists/card', locals: { playlist: playlist } %>
-      <% end %>
+  <% @todays_playlists.each do |playlist| %>
+    <% if playlist.processing? %>
+      <%= render partial: 'playlists/processing' %>
+    <% else %>
+      <%= render partial: 'playlists/card', locals: { playlist: playlist } %>
     <% end %>
-    <% if current_user.admin? %>
-      <hr>
-      <%= button_to regenerate_all_playlists_path, method: :post, data: { turbo_confirm: 'Are you sure you want to regenerate all unlocked playlists?' }, disabled: regenerate_playlists_disabled?, class: "button" do %>
-        <span class="icon">
-          <i class="fa-solid fa-sparkles"></i>
-        </span>
-        <span>Regenerate All</span>
-      <% end %>    
-    <% end %>
-  </section>
+  <% end %>
+  <% if current_user.admin? %>
+    <hr>
+    <%= button_to regenerate_all_playlists_path, method: :post, data: { turbo_confirm: 'Are you sure you want to regenerate all unlocked playlists?' }, disabled: regenerate_playlists_disabled?, class: "button" do %>
+      <span class="icon">
+        <i class="fa-solid fa-sparkles"></i>
+      </span>
+      <span>Regenerate All</span>
+    <% end %>    
+  <% end %>
+<% else %>
+  <div class="notification">
+    <strong>You don’t have any workouts scheduled for today.</strong> Why don’t you go add some?
+  </div>
 <% end %>
+</section>
