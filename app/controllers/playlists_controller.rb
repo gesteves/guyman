@@ -28,7 +28,7 @@ class PlaylistsController < ApplicationController
     elsif @todays_playlists.all?(&:locked?)
       redirect_to root_path, alert: 'All playlists are locked and can’t be regenerated.'
     else
-      GenerateUserPlaylistsJob.perform_async(current_user.id)
+      GenerateUserPlaylistsJob.perform_inline(current_user.id)
       redirect_to root_path, notice: 'Your playlists are being regenerated ✨'
     end
   end
