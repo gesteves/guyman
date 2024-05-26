@@ -12,7 +12,11 @@
 <% if @todays_playlists.any? %>
   <section class="section">
     <% @todays_playlists.each do |playlist| %>
-      <%= render partial: 'playlists/card', locals: { playlist: playlist }%>
+      <% if playlist.processing? %>
+        <%= render partial: 'playlists/processing' %>
+      <% else %>
+        <%= render partial: 'playlists/card', locals: { playlist: playlist } %>
+      <% end %>
     <% end %>
     <% if current_user.admin? %>
       <%= button_to regenerate_all_playlists_path, method: :post, data: { turbo_confirm: 'Are you sure you want to regenerate all unlocked playlists?' }, disabled: regenerate_playlists_disabled?, class: "button" do %>
