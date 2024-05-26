@@ -4,7 +4,7 @@ class PlaylistsController < ApplicationController
 
   def lock
     @playlist.update(locked: !@playlist.locked?)
-    redirect_to root_path, notice: "Your playlist is now #{@playlist.locked? ? 'locked 🔒' : 'unlocked 🔓'}."
+    redirect_to root_path, notice: "Your playlist is now #{@playlist.locked? ? 'locked 🔒' : 'unlocked 🔓'}"
   end
 
   def regenerate

@@ -8,7 +8,7 @@
     </div>
     <hr>
     <div class="field is-grouped is-grouped-right">
-      <%= button_to lock_playlist_path(playlist), method: :post, data: { turbo_confirm: playlist.locked? ? "This will allow making changes to the playlist. Are you sure?" : "This will prevent the playlist from being regenerated or removed from your Spotify library. Are you sure?" }, disabled: playlist.processing?, class: "button" do %>
+      <%= button_to lock_playlist_path(playlist), method: :post, data: { turbo_confirm: lock_button_confirmation_message(playlist) }, class: "button" do %>
         <% if playlist.locked? %>
           <span class="icon">
             <i class="fa-solid fa-lock-open"></i>
@@ -21,7 +21,7 @@
           <span>Lock</span>
         <% end %>
       <% end %> 
-      <%= button_to regenerate_playlist_path(playlist), method: :post, data: { turbo_confirm: 'Are you sure you want to regenerate this playlist?' }, disabled: playlist.locked? || playlist.processing?, class: "button" do %>
+      <%= button_to regenerate_playlist_path(playlist), method: :post, data: { turbo_confirm: 'Are you sure you want to regenerate this playlist?' }, disabled: playlist.locked?, class: "button" do %>
         <span class="icon">
           <i class="fa-solid fa-sparkles"></i>
         </span>
