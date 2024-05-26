@@ -1,16 +1,13 @@
-<section class="hero">
+<section class="hero is-small">
   <div class="hero-body">
     <h1 class="title">Today’s Playlists</h1>
-    <% if @todays_playlists.any? %>
-      <p class="subtitle">Here are your playlists for today’s workouts.</p>
-    <% else %>
-      <p class="subtitle">You don’t have any workouts scheduled for today.</p>
-    <% end %>
+    <p class="subtitle">Here are your playlists for today’s workouts.</p>
+    <hr>
   </div>
 </section>
 
 <% if @todays_playlists.any? %>
-  <section class="section">
+  <section class="container is-max-desktop">
     <% @todays_playlists.each do |playlist| %>
       <% if playlist.processing? %>
         <%= render partial: 'playlists/processing' %>
@@ -19,6 +16,7 @@
       <% end %>
     <% end %>
     <% if current_user.admin? %>
+      <hr>
       <%= button_to regenerate_all_playlists_path, method: :post, data: { turbo_confirm: 'Are you sure you want to regenerate all unlocked playlists?' }, disabled: regenerate_playlists_disabled?, class: "button" do %>
         <span class="icon">
           <i class="fa-solid fa-sparkles"></i>

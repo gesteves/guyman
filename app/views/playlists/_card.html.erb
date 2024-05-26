@@ -1,16 +1,12 @@
 <div class="card">
   <div class="card-image">
-    <iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/<%= playlist.spotify_playlist_id %>" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+    <iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/<%= playlist.spotify_playlist_id %>" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
   </div>
   <div class="card-content">
     <div class="content">
-      <% if playlist.processing? %>
-        <p>Regenerating playlist, please stand by...</p>
-        <progress class="progress is-success" max="100"></progress>
-      <% else %>
-        <%= simple_format(playlist.description) %>
-      <% end %>
+      <%= simple_format(playlist.description) %>
     </div>
+    <hr>
     <div class="field is-grouped is-grouped-right">
       <%= button_to lock_playlist_path(playlist), method: :post, data: { turbo_confirm: playlist.locked? ? "This will allow making changes to the playlist. Are you sure?" : "This will prevent the playlist from being regenerated or removed from your Spotify library. Are you sure?" }, disabled: playlist.processing?, class: "button" do %>
         <% if playlist.locked? %>

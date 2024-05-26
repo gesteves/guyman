@@ -26,15 +26,13 @@
         </div>
       </div>
     </nav>
-    <div class="container">
-      <section class="section">
-        <% flash.each do |key, value| %>
-          <div class="notification" id="flash-<%= key %>">
-            <%= value %>
-          </div>
-        <% end %>
-        <%= yield %>
-      </section>
-    </div>
+    <section class="section">
+      <% flash.each do |key, value| %>
+        <div class="notification" id="flash-<%= key %>">
+          <%= value %>
+        </div>
+      <% end %>
+      <%= yield %>
+    </section>
   </body>
 </html>
