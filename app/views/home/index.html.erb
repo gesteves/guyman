@@ -1,7 +1,11 @@
 <section class="hero is-small">
   <div class="hero-body">
     <h1 class="title">Today’s Playlists</h1>
-    <p class="subtitle">Here are your playlists for today’s workouts.</p>
+    <% if @todays_playlists.any? %>
+      <p class="subtitle">Here are your playlists for today’s workouts.</p>
+    <% else %>
+      <p class="subtitle">You don’t have any workouts scheduled for today. Why don’t you go add one to your calendar?</p>
+    <% end %>
     <hr>
   </div>
 </section>
@@ -25,20 +29,13 @@
       <% end %>
     </div>
 <% else %>
-  <div class="card">
-    <div class="card-content">
-      <div class="content has-text-centered">
-        <strong>You don’t have any workouts scheduled for today.</strong> Why don’t you go add one to your calendar?
-      </div>
-      <div class="field is-grouped is-grouped-centered">
-        <%= button_to regenerate_all_playlists_path, method: :post, class: "button" do %>
-          <span class="icon">
-            <i class="fa-solid fa-arrows-rotate"></i>
-          </span>
-          <span>Check for new workouts</span>
-        <% end %>
-      </div>
-    </div>
+  <div class="field is-grouped is-grouped-centered">
+    <%= button_to regenerate_all_playlists_path, method: :post, class: "button" do %>
+      <span class="icon">
+        <i class="fa-solid fa-arrows-rotate"></i>
+      </span>
+      <span>Check for new workouts</span>
+    <% end %>
   </div>
 <% end %>
 </section>
