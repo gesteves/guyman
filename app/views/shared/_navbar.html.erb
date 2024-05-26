@@ -12,10 +12,18 @@
     </div>
   <div class="navbar-menu">
     <div class="navbar-start">
-      <%= link_to "Requests", music_requests_path, class: "navbar-item" %>
-      <%= link_to "Playlists", playlists_path, class: "navbar-item" %>
     </div>
     <div class="navbar-end">
+      <div class="navbar-item has-dropdown is-hoverable">
+        <a class="navbar-link">
+          Archive
+        </a>
+
+        <div class="navbar-dropdown">
+          <%= link_to "Requests", music_requests_path, class: "navbar-item" %>
+          <%= link_to "Playlists", playlists_path, class: "navbar-item" %>
+        </div>
+      </div>
       <%= link_to_if current_user.admin?, "Sidekiq", "/sidekiq", target: '_blank', class: "navbar-item" %>
       <%= link_to "Settings", settings_path, class: "navbar-item" %>
       <%= link_to 'Sign out', destroy_user_session_path, class: 'navbar-item', data: { turbo_method: "delete", turbo_confirm: "Are you sure you want to sign out?" } %>
