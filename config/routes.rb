@@ -31,6 +31,11 @@ Rails.application.routes.draw do
       post :regenerate_all, to: 'playlists#regenerate_all'
     end
   end
+  resources :music_requests, only: [:index, :create, :destroy] do
+    member do
+      patch :activate
+    end
+  end
 
   get "/settings", to: "preferences#edit", as: :settings
   # Defines the root path route ("/")

@@ -118,7 +118,7 @@ class GeneratePlaylistJob < ApplicationJob
       #{playlist.workout_name}
       #{playlist.workout_description}
   
-      #{user.preference.musical_tastes}
+      #{user.current_music_request.prompt}
   
       #{user.excluded_tracks_string}
     PROMPT

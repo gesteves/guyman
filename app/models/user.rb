@@ -4,6 +4,7 @@ class User < ApplicationRecord
   has_many :authentications, dependent: :destroy
   has_one :preference, dependent: :destroy
   has_many :playlists, dependent: :destroy
+  has_many :music_requests, dependent: :destroy
 
   def self.from_omniauth(auth)
     authentication = Authentication.where(provider: auth.provider, uid: auth.uid).first_or_initialize
@@ -95,5 +96,12 @@ class User < ApplicationRecord
     rescue
       false
     end
+  end
+
+  # Returns the active music request for the user
+  #
+  # @return [MusicRequest, nil] The active music request, or nil if not found.
+  def current_music_request
+    music_requests.find_by(active: true)
   end
 end
