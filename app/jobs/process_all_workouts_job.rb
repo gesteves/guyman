@@ -6,6 +6,7 @@ class ProcessAllWorkoutsJob < ApplicationJob
     return unless Rails.env.production?
     User.includes(:preference).where.not(preferences: { id: nil }).find_each do |user|
       next unless user.has_valid_spotify_token?
+      next unless user.current_music_request.present?
 
       user.todays_workouts.each do |workout|
         # Find any playlists already created for this workout today.

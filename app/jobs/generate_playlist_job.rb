@@ -4,6 +4,8 @@ class GeneratePlaylistJob < ApplicationJob
 
   def perform(user_id, playlist_id)
     user = User.find(user_id)
+    return unless user.current_music_request.present?
+    
     playlist = user.playlists.find(playlist_id)
 
     return if playlist.locked?
