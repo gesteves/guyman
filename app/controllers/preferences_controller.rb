@@ -9,7 +9,7 @@ class PreferencesController < ApplicationController
     @preference = current_user.preference || current_user.build_preference
     if @preference.update(preference_params)
       GenerateUserPlaylistsJob.perform_async(current_user.id) unless current_user.todays_playlists.any?
-      redirect_to root_path, notice: 'Preferences updated successfully.'
+      redirect_to root_path, notice: 'Your changes have been saved!'
     else
       render :edit
     end
