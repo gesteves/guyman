@@ -3,6 +3,7 @@ class PreferencesController < ApplicationController
 
   def edit
     @preference = current_user.preference || current_user.build_preference
+    @page_title = 'Your Settings'
   end
 
   def update
