@@ -78,7 +78,7 @@ class GeneratePlaylistJob < ApplicationJob
   # - We want a playlist that matches the workout's duration,
   #   but ChatGPT is notoriously bad at generating playlists of the right duration
   #   because it can't actually do math to add up the song lengths.
-  #   Instead, we ask it to generate an arbitrary number of songs and then populate the playlist until it's the right length.
+  #   Instead, we ask it to generate an arbitrary number of songs and then remove songs until it's the right length.
   # - Because we're using the `json_object` response format in the API call to ChatGPT,
   #   we MUST specify in the prompt that it must return a JSON object with the given structure we expect.
   # - Spotify's terms of use forbid passing Spotify data to ChatGPT, so it's important that we never do that in the prompt.
