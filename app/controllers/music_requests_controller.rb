@@ -23,16 +23,16 @@ class MusicRequestsController < ApplicationController
 
     if @music_request.save
       if current_user.can_regenerate_playlists?
-        GenerateUserPlaylistsJob.perform_async(current_user.id) 
+        GenerateUserPlaylistsJob.perform_inline(current_user.id) 
         current_user.todays_playlists.each(&:processing!)
       end
-      redirect_to root_path, notice: 'Your music request has been saved!'
+      redirect_to root_path, notice: 'Your playlists are being generated ✨'
     else
       if current_user.can_regenerate_playlists?
-        GenerateUserPlaylistsJob.perform_async(current_user.id) 
+        GenerateUserPlaylistsJob.perform_inline(current_user.id) 
         current_user.todays_playlists.each(&:processing!)
       end
-      redirect_to root_path
+      redirect_to root_path, notice: 'Your playlists are being generated ✨'
     end
   end
 
