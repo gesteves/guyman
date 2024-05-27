@@ -3,8 +3,10 @@ class PlaylistsController < ApplicationController
   before_action :set_playlist, only: [:toggle_lock, :regenerate, :follow, :unfollow]
 
   def index
-    @playlists = current_user.playlists
+    page = params[:page]&.to_i || 1
+    @playlists = current_user.playlists.page(page).per(30)
     @page_title = "Playlists"
+    redirect_to tracks_path if @playlists.empty? && page > 1
   end
 
   def toggle_lock

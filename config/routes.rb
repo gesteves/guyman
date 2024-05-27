@@ -28,6 +28,7 @@ Rails.application.routes.draw do
     end
 
     collection do
+      get 'page/:page', to: 'playlists#index'
       post :regenerate_all, to: 'playlists#regenerate_all'
       delete :destroy_all, to: 'playlists#destroy_all'
     end
@@ -36,8 +37,16 @@ Rails.application.routes.draw do
     member do
       patch :activate
     end
+
+    collection do
+      get 'page/:page', to: 'music_requests#index'
+    end
   end
-  resources :tracks, only: [:index, :destroy]
+  resources :tracks, only: [:index, :destroy] do
+    collection do
+      get 'page/:page', to: 'tracks#index'
+    end
+  end
 
   get "/settings", to: "preferences#edit", as: :settings
   # Defines the root path route ("/")

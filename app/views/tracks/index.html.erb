@@ -39,6 +39,7 @@
       <% end %>
     </tbody>
   </table>
+  <%= paginate @recent_tracks, outer_window: 1, window: 1 %>
 <% else %>
   <div class="notification">
     <strong>You don’t have any recent tracks yet.</strong> Why don’t you go add some workouts to your calendar?

@@ -43,6 +43,7 @@
       <% end %>
     </tbody>
   </table>
+  <%= paginate @music_requests, outer_window: 1, window: 1 %>
 <% else %>
   <div class="notification">
     <strong>You haven’t made any requests yet.</strong> Why don’t you go make one?

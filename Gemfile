@@ -53,6 +53,7 @@ gem 'icalendar'
 gem 'httparty'
 gem 'mini_magick'
 gem 'public_suffix'
+gem 'kaminari'
 
 # Background jobs
 gem 'sidekiq'
