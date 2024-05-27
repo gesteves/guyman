@@ -23,15 +23,15 @@ class GeneratePlaylistJob < ApplicationJob
     playlist_description = response['description']
     playlist_name = response['name']
 
+    # Mark the current music request as used
+    user.current_music_request.used!
+
     # Update the existing playlist
     playlist.update!(
       name: playlist_name,
       description: playlist_description,
       cover_dalle_prompt: dalle_prompt
     )
-
-    # Mark the current music request as used
-    user.current_music_request.used!
 
     # Remove existing tracks
     playlist.tracks.destroy_all
@@ -78,7 +78,7 @@ class GeneratePlaylistJob < ApplicationJob
   # - We want a playlist that matches the workout's duration,
   #   but ChatGPT is notoriously bad at generating playlists of the right duration
   #   because it can't actually do math to add up the song lengths.
-  #   Instead, we ask it to generate a minimum number of songs and then later use them to populate the playlist until it's the right length.
+  #   Instead, we ask it to generate an arbitrary number of songs and then populate the playlist until it's the right length.
   # - Because we're using the `json_object` response format in the API call to ChatGPT,
   #   we MUST specify in the prompt that it must return a JSON object with the given structure we expect.
   # - Spotify's terms of use forbid passing Spotify data to ChatGPT, so it's important that we never do that in the prompt.
