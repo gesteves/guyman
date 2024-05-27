@@ -20,7 +20,7 @@
     </div>
     <div class="field is-grouped is-grouped-right">
       <div class="control">
-        <%= form.button type: "submit", class: "button #{'is-loading' if @todays_playlists.any?(&:processing)}", disabled: @todays_playlists.all?(&:locked?) do %>
+        <%= form.button type: "submit", class: "button #{'is-loading' if @todays_playlists.any?(&:processing)}", disabled: @todays_playlists.any?(&:unlocked?) do %>
           <span class="icon">
             <i class="fa-solid fa-sparkles"></i>
           </span>
