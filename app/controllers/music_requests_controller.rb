@@ -33,7 +33,7 @@ class MusicRequestsController < ApplicationController
   end
 
   def destroy
-    if current_user.music_requests.count <= 1
+    if current_user.music_requests.count > 1
       @music_request.destroy
       if @music_request.active?
         most_recent_request = current_user.music_requests.order(created_at: :desc).first
@@ -47,7 +47,6 @@ class MusicRequestsController < ApplicationController
     else
       redirect_to music_requests_path, alert: 'You can’t delete your only music request!'
     end
-    
   end
 
   private
