@@ -15,7 +15,7 @@ class CleanUpPlaylistsJob < ApplicationJob
       # to avoid cluttering the user's Spotify account, but we don't want to delete them
       # from the database so we don't reuse their songs in future playlists.
       if preference.automatically_clean_up_old_playlists
-        user.playlists.where('created_at < ?', current_date.beginning_of_day).where(following: true, locked: false).find_each do |playlist|
+        user.playlists.where('created_at < ?', current_date.beginning_of_day).where(following: true, locked: false).each do |playlist|
           UnfollowSpotifyPlaylistJob.perform_async(user.id, playlist.spotify_playlist_id)
         end
       end
@@ -28,7 +28,7 @@ class CleanUpPlaylistsJob < ApplicationJob
       # In this case we DO want to delete the playlist from the database so we can reuse its songs in future playlists,
       # since the playlist was likely never used.
       # Note that destroying the playlist will also unfollow it in Spotify.
-      user.playlists.where(created_at: current_date.beginning_of_day..current_date.end_of_day, locked: false).find_each do |playlist|
+      user.playlists.where(created_at: current_date.beginning_of_day..current_date.end_of_day, locked: false).each do |playlist|
         playlist.destroy unless workout_names.include?(playlist.workout_name)
       end
     end
