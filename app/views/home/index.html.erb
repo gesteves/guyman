@@ -15,12 +15,18 @@
     <div class="field">
       <%= form.label :prompt, "What do you want to listen to today?", class: 'label' %>
       <div class="control">
-        <%= form.text_area :prompt, class: 'textarea', rows: 10 %>
+        <%= form.text_area :prompt, class: 'textarea', rows: 10, disabled: current_user.cannot_regenerate_playlists? %>
       </div>
     </div>
     <div class="field is-grouped is-grouped-right">
       <div class="control">
-        <%= form.submit "Generate playlists!", class: "button" %>
+        <%= form.button type: "submit", class: "button #{'is-loading' if current_user.cannot_regenerate_playlists?}" do %>
+          <span class="icon">
+            <i class="fa-solid fa-sparkles"></i>
+          </span>
+          <span>Generate playlists!</span>
+        <% end %>
+      </div>
       </div>
     </div>
   <% end %>
@@ -34,14 +40,5 @@
         <%= render partial: 'playlists/card', locals: { playlist: playlist } %>
       <% end %>
     <% end %>
-    <hr>
-    <div class="field is-grouped is-grouped-right">
-      <%= button_to regenerate_all_playlists_path, method: :post, data: { turbo_confirm: 'Are you sure you want to regenerate all unlocked playlists?' }, disabled: current_user.cannot_regenerate_playlists?, class: "button" do %>
-        <span class="icon">
-          <i class="fa-solid fa-sparkles"></i>
-        </span>
-        <span>Regenerate all</span>
-      <% end %>
-    </div>
   <% end %>
 </section>
