@@ -11,8 +11,7 @@ class MusicRequestsController < ApplicationController
   end
 
   def activate
-    current_user.music_requests.update_all(active: false)
-    @music_request.update(active: true)
+    @music_request.active!
     if current_user.can_regenerate_playlists?
       GenerateUserPlaylistsJob.perform_inline(current_user.id) 
       current_user.todays_playlists.each(&:processing!)
