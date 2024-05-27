@@ -8,25 +8,22 @@
     </div>
     <hr>
     <div class="field is-grouped is-grouped-right">
-      <%= button_to toggle_lock_playlist_path(playlist), method: :post, data: { turbo_confirm: lock_button_confirmation_message(playlist) }, class: "button" do %>
-        <% if playlist.locked? %>
-          <span class="icon">
-            <i class="fa-solid fa-lock-open"></i>
-          </span>
-          <span>Unlock</span>
-        <% else %>
-          <span class="icon">
-            <i class="fa-solid fa-lock"></i>
-          </span>
-          <span>Lock</span>
-        <% end %>
-      <% end %> 
-      <%= button_to regenerate_playlist_path(playlist), method: :post, data: { turbo_confirm: 'Are you sure you want to regenerate this playlist?' }, disabled: playlist.locked?, class: "button" do %>
+      <%= button_to regenerate_playlist_path(playlist), method: :post, data: { turbo_confirm: 'Are you sure you want to regenerate this playlist?' }, disabled: playlist.locked?, class: "button is-small" do %>
         <span class="icon">
           <i class="fa-solid fa-sparkles"></i>
         </span>
-        <span>Regenerate</span>
       <% end %>
+      <%= button_to toggle_lock_playlist_path(playlist), method: :post, data: { turbo_confirm: lock_button_confirmation_message(playlist) }, class: "button is-small #{'is-danger is-light' if playlist.locked?}" do %>
+        <% if playlist.locked? %>
+          <span class="icon">
+            <i class="fa-solid fa-lock"></i>
+          </span>
+        <% else %>
+          <span class="icon">
+            <i class="fa-solid fa-lock-open"></i>
+          </span>
+        <% end %>
+      <% end %> 
     </div>
   </div>
 </div>
