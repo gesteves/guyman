@@ -25,8 +25,10 @@ class MusicRequestsController < ApplicationController
       GenerateUserPlaylistsJob.perform_inline(current_user.id) 
       current_user.todays_playlists.each(&:processing!)
       redirect_to root_path, notice: 'Your playlists are being generated ✨'
-    else
-      redirect_to root_path
+    elsif !current_user.can_regenerate_playlists?
+      redirect_to root_path, alert: 'Your playlists can’t be generated at this time.'
+    elsif @music_request.prompt.blank?
+      redirect_to root_path, alert: 'Your playlists can’t be generated if you leave your request blank!'
     end
   end
 
