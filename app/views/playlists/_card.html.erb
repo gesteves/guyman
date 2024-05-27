@@ -8,7 +8,7 @@
     </div>
     <hr>
     <div class="field is-grouped is-grouped-right">
-      <%= button_to lock_playlist_path(playlist), method: :post, data: { turbo_confirm: lock_button_confirmation_message(playlist) }, class: "button" do %>
+      <%= button_to toggle_lock_playlist_path(playlist), method: :post, data: { turbo_confirm: lock_button_confirmation_message(playlist) }, class: "button" do %>
         <% if playlist.locked? %>
           <span class="icon">
             <i class="fa-solid fa-lock-open"></i>

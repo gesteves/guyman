@@ -7,7 +7,7 @@ class PlaylistsController < ApplicationController
     @page_title = "Playlists"
   end
 
-  def lock
+  def toggle_lock
     @playlist.update(locked: !@playlist.locked?)
     redirect_to root_path, notice: "Your playlist is now #{@playlist.locked? ? 'locked 🔒' : 'unlocked 🔓'}"
   end

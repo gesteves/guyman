@@ -21,7 +21,7 @@ Rails.application.routes.draw do
   resource :preference, only: [:update]
   resources :playlists, only: [:index] do
     member do
-      post :lock
+      post :toggle_lock
       post :regenerate
       post :follow
       post :unfollow
