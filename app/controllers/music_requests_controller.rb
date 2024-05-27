@@ -33,7 +33,7 @@ class MusicRequestsController < ApplicationController
     if @music_request&.prompt.present? && current_user.can_regenerate_playlists?
       GenerateUserPlaylistsJob.perform_inline(current_user.id)
       current_user.todays_playlists.each(&:processing!)
-      redirect_to root_path, notice: "Your playlists are being generated ✨"
+      redirect_to root_path, notice: current_user.todays_playlists.present? ? "Your playlists are being generated ✨" : "You don’t have any workouts on your calendar!"
     elsif !current_user.can_regenerate_playlists?
       redirect_to root_path, alert: 'Your playlists can’t be generated at this time.'
     elsif @music_request&.prompt.blank?
