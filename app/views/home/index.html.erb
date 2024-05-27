@@ -30,6 +30,9 @@
         <div class="control">
           <%= form.text_area :prompt, class: 'textarea', rows: 10, disabled: @todays_playlists.any?(&:processing) %>
         </div>
+        <p class="help">
+          Be as detailed as you want. You can specify moods, genres, albums or artists you want to listen to (or not!)
+        </p>
       </div>
       <div class="field is-grouped is-grouped-right">
         <div class="control">
