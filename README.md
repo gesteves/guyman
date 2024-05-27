@@ -29,14 +29,18 @@ It's a Rails app that uses ChatGPT to generate Spotify playlists tailored to the
 
 Schedule some workouts in [TrainerRoad](https://www.trainerroad.com) or [TrainingPeaks](https://www.trainingpeaks.com)...
 
-![Capture-2024-05-26-124159](https://github.com/gesteves/robot-rock/assets/6379/08798463-1ed5-4086-86eb-7f2f01823f89)
+![Capture-2024-05-27-083935](https://github.com/gesteves/robot-rock/assets/6379/eab31d28-7891-42c5-9bf0-fad256dd984d)
 
 ...then tell the app what you want to listen to...
 
-![Capture-2024-05-26-162311](https://github.com/gesteves/robot-rock/assets/6379/31dc0f5f-2dbe-4a6a-91b1-112c64521f24)
+![Workout Playlist Generator](https://github.com/gesteves/robot-rock/assets/6379/a0be93bc-1dca-48cc-9b7a-3f16e9230be8)
 
-...wait a few seconds and...
+...wait a few seconds...
 
-![Capture-2024-05-26-162440](https://github.com/gesteves/robot-rock/assets/6379/882daeb5-6c06-4f0b-ac5d-166d4733ed95)
+![Workout Playlist Generator 2](https://github.com/gesteves/robot-rock/assets/6379/3daa5c4c-ab41-4170-a834-d34d1dc8eee7)
 
-Boom. Enjoy your workout!
+
+... and boom, you'll have a playlist perfectly tailored to the length of your workout according to your musica tastes. Enjoy your workout!
+
+![Workout Playlist Generator 3](https://github.com/gesteves/robot-rock/assets/6379/c78005ea-89ff-45b3-8396-b660377c1608)
+
