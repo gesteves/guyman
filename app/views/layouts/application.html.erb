@@ -7,7 +7,9 @@
     <%= csp_meta_tag %>
 
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
-    <script src="https://kit.fontawesome.com/1d1fdbc6be.js" crossorigin="anonymous"></script>
+    <% if ENV['FONT_AWESOME_KEY'].present?%>
+      <script src="https://kit.fontawesome.com/<%= ENV['FONT_AWESOME_KEY'] %>.js" crossorigin="anonymous"></script>
+    <% end %>
     <%= javascript_importmap_tags %>
   </head>
 
