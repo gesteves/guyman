@@ -15,12 +15,12 @@
     <div class="field">
       <%= form.label :prompt, "What do you want to listen to today?", class: 'label' %>
       <div class="control">
-        <%= form.text_area :prompt, class: 'textarea', rows: 10, disabled: current_user.cannot_regenerate_playlists? %>
+        <%= form.text_area :prompt, class: 'textarea', rows: 10, disabled: @todays_playlists.any?(&:processing) %>
       </div>
     </div>
     <div class="field is-grouped is-grouped-right">
       <div class="control">
-        <%= form.button type: "submit", class: "button #{'is-loading' if current_user.cannot_regenerate_playlists?}" do %>
+        <%= form.button type: "submit", class: "button #{'is-loading' if @todays_playlists.any?(&:processing)}", disabled: @todays_playlists.all?(&:locked?) do %>
           <span class="icon">
             <i class="fa-solid fa-sparkles"></i>
           </span>
@@ -43,7 +43,7 @@
     <% if Rails.env.development? %>
       <hr>
       <div class="field is-grouped is-grouped-right">
-        <%= button_to destroy_all_playlists_path, method: :delete, data: { turbo_confirm: 'Are you sure you want to delete all playlists?' }, disabled: current_user.cannot_regenerate_playlists?, class: "button is-danger" do %>
+        <%= button_to destroy_all_playlists_path, method: :delete, data: { turbo_confirm: 'Are you sure you want to delete all playlists?' }, disabled: @todays_playlists.any?(&:processing), class: "button is-danger" do %>
           <span class="icon">
             <i class="fa-solid fa-circle-xmark"></i>
           </span>
