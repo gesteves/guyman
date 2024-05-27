@@ -37,6 +37,7 @@ Rails.application.routes.draw do
       patch :activate
     end
   end
+  resources :tracks, only: [:index, :destroy]
 
   get "/settings", to: "preferences#edit", as: :settings
   # Defines the root path route ("/")

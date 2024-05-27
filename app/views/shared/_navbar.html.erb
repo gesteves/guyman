@@ -20,8 +20,9 @@
         </a>
 
         <div class="navbar-dropdown">
-          <%= link_to "Requests", music_requests_path, class: "navbar-item" %>
           <%= link_to "Playlists", playlists_path, class: "navbar-item" %>
+          <%= link_to "Requests", music_requests_path, class: "navbar-item" %>
+          <%= link_to "Tracks", tracks_path, class: "navbar-item" %>
         </div>
       </div>
       <%= link_to_if current_user.admin?, "Sidekiq", "/sidekiq", target: '_blank', class: "navbar-item" %>

@@ -1,0 +1,46 @@
+<section class="hero is-small">
+  <div class="hero-body">
+    <h1 class="title">Recent Tracks</h1>
+    <hr>
+  </div>
+</section>
+
+<section class="container">
+<% if @recent_tracks.any? %>
+  <table class="table is-striped is-fullwidth">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Artist</th>
+        <th>Added</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @recent_tracks.each do |track| %>
+        <tr>
+          <td><%= link_to track.title, "https://open.spotify.com/track/#{track.spotify_uri.split(':').last}", target: "_blank" %></td>
+          <td><%= track.artist %></td>
+          <td><%= time_ago_in_words(track.created_at).gsub(/\s+/, "&nbsp;").html_safe %>&nbsp;ago</td>
+          <td>
+            <div class="field is-grouped is-grouped-right">
+              <%= button_to track_path(request), method: :delete, data: { turbo_confirm: 'Are you sure you want to delete this track? This can’t be undone.' }, class: "button is-danger" do %>
+                  <span class="icon">
+                    <i class="fa-solid fa-circle-xmark"></i>
+                  </span>
+                  <span>Delete</span>
+              <% end %>
+            </div>
+          </td>
+        </tr>
+        </tr>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <div class="notification">
+    <strong>You don’t have any recent tracks yet.</strong> Why don’t you go add some workouts to your calendar?
+  </div>
+<% end %>
+</section>
