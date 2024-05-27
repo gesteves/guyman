@@ -47,15 +47,20 @@ class UserTest < ActiveSupport::TestCase
 
   test "recent_tracks returns unique recent tracks" do
     playlist = @user.playlists.create!(workout_name: 'Test Workout')
-    playlist.tracks.create!(spotify_uri: 'uri1', artist: 'Artist1', title: 'Title1', created_at: 1.day.ago)
-    playlist.tracks.create!(spotify_uri: 'uri2', artist: 'Artist2', title: 'Title2', created_at: 2.days.ago)
-    assert_equal [['uri1', 'Artist1', 'Title1'], ['uri2', 'Artist2', 'Title2']], @user.recent_tracks
+    first = playlist.tracks.create!(spotify_uri: 'uri1', artist: 'Artist1', title: 'Title1', created_at: 1.day.ago)
+    second = playlist.tracks.create!(spotify_uri: 'uri2', artist: 'Artist2', title: 'Title2', created_at: 2.days.ago)
+    old = playlist.tracks.create!(spotify_uri: 'uri3', artist: 'Artist3', title: 'Title3', created_at: 4.weeks.ago)
+    assert_equal 2, @user.recent_tracks.size 
+    assert @user.recent_tracks.include?(first)
+    assert @user.recent_tracks.include?(second)
+    assert_not @user.recent_tracks.include?(old)
   end
 
   test "excluded_tracks_string returns formatted string of recent tracks" do
     playlist = @user.playlists.create!(workout_name: 'Test Workout')
     playlist.tracks.create!(spotify_uri: 'uri1', artist: 'Artist1', title: 'Title1', created_at: 1.day.ago)
     playlist.tracks.create!(spotify_uri: 'uri2', artist: 'Artist2', title: 'Title2', created_at: 2.days.ago)
+    playlist.tracks.create!(spotify_uri: 'uri3', artist: 'Artist3', title: 'Title3', created_at: 4.weeks.ago)
     expected_string = "The following songs have already been used in previous playlists, don't include them:\n- Artist1 - Title1\n- Artist2 - Title2"
     assert_equal expected_string, @user.excluded_tracks_string
   end
