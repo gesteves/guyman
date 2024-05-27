@@ -15,7 +15,7 @@
     </div>
   <% end %>
 
-  <%= form_with model: @preference, url: preference_path, method: :patch, local: true do |form| %>
+  <%= form_with model: @preference, url: preference_path, method: :patch do |form| %>
 
     <div class="field">
       <%= form.label :calendar_url, "Calendar URL", class: "label" %>
