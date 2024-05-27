@@ -9,6 +9,6 @@ class UpdateSpotifyPlaylistTracksJob < ApplicationJob
     # Update the Spotify playlist with our playlist's tracks.
     spotify_client.update_playlist_tracks(playlist.spotify_playlist_id, playlist.spotify_uris)
 
-    playlist.update!(processing: false)
+    playlist.done_processing!
   end
 end

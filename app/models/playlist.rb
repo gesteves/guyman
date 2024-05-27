@@ -36,6 +36,14 @@ class Playlist < ApplicationRecord
     created_at.in_time_zone(user.preference.timezone).today?
   end
 
+  def processing!
+    update!(processing: true) unless locked?
+  end
+
+  def done_processing!
+    update!(processing: false)
+  end
+
   private
 
   def unfollow_spotify_playlist

@@ -10,7 +10,7 @@ class GeneratePlaylistJob < ApplicationJob
 
     return if playlist.locked?
 
-    playlist.update!(processing: true)
+    playlist.processing!
 
     # Ask ChatGPT to produce a playlist using the workout details and user's music preferences.
     prompt = chatgpt_user_prompt(user, playlist)
@@ -45,7 +45,7 @@ class GeneratePlaylistJob < ApplicationJob
     # with the name and description ChatGPT generated.
     SetUpSpotifyPlaylistJob.perform_async(user.id, playlist.id)
   rescue StandardError => e
-    playlist.update!(processing: false)
+    playlist.done_processing!
     raise e
   end
 
