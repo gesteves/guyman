@@ -36,7 +36,7 @@
     <% end %>
     <hr>
     <div class="field is-grouped is-grouped-right">
-      <%= button_to regenerate_all_playlists_path, method: :post, data: { turbo_confirm: 'Are you sure you want to regenerate all unlocked playlists?' }, disabled: current_user.regenerate_playlists_disabled?, class: "button" do %>
+      <%= button_to regenerate_all_playlists_path, method: :post, data: { turbo_confirm: 'Are you sure you want to regenerate all unlocked playlists?' }, disabled: current_user.cannot_regenerate_playlists?, class: "button" do %>
         <span class="icon">
           <i class="fa-solid fa-sparkles"></i>
         </span>

@@ -12,12 +12,14 @@ class MusicRequest < ApplicationRecord
 
   private
 
+  # Validates that there are no duplicate active prompts for the same user.
   def no_duplicate_active_prompt
     return unless user.music_requests.active.where(prompt: prompt).exists?
 
     errors.add(:prompt, 'already exists.')
   end
 
+  # Ensures that only one music request is active at a time for the user.
   def ensure_only_one_active
     if active
       user.music_requests.update_all(active: false)

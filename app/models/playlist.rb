@@ -36,14 +36,23 @@ class Playlist < ApplicationRecord
     created_at.in_time_zone(user.preference.timezone).today?
   end
 
+  # Sets the playlist's processing flag to true if it is not locked.
+  #
+  # @return [void]
   def processing!
     update!(processing: true) unless locked?
   end
 
+  # Sets the playlist's processing flag to false.
+  #
+  # @return [void]
   def done_processing!
     update!(processing: false)
   end
 
+  # Checks if the playlist is unlocked.
+  #
+  # @return [Boolean] true if the playlist is unlocked, false otherwise.
   def unlocked?
     !locked?
   end
