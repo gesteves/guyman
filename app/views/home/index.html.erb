@@ -23,29 +23,29 @@
 </section>
 
 <section class="container is-max-desktop">
+  <%= form_with model: @music_request, url: music_requests_path, method: :post, local: true, data: { turbo: false } do |form| %>
+    <div class="field">
+      <%= form.label :prompt, "What do you want to listen to today?", class: 'label' %>
+      <div class="control">
+        <%= form.text_area :prompt, class: 'textarea', rows: 10, disabled: @todays_playlists.any?(&:processing) %>
+      </div>
+      <p class="help">
+        Be as detailed as you want. You can specify moods, genres, albums or artists you want to listen to (or not!)
+      </p>
+    </div>
+    <div class="field">
+      <div class="control">
+        <%= form.button type: "submit", class: generate_playlists_button_class do %>
+          <span class="icon">
+            <i class="fa-solid fa-sparkles"></i>
+          </span>
+          <span>Generate playlists!</span>
+        <% end %>
+      </div>
+      </div>
+    </div>
+  <% end %>
   <% if @todays_playlists.any? %>
-    <%= form_with model: @music_request, url: music_requests_path, method: :post, local: true, data: { turbo: false } do |form| %>
-      <div class="field">
-        <%= form.label :prompt, "What do you want to listen to today?", class: 'label' %>
-        <div class="control">
-          <%= form.text_area :prompt, class: 'textarea', rows: 10, disabled: @todays_playlists.any?(&:processing) %>
-        </div>
-        <p class="help">
-          Be as detailed as you want. You can specify moods, genres, albums or artists you want to listen to (or not!)
-        </p>
-      </div>
-      <div class="field">
-        <div class="control">
-          <%= form.button type: "submit", class: generate_playlists_button_class do %>
-            <span class="icon">
-              <i class="fa-solid fa-sparkles"></i>
-            </span>
-            <span>Generate playlists!</span>
-          <% end %>
-        </div>
-        </div>
-      </div>
-    <% end %>
     <hr>
     <% @todays_playlists.each do |playlist| %>
       <% if playlist.processing? %>
@@ -54,9 +54,5 @@
         <%= render partial: 'playlists/card', locals: { playlist: playlist } %>
       <% end %>
     <% end %>
-  <% else %>
-    <div class="notification">
-      <strong>You don’t have any workouts scheduled for today.</strong> Why don’t you go add some to your calendar?
-    </div>
   <% end %>
 </section>
