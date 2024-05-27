@@ -21,8 +21,4 @@ module HomeHelper
     css_class << "is-loading" if @todays_playlists.present? && @todays_playlists.any?(&:processing)
     css_class.join(" ")
   end
-
-  def generate_playlists_button_disabled?
-    @todays_playlists.present? && @todays_playlists.all?(&:locked?)
-  end
 end
