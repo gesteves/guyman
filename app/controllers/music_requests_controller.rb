@@ -33,16 +33,21 @@ class MusicRequestsController < ApplicationController
   end
 
   def destroy
-    @music_request.destroy
-    if @music_request.active?
-      most_recent_request = current_user.music_requests.order(created_at: :desc).first
-      most_recent_request.update(active: true) if most_recent_request.present?
-      if current_user.can_regenerate_playlists?
-        GenerateUserPlaylistsJob.perform_inline(current_user.id) 
-        current_user.todays_playlists.each(&:processing!)
+    if current_user.music_requests.count <= 1
+      @music_request.destroy
+      if @music_request.active?
+        most_recent_request = current_user.music_requests.order(created_at: :desc).first
+        most_recent_request.update(active: true) if most_recent_request.present?
+        if current_user.can_regenerate_playlists?
+          GenerateUserPlaylistsJob.perform_inline(current_user.id) 
+          current_user.todays_playlists.each(&:processing!)
+        end
       end
+      redirect_to music_requests_path, notice: 'Your music request has been deleted!'
+    else
+      redirect_to music_requests_path, alert: 'You can’t delete your only music request!'
     end
-    redirect_to music_requests_path, notice: 'Your music request has been deleted!'
+    
   end
 
   private
