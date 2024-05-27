@@ -21,16 +21,23 @@ class MusicRequestsController < ApplicationController
   end
 
   def create
-    @music_request = current_user.music_requests.build(music_request_params)
-    @music_request.active = true
-    @music_request.save
-    if @music_request.prompt.present? && current_user.can_regenerate_playlists?
-      GenerateUserPlaylistsJob.perform_inline(current_user.id) 
+    @music_request = current_user.music_requests.find_by(prompt: music_request_params[:prompt])
+  
+    if @music_request
+      @music_request.active!
+    else
+      @music_request = current_user.music_requests.build(music_request_params)
+      @music_request.active = true
+      @music_request.save
+    end
+  
+    if @music_request&.prompt.present? && current_user.can_regenerate_playlists?
+      GenerateUserPlaylistsJob.perform_inline(current_user.id)
       current_user.todays_playlists.each(&:processing!)
-      redirect_to root_path, notice: 'Your playlists are being generated ✨'
+      redirect_to root_path, notice: "Your playlists are being generated ✨"
     elsif !current_user.can_regenerate_playlists?
       redirect_to root_path, alert: 'Your playlists can’t be generated at this time.'
-    elsif @music_request.prompt.blank?
+    elsif @music_request&.prompt.blank?
       redirect_to root_path, alert: 'Your playlists can’t be generated if you leave your request blank!'
     end
   end

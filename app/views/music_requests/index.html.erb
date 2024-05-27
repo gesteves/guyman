@@ -13,6 +13,7 @@
       <tr>
         <th>In&nbsp;use?</th>
         <th>Request</th>
+        <th>Last&nbsp;Used</th>
         <th class="has-text-right">Actions</th>
       </tr>
     </thead>
@@ -21,6 +22,7 @@
         <tr>
           <td><% if request.active? %><i class="fa-solid fa-check"></i><% end %></td>
           <td><%= simple_format(request.prompt) %></td>
+          <td><%= request.last_used_at.blank? ? "Never" : time_ago_in_words(request.last_used_at).gsub(/\s+/, "&nbsp;").html_safe + "&nbsp;ago".html_safe %></td>
           <td>
             <div class="field is-grouped is-grouped-right">
               <%= button_to activate_music_request_path(request), method: :patch, data: { turbo_confirm: 'Are you sure you want to make this your current request? This will regenerate any unlocked playlists you have for today using this request.' }, class: "button", disabled: request.active? || music_request_buttons_disabled do %>

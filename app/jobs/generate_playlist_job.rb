@@ -30,6 +30,9 @@ class GeneratePlaylistJob < ApplicationJob
       cover_dalle_prompt: dalle_prompt
     )
 
+    # Mark the current music request as used
+    user.current_music_request.used!
+
     # Remove existing tracks
     playlist.tracks.destroy_all
 
