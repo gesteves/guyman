@@ -2,6 +2,22 @@
   <div class="hero-body">
     <h1 class="title">Today’s Playlists</h1>
     <p class="subtitle">Here are your playlists for today’s workouts.</p>
+    <% if Rails.env.development? %>
+      <div class="field is-grouped">
+        <%= button_to regenerate_all_playlists_path, method: :post, data: { turbo_confirm: 'Are you sure you want to regenerate all playlists?' }, class: "button #{'is-loading' if @todays_playlists.any?(&:processing)}" do %>
+          <span class="icon">
+            <i class="fa-solid fa-sparkles"></i>
+          </span>
+          <span>Regenerate all</span>
+        <% end %>
+        <%= button_to destroy_all_playlists_path, method: :delete, data: { turbo_confirm: 'Are you sure you want to delete all playlists?' }, disabled: @todays_playlists.any?(&:processing) || @todays_playlists.blank?, class: "button is-danger" do %>
+          <span class="icon">
+            <i class="fa-solid fa-circle-xmark"></i>
+          </span>
+          <span>Delete all</span>
+        <% end %>
+      </div>
+    <% end %>
     <hr>
   </div>
 </section>
@@ -34,17 +50,6 @@
       <% else %>
         <%= render partial: 'playlists/card', locals: { playlist: playlist } %>
       <% end %>
-    <% end %>
-    <% if Rails.env.development? %>
-      <hr>
-      <div class="field is-grouped is-grouped-right">
-        <%= button_to destroy_all_playlists_path, method: :delete, data: { turbo_confirm: 'Are you sure you want to delete all playlists?' }, disabled: @todays_playlists.any?(&:processing), class: "button is-danger" do %>
-          <span class="icon">
-            <i class="fa-solid fa-circle-xmark"></i>
-          </span>
-          <span>Delete all</span>
-        <% end %>
-      </div>
     <% end %>
   <% else %>
     <div class="notification">
