@@ -57,6 +57,14 @@ class Playlist < ApplicationRecord
     !locked?
   end
 
+  # Returns the minimum number of songs required for the playlist based on the workout duration.
+  # Guesstimates 3 minutes per song, but ensures it returns a minimum of 10 songs and a maximum of 200 songs.
+  #
+  # @return [Integer] The minimum number of songs.
+  def minimum_song_count
+    (workout_duration / 3.0).ceil.clamp(10, 200)
+  end
+
   private
 
   def unfollow_spotify_playlist

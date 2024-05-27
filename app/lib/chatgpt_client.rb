@@ -33,7 +33,8 @@ class ChatgptClient
             content: user_prompt
           }
         ]
-      }.to_json
+      }.to_json,
+      timeout: 120
     }
     response = HTTParty.post("#{OPENAI_API_URL}/chat/completions", options)
     if response.success?

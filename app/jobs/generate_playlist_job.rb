@@ -14,7 +14,7 @@ class GeneratePlaylistJob < ApplicationJob
 
     # Ask ChatGPT to produce a playlist using the workout details and user's music preferences.
     prompt = chatgpt_user_prompt(user, playlist)
-    response = ChatgptClient.new.ask_for_json(chatgpt_system_prompt, prompt, user_id)
+    response = ChatgptClient.new.ask_for_json(chatgpt_system_prompt(playlist.minimum_song_count), prompt, user_id)
 
     validate_response(response)
 
@@ -79,13 +79,13 @@ class GeneratePlaylistJob < ApplicationJob
   # - Because we're using the `json_object` response format in the API call to ChatGPT,
   #   we MUST specify in the prompt that it must return a JSON object with the given structure we expect.
   # - Spotify's terms of use forbid passing Spotify data to ChatGPT, so it's important that we never do that in the prompt.
-  def chatgpt_system_prompt
+  def chatgpt_system_prompt(count = 100)
     <<~PROMPT
       You are a helpful assistant tasked with creating a cohesive Spotify playlist to power your user's workout of the day. Your task is the following:
 
       - You will receive the name of the user's workout, followed by a description of the workout.
       - You must generate a playlist tailored to the workout's structure and intensity.
-      - The playlist must contain at least 250 songs. 
+      - The playlist must contain at least #{count} songs. 
       - The user may specify genres and bands they like; use this information to guide your choices.
       - The user may specify genres, bands, or specific tracks they want to avoid; do not include them in the playlist.
       - You may receive a list of songs used in playlists for previous workouts; do not include them in the playlist.
