@@ -24,16 +24,6 @@ class PlaylistsController < ApplicationController
     end
   end
 
-  def regenerate_all
-    if current_user.can_regenerate_playlists?
-      GenerateUserPlaylistsJob.perform_inline(current_user.id)
-      current_user.todays_playlists.each(&:processing!)
-      redirect_to root_path, notice: 'Your playlists are being generated ✨'
-    else
-      redirect_to root_path, alert: 'Your playlists can’t be generated at this time.'
-    end
-  end
-
   def follow
     if !@playlist.following?
       FollowSpotifyPlaylistJob.perform_inline(current_user.id, @playlist.spotify_playlist_id)

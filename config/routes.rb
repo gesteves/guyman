@@ -29,7 +29,6 @@ Rails.application.routes.draw do
 
     collection do
       get 'page/:page', to: 'playlists#index'
-      post :regenerate_all, to: 'playlists#regenerate_all'
       delete :destroy_all, to: 'playlists#destroy_all'
     end
   end
