@@ -28,6 +28,10 @@ class MusicRequestsController < ApplicationController
       end
       redirect_to root_path, notice: 'Your music request has been saved!'
     else
+      if current_user.can_regenerate_playlists?
+        GenerateUserPlaylistsJob.perform_async(current_user.id) 
+        current_user.todays_playlists.each(&:processing!)
+      end
       redirect_to root_path
     end
   end

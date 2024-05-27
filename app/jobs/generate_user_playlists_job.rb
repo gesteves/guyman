@@ -14,11 +14,11 @@ class GenerateUserPlaylistsJob < ApplicationJob
       # Skip if:
       # - A playlist already exists for this workout today and it's being processed.
       # - A playlist already exists for this workout today and it's locked.
-      next if playlist.processing? || playlist.locked?
+      next if playlist&.processing? || playlist&.locked?
       
       # Otherwise, create the playlist if it doesn't exist.
       if playlist.blank?
-        user.playlists.create!(
+        playlist = user.playlists.create!(
           workout_name: workout[:name],
           workout_description: workout[:description],
           workout_duration: workout[:duration],

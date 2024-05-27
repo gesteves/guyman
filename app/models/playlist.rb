@@ -44,6 +44,10 @@ class Playlist < ApplicationRecord
     update!(processing: false)
   end
 
+  def unlocked?
+    !locked?
+  end
+
   private
 
   def unfollow_spotify_playlist

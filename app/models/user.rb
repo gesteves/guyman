@@ -105,12 +105,12 @@ class User < ApplicationRecord
     music_requests.find_by(active: true)
   end
 
-  def regenerate_playlists_disabled?
-    return false if todays_playlists.blank?
-    todays_playlists.any?(&:processing?) || todays_playlists.all?(&:locked?)
+  def can_regenerate_playlists?
+    return true if todays_playlists.blank?
+    todays_playlists.none?(&:processing?) && todays_playlists.any?(&:unlocked?)
   end
 
-  def can_regenerate_playlists?
-    !regenerate_playlists_disabled?
+  def regenerate_playlists_disabled?
+    !can_regenerate_playlists?
   end
 end

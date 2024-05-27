@@ -11,7 +11,7 @@
 </section>
 
 <section class="container is-max-desktop">
-  <%= form_with model: @music_request, url: music_requests_path, method: :post, local: true do |form| %>
+  <%= form_with model: @music_request, url: music_requests_path, method: :post, local: true, data: { turbo: false } do |form| %>
     <div class="field">
       <%= form.label :prompt, "What do you want to listen to today?", class: 'label' %>
       <div class="control">
