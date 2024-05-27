@@ -39,7 +39,8 @@ Schedule some workouts in [TrainerRoad](https://www.trainerroad.com) or [Trainin
 
 ![Workout Playlist Generator 2](https://github.com/gesteves/robot-rock/assets/6379/3daa5c4c-ab41-4170-a834-d34d1dc8eee7)
 
-... and boom, you'll have a playlist perfectly tailored to the length of your workout and your musical tastes. Enjoy your workout!
+... and boom, you'll have a playlist perfectly tailored to the length of your workout and your musical tastes.
 
 ![Workout Playlist Generator 3](https://github.com/gesteves/robot-rock/assets/6379/c78005ea-89ff-45b3-8396-b660377c1608)
 
+Enjoy your workout!
