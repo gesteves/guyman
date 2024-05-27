@@ -1,5 +1,3 @@
-# Robot Rock
-
 *♪  
 Rock, robot rock   
 Rock, robot rock  
