@@ -13,8 +13,8 @@ class PlaylistsController < ApplicationController
   end
 
   def regenerate
-    if @playlist.locked?
-      redirect_to root_path, alert: 'Your playlist can’t be regenerated while it’s locked.'
+    if @playlist.processing? || @playlist.locked?
+      redirect_to root_path, alert: 'Your playlist can’t be regenerated at this time.'
     else
       GeneratePlaylistJob.perform_async(current_user.id, @playlist.id)
       @playlist.processing!
@@ -23,14 +23,12 @@ class PlaylistsController < ApplicationController
   end
 
   def regenerate_all
-    if current_user.todays_playlists.any?(&:processing?)
-      redirect_to root_path, alert: "Your playlists are already being regenerated."
-    elsif current_user.todays_playlists.all?(&:locked?)
-      redirect_to root_path, alert: 'All playlists are locked and can’t be regenerated.'
-    else
+    if current_user.can_regenerate_playlists?
       GenerateUserPlaylistsJob.perform_inline(current_user.id)
       current_user.todays_playlists.each(&:processing!)
       redirect_to root_path, notice: 'Your playlists are being regenerated ✨'
+    else
+      redirect_to root_path, alert: 'Your playlists can’t be regenerated at this time.'
     end
   end
 
