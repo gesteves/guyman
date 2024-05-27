@@ -33,7 +33,7 @@ class Playlist < ApplicationRecord
   #
   # @return [Boolean] true if the playlist was created today, false otherwise.
   def todays?
-    created_at.in_time_zone(user.preference.timezone).today?
+    Time.current.in_time_zone(user.preference.timezone).to_date == created_at.in_time_zone(user.preference.timezone).to_date
   end
 
   # Sets the playlist's processing flag to true if it is not locked.
