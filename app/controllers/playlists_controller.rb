@@ -1,6 +1,6 @@
 class PlaylistsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_playlist, only: [:lock, :regenerate, :follow, :unfollow]
+  before_action :set_playlist, only: [:toggle_lock, :regenerate, :follow, :unfollow]
 
   def index
     @playlists = current_user.playlists
