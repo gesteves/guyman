@@ -5,7 +5,7 @@ class MusicRequestsController < ApplicationController
   def index
     page = params[:page]&.to_i || 1
     @todays_playlists = current_user.todays_playlists
-    @music_requests = current_user.music_requests.page(page).per(10)
+    @music_requests = current_user.music_requests.page(page).per(100)
     
     redirect_to tracks_path if @music_requests.empty? && page > 1
   end
