@@ -17,7 +17,7 @@ module HomeHelper
   end
 
   def generate_playlists_button_class
-    css_class = ["button"]
+    css_class = ["button is-fullwidth"]
     css_class << "is-loading" if @todays_playlists.present? && @todays_playlists.any?(&:processing)
     css_class.join(" ")
   end
