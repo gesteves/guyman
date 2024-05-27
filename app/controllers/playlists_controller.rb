@@ -52,6 +52,13 @@ class PlaylistsController < ApplicationController
     end
   end
 
+  def destroy_all
+    if Rails.env.development?
+      Playlist.destroy_all
+      redirect_to root_path, notice: 'All playlists have been deleted.'
+    end
+  end
+
   private
 
   def set_playlist

@@ -40,5 +40,16 @@
         <%= render partial: 'playlists/card', locals: { playlist: playlist } %>
       <% end %>
     <% end %>
+    <% if Rails.env.development? %>
+      <hr>
+      <div class="field is-grouped is-grouped-right">
+        <%= button_to destroy_all_playlists_path, method: :delete, data: { turbo_confirm: 'Are you sure you want to delete all playlists?' }, disabled: current_user.cannot_regenerate_playlists?, class: "button is-danger" do %>
+          <span class="icon">
+            <i class="fa-solid fa-circle-xmark"></i>
+          </span>
+          <span>Delete all</span>
+        <% end %>
+      </div>
+    <% end %>
   <% end %>
 </section>

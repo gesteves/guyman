@@ -29,6 +29,7 @@ Rails.application.routes.draw do
 
     collection do
       post :regenerate_all, to: 'playlists#regenerate_all'
+      delete :destroy_all, to: 'playlists#destroy_all'
     end
   end
   resources :music_requests, only: [:index, :create, :destroy] do
