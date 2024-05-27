@@ -4,9 +4,8 @@ class ProcessAllWorkoutsJob < ApplicationJob
   # This job generates the playlists for today's workouts for every user, if one hasn't been created yet.
   def perform
     return unless Rails.env.production?
-    User.includes(:preference).where.not(preferences: { id: nil }).find_each do |user|
+    User.joins(:preference, :music_requests).where.not(preferences: { id: nil }).where(music_requests: { active: true }).distinct.find_each do |user|
       next unless user.has_valid_spotify_token?
-      next unless user.current_music_request.present?
 
       user.todays_workouts.each do |workout|
         # Find any playlists already created for this workout today.
