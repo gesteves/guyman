@@ -11,7 +11,7 @@ class MusicRequestsController < ApplicationController
     current_user.music_requests.update_all(active: false)
     @music_request.update(active: true)
     if current_user.can_regenerate_playlists?
-      GenerateUserPlaylistsJob.perform_async(current_user.id) 
+      GenerateUserPlaylistsJob.perform_inline(current_user.id) 
       current_user.todays_playlists.each(&:processing!)
     end
     redirect_to music_requests_path, notice: 'Your music request has been restored!'
@@ -42,7 +42,7 @@ class MusicRequestsController < ApplicationController
       most_recent_request = current_user.music_requests.order(created_at: :desc).first
       most_recent_request.update(active: true) if most_recent_request.present?
       if current_user.can_regenerate_playlists?
-        GenerateUserPlaylistsJob.perform_async(current_user.id) 
+        GenerateUserPlaylistsJob.perform_inline(current_user.id) 
         current_user.todays_playlists.each(&:processing!)
       end
     end
