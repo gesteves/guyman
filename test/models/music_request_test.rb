@@ -59,4 +59,19 @@ class MusicRequestTest < ActiveSupport::TestCase
     end
     assert existing_request.reload.active?
   end
+
+  test "should set next most recent as active when destroying the current active request" do
+    @music_request.update(active: true)
+    recent_request = @user.music_requests.create(prompt: "Chill vibes", last_used_at: Time.current)
+    @music_request.destroy
+    assert recent_request.reload.active?
+  end
+
+  test "should not set next most recent as active if destroying an inactive request" do
+    recent_request = @user.music_requests.create(prompt: "Some vibes", last_used_at: Time.current, active: false)
+    inactive_request = @user.music_requests.create(prompt: "Old vibes", last_used_at: 1.week.ago, active: false)
+    inactive_request.destroy
+    assert @music_request.reload.active?
+    assert_not recent_request.reload.active?
+  end
 end
