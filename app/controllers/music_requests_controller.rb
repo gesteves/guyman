@@ -20,19 +20,13 @@ class MusicRequestsController < ApplicationController
   def create
     @music_request = current_user.music_requests.build(music_request_params)
     @music_request.active = true
-
-    if @music_request.save
-      if current_user.can_regenerate_playlists?
-        GenerateUserPlaylistsJob.perform_inline(current_user.id) 
-        current_user.todays_playlists.each(&:processing!)
-      end
+    @music_request.save
+    if @music_request.prompt.present? && current_user.can_regenerate_playlists?
+      GenerateUserPlaylistsJob.perform_inline(current_user.id) 
+      current_user.todays_playlists.each(&:processing!)
       redirect_to root_path, notice: 'Your playlists are being generated ✨'
     else
-      if current_user.can_regenerate_playlists?
-        GenerateUserPlaylistsJob.perform_inline(current_user.id) 
-        current_user.todays_playlists.each(&:processing!)
-      end
-      redirect_to root_path, notice: 'Your playlists are being generated ✨'
+      redirect_to root_path
     end
   end
 
