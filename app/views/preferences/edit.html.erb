@@ -41,18 +41,18 @@
     <div class="field">
       <div class="control">
         <%= form.label :public_playlists, class: "checkbox" do %>
-          <%= form.check_box :public_playlists, class: "checkbox"  %> Make new playlists public
+          <%= form.check_box :public_playlists, class: "checkbox"  %> Make Spotify playlists public
         <% end %>
       </div>
       <p class="help">
-        This won’t affect existing playlists.
+        Changing this won’t affect existing playlists.
       </p>
     </div>
 
     <div class="field">
       <div class="control">
         <%= form.label :automatically_clean_up_old_playlists, class: "checkbox" do %>
-          <%= form.check_box :automatically_clean_up_old_playlists, class: "checkbox"  %> Automatically remove older playlists from my Spotify library
+          <%= form.check_box :automatically_clean_up_old_playlists, class: "checkbox"  %> Automatically remove older playlists from your Spotify library
         <% end %>
       </div>
       <p class="help">
