@@ -21,12 +21,9 @@ class MusicRequestsController < ApplicationController
 
   def create
     @music_request = current_user.music_requests.find_by(prompt: music_request_params[:prompt])
-    logger.info "[MUSIC REQUEST] #{@music_request.inspect}"
     if @music_request.present?
-      logger.info "[MUSIC REQUEST] Found existing music request; activating music request #{@music_request.id}"
       @music_request.active!
     else
-      logger.info "[MUSIC REQUEST] Creating new music request"
       @music_request = current_user.music_requests.build(music_request_params)
       @music_request.active = true
       @music_request.save
