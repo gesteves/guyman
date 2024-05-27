@@ -107,11 +107,14 @@ class User < ApplicationRecord
 
   # Determines whether the user can regenerate playlists.
   #
-  # Returns true if the user doesn't have any playlists today, so we can check for new ones.
-  # Otherwise, returns true if none of the playlists are processing and at least one is unlocked.
+  # Returns true if:
+  # - The user has a music request, and
+  # - The user has no playlists today, or
+  # - None of the playlists are processing, and at least one of them is unlocked
   #
   # @return [Boolean] true if the user can regenerate playlists, false otherwise.
   def can_regenerate_playlists?
+    return false if current_music_request.blank?
     return true if todays_playlists.blank?
     todays_playlists.none?(&:processing?) && todays_playlists.any?(&:unlocked?)
   end
