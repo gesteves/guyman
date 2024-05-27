@@ -22,7 +22,7 @@ class MusicRequestsController < ApplicationController
   def create
     @music_request = current_user.music_requests.find_by(prompt: music_request_params[:prompt])
   
-    if @music_request
+    if @music_request.present?
       @music_request.active!
     else
       @music_request = current_user.music_requests.build(music_request_params)
