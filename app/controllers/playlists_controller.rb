@@ -23,9 +23,9 @@ class PlaylistsController < ApplicationController
   end
 
   def regenerate_all
-    if @todays_playlists.any?(&:processing?)
+    if current_user.todays_playlists.any?(&:processing?)
       redirect_to root_path, alert: "Your playlists are already being regenerated."
-    elsif @todays_playlists.all?(&:locked?)
+    elsif current_user.todays_playlists.all?(&:locked?)
       redirect_to root_path, alert: 'All playlists are locked and can’t be regenerated.'
     else
       GenerateUserPlaylistsJob.perform_inline(current_user.id)
