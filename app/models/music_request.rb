@@ -6,6 +6,7 @@ class MusicRequest < ApplicationRecord
   default_scope { order(active: :desc, last_used_at: :desc) }
 
   before_save :ensure_only_one_active, if: :active?
+  before_save :normalize_prompt
   before_destroy :set_next_most_recent_as_active, if: :active?
 
   scope :active, -> { where(active: true) }
@@ -23,6 +24,10 @@ class MusicRequest < ApplicationRecord
   end
 
   private
+
+  def normalize_prompt
+    self.prompt = prompt.gsub("\r\n", "\n")
+  end
 
   # Ensures that only one music request is active at a time for the user.
   def ensure_only_one_active
