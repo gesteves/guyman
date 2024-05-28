@@ -25,43 +25,59 @@ class ProcessPlaylistTracksJob < ApplicationJob
     recent_track_uris = playlist.recent_track_uris_from_other_playlists
 
     playlist.tracks.each do |track|
-      # Search for the track in Spotify using its title and artist
-      spotify_track = spotify_client.search_tracks(track.title, track.artist)
-      
-      # Skip tracks not found on Spotify
-      next if spotify_track.blank?
+      # Search for the track in Spotify using its title and artist, if we don't have its data
+      if track.spotify_uri.blank? || track.duration_ms.blank?
+        spotify_track = spotify_client.search_tracks(track.title, track.artist)
+        
+        # Skip tracks not found on Spotify
+        next if spotify_track.blank?
+
+        spotify_uri = spotify_track['uri']
+        duration_ms = spotify_track['duration_ms']
+      else
+        spotify_uri = track.spotify_uri
+        duration_ms = track.duration_ms
+      end
 
       # Skip tracks that are already in other playlists
-      next if recent_track_uris.include?(spotify_track['uri'])
+      next if recent_track_uris.include?(spotify_uri)
 
       # Skip tracks that are already in this playlist
-      next if track_uris.include?(spotify_track['uri'])
+      next if track_uris.include?(spotify_uri)
 
-      # Store the Spotify track URI in the track record for future reference.
+      # Store the Spotify track URI and duration in the track record for future reference.
       # It's important that we DON'T store the track names and artists returned by Spotify,
       # because we'll use them in future prompts,
       # and Spotify's terms of use forbid passing Spotify data to ChatGPT.
-      # We only need to store the Spotify track URIs for track deduplication, as seen above,
-      # and to add the tracks to the Spotify playlist.
-      # We shouldn't store any other data from the Spotify API.
-      track.update!(spotify_uri: spotify_track['uri'])
+      track.update!(spotify_uri: spotify_uri, duration_ms: duration_ms) if track.spotify_uri.blank? || track.duration_ms.blank?
 
-      # Add the Spotify track URI to the list of URIs we've added to the Spotify playlist.
-      track_uris << spotify_track['uri']
+      # Add the Spotify track URI to the list of URIs we've added to this Spotify playlist.
+      track_uris << spotify_uri
       
       # Increment the total duration of the tracks in the playlist
-      total_duration += spotify_track['duration_ms']
+      total_duration += duration_ms
 
       # If the total duration of the tracks is greater than or equal to the workout duration,
       # stop adding more tracks
       break if total_duration >= workout_duration_ms
     end
 
-    # Remove the remaining tracks from our playlist.
-    playlist.tracks.where(spotify_uri: nil).destroy_all
+    if total_duration >= workout_duration_ms
+      # If the playlist is longer than the workout, then it's ready to be used.
 
-    # Now that our playlist is ready, enqueue a job to update the tracks
-    # on the Spotify playlist.
-    UpdateSpotifyPlaylistTracksJob.perform_async(user.id, playlist.id)
+      # First, remove the remaining tracks from our playlist.
+      playlist.tracks.where(spotify_uri: nil).destroy_all
+
+      # Then, enqueue a job to update the tracks
+      # on the Spotify playlist.
+      UpdateSpotifyPlaylistTracksJob.perform_async(user.id, playlist.id)
+
+      # Finally, enqueue a job to generate a cover image for the playlist using Dall-E.
+      GenerateCoverImageJob.perform_async(user.id, playlist.id)
+    else
+      # If the playlist is shorter than the workout, we need to generate more tracks
+      # and append them to the playlist.
+      GeneratePlaylistJob.perform_async(user.id, playlist.id, true)
+    end
   end
 end

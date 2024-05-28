@@ -19,8 +19,5 @@ class SetUpSpotifyPlaylistJob < ApplicationJob
 
     # Process the tracks before adding them to the Spotify playlist.
     ProcessPlaylistTracksJob.perform_async(user.id, playlist.id)
-
-    # Enqueue a job to generate a cover image for the playlist using Dall-E.
-    GenerateCoverImageJob.perform_async(user.id, playlist.id)
   end
 end

@@ -2,7 +2,7 @@ class GeneratePlaylistJob < ApplicationJob
   queue_as :high
   sidekiq_options retry_for: 5.minutes
 
-  def perform(user_id, playlist_id)
+  def perform(user_id, playlist_id, append = false)
     user = User.find(user_id)
     return unless user.current_music_request.present?
     
@@ -33,15 +33,19 @@ class GeneratePlaylistJob < ApplicationJob
       cover_dalle_prompt: dalle_prompt
     )
 
-    # Remove existing tracks
-    playlist.tracks.destroy_all
+    # Remove existing tracks, unless we're appending them to the playlist.
+    playlist.tracks.destroy_all unless append
+
+    # Get the position of the last track in the playlist.
+    last_position = playlist.tracks.last&.position || 0
 
     # Add the tracks ChatGPT generated to the playlist.
     # It's important that we store the track names and artists returned by ChatGPT,
     # not the ones from Spotify, because we'll use them in future prompts,
     # and Spotify's terms of use forbid passing Spotify data to ChatGPT.
     playlist_tracks.each_with_index do |track, index|
-      playlist.tracks.create!(title: track['track'], artist: track['artist'], position: index + 1)
+      position = last_position + index + 1
+      playlist.tracks.create!(title: track['track'], artist: track['artist'], position: position)
     end
 
     # Enqueue a job to create or update the playlist in Spotify
@@ -88,7 +92,7 @@ class GeneratePlaylistJob < ApplicationJob
 
       - You will receive the name of the user's workout, followed by a description of the workout.
       - You must generate a playlist tailored to the workout's structure and intensity.
-      - The playlist must contain at least 100 songs. 
+      - The playlist must contain at least 20 songs. 
       - The user may specify genres and bands they like; use this information to guide your choices.
       - The user may specify genres, bands, or specific tracks they want to avoid; do not include them in the playlist.
       - You may receive a list of songs used in playlists for previous workouts; do not include them in the playlist.
