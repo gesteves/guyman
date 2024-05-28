@@ -31,23 +31,20 @@ class ProcessPlaylistTracksJob < ApplicationJob
         spotify_track = spotify_client.search_tracks(track.title, track.artist)
         # Skip tracks not found on Spotify
         next if spotify_track.blank?
-        spotify_uri = spotify_track['uri']
-        duration_ms = spotify_track['duration_ms']
-      else
-        spotify_uri = track.spotify_uri
-        duration_ms = track.duration_ms
+        # Store the Spotify track URI and duration in the track record.
+        # It's important that we DON'T store the track names and artists returned by Spotify,
+        # because we'll use them in future prompts, and Spotify's terms of use forbid passing Spotify data to ChatGPT.
+        track.update!(spotify_uri: spotify_track['uri'], duration_ms: spotify_track['duration_ms'])
       end
+
+      spotify_uri = track.spotify_uri
+      duration_ms = track.duration_ms
 
       # Skip tracks that are already in other playlists
       next if recent_track_uris.include?(spotify_uri)
 
       # Skip tracks that are already in this playlist
       next if track_uris.include?(spotify_uri)
-
-      # Store the Spotify track URI and duration in the track record for performance.
-      # It's important that we DON'T store the track names and artists returned by Spotify,
-      # because we'll use them in future prompts, and Spotify's terms of use forbid passing Spotify data to ChatGPT.
-      track.update!(spotify_uri: spotify_uri, duration_ms: duration_ms) if track.spotify_uri.blank? || track.duration_ms.blank?
 
       # Add the Spotify track URI to the list of URIs we've added to this Spotify playlist.
       track_uris << spotify_uri
@@ -60,11 +57,11 @@ class ProcessPlaylistTracksJob < ApplicationJob
       break if total_duration >= workout_duration_ms
     end
 
+    # Get rid of the tracks we won't use.
+    playlist.tracks.where.not(spotify_uri: track_uris).destroy_all
+
     if total_duration >= workout_duration_ms
-      # If the playlist is longer than the workout, then it's ready to be used, so:
-      # First, remove the remaining tracks from our playlist.
-      playlist.tracks.where.not(spotify_uri: track_uris).destroy_all
-      # Then, enqueue a job to update the tracks on the Spotify playlist.
+      # If the playlist is longer than the workout, enqueue a job to update the tracks on the Spotify playlist.
       UpdateSpotifyPlaylistTracksJob.perform_async(user.id, playlist.id)
     else
       # If the playlist is shorter than the workout, we need to add more tracks to the playlist.
