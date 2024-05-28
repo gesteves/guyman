@@ -59,6 +59,8 @@ class ProcessPlaylistTracksJob < ApplicationJob
 
     # Get rid of the tracks we won't use.
     playlist.tracks.where.not(spotify_uri: track_uris).destroy_all
+    # Ensure track positions are still sequential.
+    playlist.update_track_positions!
 
     if total_duration >= workout_duration_ms
       # If the playlist is longer than the workout, enqueue a job to update the tracks on the Spotify playlist.

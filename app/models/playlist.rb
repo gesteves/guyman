@@ -57,6 +57,15 @@ class Playlist < ApplicationRecord
     !locked?
   end
 
+  # Ensures the track positions are sequential.
+  #
+  # @return [void]
+  def update_track_positions!
+    tracks.order(:position).each_with_index do |track, index|
+      track.update!(position: index + 1)
+    end
+  end
+
   private
 
   def unfollow_spotify_playlist
