@@ -92,7 +92,7 @@ class GeneratePlaylistJob < ApplicationJob
 
       - You will receive the name of the user's workout, followed by a description of the workout.
       - You must generate a playlist tailored to the workout's structure and intensity.
-      - The playlist must contain at least 20 songs. 
+      - The playlist must contain at least 100 songs. 
       - The user may specify genres and bands they like; use this information to guide your choices.
       - The user may specify genres, bands, or specific tracks they want to avoid; do not include them in the playlist.
       - You may receive a list of songs used in playlists for previous workouts; do not include them in the playlist.
