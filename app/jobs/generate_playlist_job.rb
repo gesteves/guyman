@@ -46,8 +46,8 @@ class GeneratePlaylistJob < ApplicationJob
     end
     
     if append_tracks
-      # Enqueue a job to update the tracks on the Spotify playlist.
-      UpdateSpotifyPlaylistTracksJob.perform_async(user.id, playlist.id)
+      # Enqueue a job to process the tracks on the playlist.
+      ProcessPlaylistTracksJob.perform_async(user.id, playlist.id)
     else
       # Enqueue a job to create or update the playlist in Spotify
       # with the name and description ChatGPT generated.
