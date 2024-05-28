@@ -60,9 +60,9 @@ class AddTracksToPlaylistJob < ApplicationJob
   # - Spotify's terms of use forbid passing Spotify data to ChatGPT, so it's important that we never do that in the prompt.
   def chatgpt_system_prompt
     <<~PROMPT
-      You are a helpful assistant tasked with adding songs to the user's Spotify playlist. Your task is the following:
+      You are a helpful music assistant tasked with suggesting songs to add to the user's Spotify playlist. Your task is the following:
 
-      - You will receive a list of songs in the user's playlist, you must suggest new songs to add to it.
+      - You will receive a list of songs in the user's playlist, and you must suggest new songs to add to it.
       - You must suggest at least 50 songs. 
       - The user may specify genres and bands they like; use this information to guide your choices.
       - The user may specify genres, bands, or specific tracks they want to avoid; do not include them in your suggestions.
