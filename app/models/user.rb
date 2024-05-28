@@ -113,7 +113,7 @@ class User < ApplicationRecord
   def can_regenerate_playlists?
     return false if current_music_request&.prompt.blank?
     return true if todays_playlists.blank?
-    todays_playlists.none?(&:processing?) && todays_playlists.any?(&:unlocked?)
+    todays_playlists.none?(&:processing?)
   end
 
   def cannot_regenerate_playlists?
