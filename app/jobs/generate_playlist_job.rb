@@ -86,14 +86,14 @@ class GeneratePlaylistJob < ApplicationJob
       - The user may specify genres, bands, or specific tracks they want to avoid; do not include them in the playlist.
       - You may receive a list of songs used in playlists for previous workouts; do not include them in the playlist.
       - You must come up with a name for the playlist following this exact format: "[name_of_the_workout]: [very_short_description_of_the_playlist]"
-      - You must write a description that summarizes the playlist in 300 characters or less and includes details about the workout.
+      - You must write a description that summarizes the workout in 300 characters or less.
       - Generate a detailed prompt to create, using Dall-E, a playlist cover image that visually represents the workout and the playlist in a creative way, but avoid anything that may cause content policy violations in Dall-E or get flagged by OpenAI's safety systems.
       
       You must return your response in JSON format using this exact structure:
       
       {
         "name": "The name of the playlist",
-        "description": "The summary of the workout.",
+        "description": "The 300-character summary of the workout.",
         "cover_prompt": "A prompt to generate a playlist cover image.",
         "tracks": [
           {"artist": "Artist Name 1", "track": "Track Name 1"},
