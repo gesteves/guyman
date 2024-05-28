@@ -58,7 +58,7 @@ class ProcessPlaylistTracksJob < ApplicationJob
     end
 
     # Get rid of the tracks we won't use.
-    playlist.tracks.where.not(spotify_uri: track_uris).destroy_all
+    playlist.tracks.where.not(spotify_uri: track_uris).or(playlist.tracks.where(spotify_uri: nil)).destroy_all
     # Ensure track positions are still sequential.
     playlist.update_track_positions!
 
