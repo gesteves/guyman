@@ -2,7 +2,7 @@ class GeneratePlaylistJob < ApplicationJob
   queue_as :high
   sidekiq_options retry_for: 5.minutes
 
-  def perform(user_id, playlist_id, append = false)
+  def perform(user_id, playlist_id, append_tracks = false)
     user = User.find(user_id)
     return unless user.current_music_request.present?
     
@@ -26,15 +26,12 @@ class GeneratePlaylistJob < ApplicationJob
     # Mark the current music request as used
     user.current_music_request.used!
 
-    # Update the existing playlist
-    playlist.update!(
-      name: playlist_name,
-      description: playlist_description,
-      cover_dalle_prompt: dalle_prompt
-    )
-
-    # Remove existing tracks, unless we're appending them to the playlist.
-    playlist.tracks.destroy_all unless append
+    unless append_tracks
+      # Update the existing playlist
+      playlist.update!(name: playlist_name, description: playlist_description, cover_dalle_prompt: dalle_prompt)
+      # Remove existing tracks
+      playlist.tracks.destroy_all
+    end
 
     # Get the position of the last track in the playlist.
     last_position = playlist.tracks.last&.position || 0
@@ -47,10 +44,15 @@ class GeneratePlaylistJob < ApplicationJob
       position = last_position + index + 1
       playlist.tracks.create!(title: track['track'], artist: track['artist'], position: position)
     end
-
-    # Enqueue a job to create or update the playlist in Spotify
-    # with the name and description ChatGPT generated.
-    SetUpSpotifyPlaylistJob.perform_async(user.id, playlist.id)
+    
+    if append_tracks
+      # Enqueue a job to update the tracks on the Spotify playlist.
+      UpdateSpotifyPlaylistTracksJob.perform_async(user.id, playlist.id)
+    else
+      # Enqueue a job to create or update the playlist in Spotify
+      # with the name and description ChatGPT generated.
+      SetUpSpotifyPlaylistJob.perform_async(user.id, playlist.id)
+    end
   rescue StandardError => e
     playlist.done_processing!
     raise e
