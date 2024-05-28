@@ -19,7 +19,6 @@ class ProcessPlaylistTracksJob < ApplicationJob
     spotify_client = SpotifyClient.new(user.authentications.find_by(provider: 'spotify').refresh_token)
 
     track_uris = []
-    total_duration = 0
     workout_duration_ms = playlist.workout_duration * 60 * 1000 # Convert workout duration from minutes to milliseconds
 
     # Collect all track URIs from the user's other playlists
@@ -48,13 +47,10 @@ class ProcessPlaylistTracksJob < ApplicationJob
 
       # Add the Spotify track URI to the list of URIs we've added to this Spotify playlist.
       track_uris << spotify_uri
-      
-      # Increment the total duration of the tracks in the playlist
-      total_duration += duration_ms
 
       # If the total duration of the tracks is greater than or equal to the workout duration,
       # stop adding more tracks
-      break if total_duration >= workout_duration_ms
+      break if playlist.total_duration >= workout_duration_ms
     end
 
     # Get rid of the tracks we won't use.
