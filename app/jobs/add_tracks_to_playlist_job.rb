@@ -55,6 +55,9 @@ class AddTracksToPlaylistJob < ApplicationJob
   end
 
   # A few things worth noting about this system prompt:
+  # - Ideally, we'd ask ChatGPT to give us a playlist of the specific duration we need,
+  #   but ChatGPT is notoriously bad at this because it can't actually do math to add up the song lengths.
+  #   Instead, we ask it to generate an arbitrarily large number of songs and then trim the playlist to the right length.
   # - Because we're using the `json_object` response format in the API call to ChatGPT,
   #   we MUST specify in the prompt that it must return a JSON object with the given structure we expect.
   # - Spotify's terms of use forbid passing Spotify data to ChatGPT, so it's important that we never do that in the prompt.
@@ -79,7 +82,7 @@ class AddTracksToPlaylistJob < ApplicationJob
     PROMPT
   end
 
-  # In the user prompt, we pass the workout name and description, along with the musical preferences the user specified. 
+  # In the user prompt, we pass the songs currently in the playlist, along with the musical preferences the user specified. 
   # ChatGPT is not super original at creating playlists, and tends to return the same songs over and over.
   # To try to work around this, we store in the database the songs that have already been used in other playlists,
   # then tell it to avoid using those songs in the current playlist.
