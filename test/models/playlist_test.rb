@@ -41,4 +41,24 @@ class PlaylistTest < ActiveSupport::TestCase
 
     assert_equal ["spotify:track:1", "spotify:track:2", "spotify:track:3"], playlist_with_tracks.recent_track_uris_from_other_playlists
   end
+
+  test "total_duration should return the correct total duration in milliseconds" do
+    @playlist.tracks.create!(title: "Track 1", artist: "Artist 1", duration_ms: 1000)
+    @playlist.tracks.create!(title: "Track 2", artist: "Artist 2", duration_ms: 2000)
+
+    assert_equal 3000, @playlist.total_duration
+  end
+
+  test "total_duration should return zero if there are no tracks" do
+    @playlist.tracks.destroy_all
+
+    assert_equal 0, @playlist.total_duration
+  end
+
+  test "total_duration should correctly handle a mix of valid and invalid durations" do
+    @playlist.tracks.create!(title: "Track 1", artist: "Artist 1", duration_ms: 1000)
+    @playlist.tracks.create!(title: "Track 2", artist: "Artist 2")
+
+    assert_equal 1000, @playlist.total_duration
+  end
 end
