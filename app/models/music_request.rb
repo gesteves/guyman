@@ -26,6 +26,7 @@ class MusicRequest < ApplicationRecord
   private
 
   def normalize_prompt
+    # Replace Windows-style line breaks with Unix-style line breaks.
     self.prompt = prompt.gsub("\r\n", "\n").strip
   end
 
