@@ -66,6 +66,13 @@ class Playlist < ApplicationRecord
     end
   end
 
+  # Adds up the duration of the tracks in the playlist.
+  #
+  # @return [Integer] The total duration of the playlist in milliseconds.
+  def total_duration
+    tracks.sum(:duration_ms)
+  end
+
   private
 
   def unfollow_spotify_playlist

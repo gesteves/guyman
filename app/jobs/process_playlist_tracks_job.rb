@@ -62,7 +62,7 @@ class ProcessPlaylistTracksJob < ApplicationJob
     # Ensure track positions are still sequential.
     playlist.update_track_positions!
 
-    if total_duration >= workout_duration_ms
+    if playlist.total_duration >= workout_duration_ms
       # If the playlist is longer than the workout, enqueue a job to update the tracks on the Spotify playlist.
       UpdateSpotifyPlaylistTracksJob.perform_async(user.id, playlist.id)
     else
