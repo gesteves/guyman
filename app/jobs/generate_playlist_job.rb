@@ -67,8 +67,6 @@ class GeneratePlaylistJob < ApplicationJob
   end
 
   # A few things worth noting about this system prompt:
-  # - Ideally we'd want to generate a playlist that matches the workout's intensity;
-  #   but ChatGPT is pretty bad at that, so despite specifying it in the prompt, it rarely works.
   # - Ideally, we'd ask ChatGPT to return a playlist of the exact duration of the workout,
   #   but ChatGPT is notorously bad at it because it can't actually do math to add up the song lengths.
   #   Instead, we ask it to generate an arbitrarily large number of songs and then trim the playlist to the right length.
