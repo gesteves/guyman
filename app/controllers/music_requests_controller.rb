@@ -20,16 +20,11 @@ class MusicRequestsController < ApplicationController
   end
 
   def create
-    @music_request = current_user.music_requests.find_by(prompt: music_request_params[:prompt])
-    if @music_request.present?
-      @music_request.active!
-    else
-      @music_request = current_user.music_requests.build(music_request_params)
-      @music_request.active = true
-      @music_request.save
-    end
-  
-    if @music_request&.prompt.present? && current_user.can_regenerate_playlists?
+    return redirect_to root_path, alert: 'Your playlists can’t be generated if you leave your request blank!' if music_request_params[:prompt].strip.blank?
+    
+    @music_request = MusicRequest.find_or_create_and_activate(current_user, music_request_params[:prompt])
+    
+    if current_user.can_regenerate_playlists?
       GenerateUserPlaylistsJob.perform_inline(current_user.id)
       current_user.todays_playlists.each(&:processing!)
       if current_user.todays_playlists.present?
@@ -37,10 +32,8 @@ class MusicRequestsController < ApplicationController
       else
         redirect_to root_path, alert: "You don’t have any workouts on your calendar! Add some first, and then try again."
       end
-    elsif !current_user.can_regenerate_playlists?
+    else
       redirect_to root_path, alert: 'Your playlists can’t be generated at this time.'
-    elsif @music_request&.prompt.blank?
-      redirect_to root_path, alert: 'Your playlists can’t be generated if you leave your request blank!'
     end
   end
 

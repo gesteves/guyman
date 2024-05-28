@@ -11,6 +11,18 @@ class MusicRequest < ApplicationRecord
 
   scope :active, -> { where(active: true) }
 
+  def self.find_or_create_and_activate(user, prompt)
+    music_request = user.music_requests.find_by(prompt: normalize_prompt_text(prompt))
+    if music_request.present?
+      music_request.active!
+    else
+      music_request = user.music_requests.build(prompt: prompt)
+      music_request.active = true
+      music_request.save
+    end
+    music_request
+  end
+
   def used!
     update!(last_used_at: Time.current)
   end
@@ -26,8 +38,11 @@ class MusicRequest < ApplicationRecord
   private
 
   def normalize_prompt
-    # Replace Windows-style line breaks with Unix-style line breaks.
-    self.prompt = prompt.gsub("\r\n", "\n").strip
+    self.prompt = self.class.normalize_prompt_text(prompt)
+  end
+
+  def self.normalize_prompt_text(text)
+    text.gsub("\r\n", "\n").strip
   end
 
   # Ensures that only one music request is active at a time for the user.
