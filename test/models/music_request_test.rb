@@ -74,4 +74,10 @@ class MusicRequestTest < ActiveSupport::TestCase
     assert @music_request.reload.active?
     assert_not recent_request.reload.active?
   end
+
+  test "should normalize prompt before save" do
+    @music_request.prompt = "Test Prompt\r\nWith Newlines\r\n"
+    @music_request.save
+    assert_equal "Test Prompt\nWith Newlines", @music_request.reload.prompt
+  end
 end
