@@ -46,8 +46,9 @@ class MusicRequestsController < ApplicationController
 
   def destroy
     if current_user.music_requests.count > 1
+      active = @music_request.active?
       @music_request.destroy
-      if current_user.can_regenerate_playlists?
+      if active && current_user.can_regenerate_playlists?
         GenerateUserPlaylistsJob.perform_inline(current_user.id) 
         current_user.todays_playlists.each(&:processing!)
       end
