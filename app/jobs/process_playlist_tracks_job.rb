@@ -11,7 +11,8 @@ class ProcessPlaylistTracksJob < ApplicationJob
   # 4. Stores the Spotify URI for each valid track and updates the total duration of the playlist.
   # 5. Stops adding tracks once the total duration meets or exceeds the workout duration.
   # 6. Removes any leftover tracks.
-  # 7. Enqueues a job to update the Spotify playlist with the remaining tracks.
+  # 7. If the playlist is the right length, enqueues a job to update the Spotify playlist with the remaining tracks.
+  #    Otherwise, enqueues a job to add more tracks to the playlist.
   def perform(user_id, playlist_id)
     user = User.find(user_id)
     playlist = Playlist.find(playlist_id)
@@ -62,13 +63,12 @@ class ProcessPlaylistTracksJob < ApplicationJob
     if total_duration >= workout_duration_ms
       # If the playlist is longer than the workout, then it's ready to be used, so:
       # First, remove the remaining tracks from our playlist.
-      playlist.tracks.where(spotify_uri: nil).destroy_all
+      playlist.tracks.where.not(spotify_uri: track_uris).destroy_all
       # Then, enqueue a job to update the tracks on the Spotify playlist.
       UpdateSpotifyPlaylistTracksJob.perform_async(user.id, playlist.id)
     else
-      # If the playlist is shorter than the workout, we need to generate more tracks
-      # and append them to the playlist.
-      GeneratePlaylistJob.perform_async(user.id, playlist.id, true)
+      # If the playlist is shorter than the workout, we need to add more tracks to the playlist.
+      AddTracksToPlaylistJob.perform_async(user.id, playlist.id)
     end
   end
 end
