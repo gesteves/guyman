@@ -26,7 +26,7 @@ class MusicRequest < ApplicationRecord
   private
 
   def normalize_prompt
-    self.prompt = prompt.gsub("\r\n", "\n")
+    self.prompt = prompt.gsub("\r\n", "\n").strip
   end
 
   # Ensures that only one music request is active at a time for the user.
