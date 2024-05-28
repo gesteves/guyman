@@ -5,6 +5,62 @@ class MusicRequestTest < ActiveSupport::TestCase
     @user = users(:basic)
   end
 
+  test "should be valid with a prompt" do
+    request = @user.music_requests.create(prompt: "Upbeat pop songs")
+    assert request.valid?
+  end
+
+  test "should be invalid without a prompt" do
+    request = @user.music_requests.create(prompt: nil)
+    assert_not request.valid?
+  end
+
+  test "should set last_used_at when used! is called" do
+    request = @user.music_requests.create(prompt: "Upbeat pop songs")
+    request.used!
+    assert_not_nil request.reload.last_used_at
+  end
+
+  test "should set active to true when active! is called" do
+    request = @user.music_requests.create(prompt: "Upbeat pop songs")
+    request.active!
+    assert request.reload.active?
+  end
+
+  test "should set active to false when inactive! is called" do
+    request = @user.music_requests.create(prompt: "Upbeat pop songs", active: true)
+    request.inactive!
+    assert_not request.reload.active?
+  end
+
+  test "should order by active and last_used_at by default" do
+    old_request = @user.music_requests.create(prompt: "Old song list", last_used_at: 1.week.ago, active: false)
+    new_request = @user.music_requests.create(prompt: "New song list", last_used_at: 1.day.ago, active: true)
+    newer_request = @user.music_requests.create(prompt: "Newer song list", last_used_at: Time.now, active: false)
+
+    assert_equal new_request, @user.music_requests.first
+    assert_equal newer_request, @user.music_requests.second
+    assert_equal old_request, @user.music_requests.last
+  end
+
+  test "should set next most recent as active when destroying the current active request" do
+    old_request = @user.music_requests.create(prompt: "Old song list", last_used_at: 1.week.ago)
+    new_request = @user.music_requests.create(prompt: "New song list", last_used_at: 1.day.ago, active: true)
+
+    new_request.destroy
+    assert old_request.reload.active?
+  end
+
+  test "should not set next most recent as active if destroying an inactive request" do
+    old_request = @user.music_requests.create(prompt: "Old song list", last_used_at: 1.week.ago)
+    new_request = @user.music_requests.create(prompt: "New song list", last_used_at: 1.day.ago)
+    newer_request = @user.music_requests.create(prompt: "Newer song list", last_used_at: Time.now, active: true)
+    
+    old_request.destroy
+    assert newer_request.reload.active?
+    assert_not new_request.reload.active?
+  end
+
   test "should find existing music request and activate it" do
     existing_request = MusicRequest.find_or_create_and_activate(@user, "Upbeat pop songs")
     music_request = MusicRequest.find_or_create_and_activate(@user, "Upbeat pop songs")
