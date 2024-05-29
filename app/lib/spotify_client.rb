@@ -10,11 +10,12 @@ class SpotifyClient
 
   # Initializes a new instance of the SpotifyClient class.
   #
+  # @param user_id [String] The ID of the Spotify user.
   # @param refresh_token [String] The refresh token used to obtain an access token.
-  def initialize(refresh_token)
+  def initialize(user_id, refresh_token)
+    @user_id = user_id
     @refresh_token = refresh_token
     @access_token = refresh_access_token
-    @user_id = get_spotify_user_id
   end
 
   # Checks if the Spotify token is still valid.
@@ -147,12 +148,14 @@ class SpotifyClient
   #
   # @return [String] The new access token.
   def refresh_access_token
-    options = {
-      body: { grant_type: 'refresh_token', refresh_token: @refresh_token },
-      headers: { "Authorization" => "Basic " + Base64.strict_encode64("#{ENV['SPOTIFY_CLIENT_ID']}:#{ENV['SPOTIFY_CLIENT_SECRET']}"), "Content-Type" => "application/x-www-form-urlencoded" }
-    }
-    response = HTTParty.post("https://accounts.spotify.com/api/token", options)
-    handle_response(response)['access_token']
+    Rails.cache.fetch("spotify:access_token:user:#{@user_id}", expires_in: 60.minutes) do
+      options = {
+        body: { grant_type: 'refresh_token', refresh_token: @refresh_token },
+        headers: { "Authorization" => "Basic " + Base64.strict_encode64("#{ENV['SPOTIFY_CLIENT_ID']}:#{ENV['SPOTIFY_CLIENT_SECRET']}"), "Content-Type" => "application/x-www-form-urlencoded" }
+      }
+      response = HTTParty.post("https://accounts.spotify.com/api/token", options)
+      handle_response(response)['access_token']
+    end
   end
 
   # Retrieves the user ID associated with the access token.

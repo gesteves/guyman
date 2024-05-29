@@ -16,7 +16,7 @@ class ProcessPlaylistTracksJob < ApplicationJob
   def perform(user_id, playlist_id)
     user = User.find(user_id)
     playlist = Playlist.find(playlist_id)
-    spotify_client = SpotifyClient.new(user.authentications.find_by(provider: 'spotify').refresh_token)
+    spotify_client = SpotifyClient.new(user.spotify_user_id, user.spotify_refresh_token)
 
     track_uris = []
     total_duration = 0

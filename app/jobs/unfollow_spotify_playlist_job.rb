@@ -6,7 +6,7 @@ class UnfollowSpotifyPlaylistJob < ApplicationJob
     user = User.find(user_id)
     # Unfollow the playlist on Spotify.
     # (This is the same as deleting it from the app.)
-    spotify_client = SpotifyClient.new(user.authentications.find_by(provider: 'spotify').refresh_token)
+    spotify_client = SpotifyClient.new(user.spotify_user_id, user.spotify_refresh_token)
     spotify_client.unfollow_playlist(spotify_playlist_id)
 
     # Set the playlist's following attribute to false.

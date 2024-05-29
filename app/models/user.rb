@@ -88,7 +88,7 @@ class User < ApplicationRecord
     return false unless spotify_auth
 
     begin
-      spotify_client = SpotifyClient.new(spotify_auth.refresh_token)
+      spotify_client = SpotifyClient.new(spotify_auth.uid, spotify_auth.refresh_token)
       spotify_client.valid_token?
     rescue
       false
@@ -118,5 +118,13 @@ class User < ApplicationRecord
 
   def cannot_regenerate_playlists?
     !can_regenerate_playlists?
+  end
+
+  def spotify_user_id
+    authentications.find_by(provider: 'spotify').uid
+  end
+
+  def spotify_refresh_token
+    authentications.find_by(provider: 'spotify').refresh_token
   end
 end
