@@ -8,7 +8,6 @@ class AddTracksToPlaylistJob < ApplicationJob
     
     playlist = user.playlists.find(playlist_id)
 
-    # Ask ChatGPT to produce a playlist using the workout details and user's music preferences.
     prompt = chatgpt_user_prompt(user, playlist)
     response = ChatgptClient.new.ask_for_json(chatgpt_system_prompt, prompt, user_id)
 
