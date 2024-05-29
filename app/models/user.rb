@@ -121,10 +121,10 @@ class User < ApplicationRecord
   end
 
   def spotify_user_id
-    authentications.find_by(provider: 'spotify').uid
+    authentications.find_by(provider: 'spotify')&.uid
   end
 
   def spotify_refresh_token
-    authentications.find_by(provider: 'spotify').refresh_token
+    authentications.find_by(provider: 'spotify')&.refresh_token
   end
 end
