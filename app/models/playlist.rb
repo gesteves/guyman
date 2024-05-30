@@ -55,7 +55,7 @@ class Playlist < ApplicationRecord
   # - It's not being processed already
   # - It's not locked
   def can_be_processed?
-    playlist.tracks.blank? && !playlist.processing? && !playlist.locked?
+    tracks.blank? && !processing? && !locked?
   end
 
   # Checks if the playlist is unlocked.
