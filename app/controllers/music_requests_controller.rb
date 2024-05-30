@@ -21,6 +21,7 @@ class MusicRequestsController < ApplicationController
     @music_request = MusicRequest.find_or_create_and_activate(current_user, music_request_params[:prompt])
 
     ProcessNewWorkoutsForUserJob.perform_inline(current_user.id)
+    CleanUpPlaylistsForUserJob.perform_inline(current_user.id)
 
     if current_user.todays_playlists.blank?
       redirect_to root_path, alert: "You don’t have any workouts on your calendar! Add some first, and then try again."
