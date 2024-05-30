@@ -22,7 +22,7 @@
     <div class="field is-grouped is-grouped-right">
       <%= button_to regenerate_playlist_path(playlist), method: :post, data: { turbo_confirm: 'Are you sure you want to regenerate this playlist?' }, disabled: playlist.processing? || playlist.locked?, class: "button is-small" do %>
         <span class="icon">
-          <i class="fa-solid fa-arrows-rotate"></i>
+          <i class="fa-solid fa-sparkles"></i>
         </span>
       <% end %>
       <%= button_to regenerate_cover_playlist_path(playlist), method: :post, data: { turbo_confirm: 'Are you sure you want to regenerate this playlist’s cover art?' }, disabled: playlist.processing? || playlist.locked?, class: "button is-small" do %>
