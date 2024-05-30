@@ -73,12 +73,6 @@ class Playlist < ApplicationRecord
     tracks.sum(:duration_ms)
   end
 
-  # Clears out the ChatGPT-generated data.
-  def reset_chatgpt_generated_data!
-    update!(name: nil, description: nil, cover_dalle_prompt: nil)
-    tracks.destroy_all
-  end
-
   private
 
   def unfollow_spotify_playlist

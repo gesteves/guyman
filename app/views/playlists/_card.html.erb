@@ -7,15 +7,15 @@
     <% end %>
   </div>
   <div class="card-content">
-    <% if playlist.name.present? && playlist.description.present? %>
-      <div class="content">
-        <strong><%= playlist.name %></strong><br><%= playlist.description %>
-      </div>
-    <% else %>
+    <% if playlist.processing? %>
       <div class="content skeleton-lines">
         <div></div>
         <div></div>
         <div></div>
+      </div>
+    <% else %>
+      <div class="content">
+        <strong><%= playlist.name %></strong><br><%= playlist.description %>
       </div>
     <% end %>
     <hr>

@@ -10,7 +10,6 @@ class GeneratePlaylistJob < ApplicationJob
 
     return if playlist.locked?
 
-    playlist.reset_chatgpt_generated_data!
     playlist.processing!
 
     # Ask ChatGPT to produce a playlist using the workout details and user's music preferences.
@@ -29,6 +28,8 @@ class GeneratePlaylistJob < ApplicationJob
 
     # Update the existing playlist with the new data
     playlist.update!(name: playlist_name, description: playlist_description, cover_dalle_prompt: dalle_prompt)
+    # Remove existing tracks
+    playlist.tracks.destroy_all
 
     # Add the tracks ChatGPT generated to the playlist.
     # It's important that we store the track names and artists returned by ChatGPT,
