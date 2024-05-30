@@ -69,6 +69,7 @@ class AddTracksToPlaylistJob < ApplicationJob
       - The user may specify genres and bands they like; use this information to guide your choices.
       - The user may specify genres, bands, or specific tracks they want to avoid; do not include them in your suggestions.
       - You may receive a list of songs used in other playlists; do not include them in your response.
+      - Do not include songs with significant amounts of silence (such as songs with hidden tracks).
       
       You must return your response in JSON format using this exact structure:
       
