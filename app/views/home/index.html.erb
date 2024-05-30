@@ -42,11 +42,7 @@
   <% if @todays_playlists.any? %>
     <hr>
     <% @todays_playlists.each do |playlist| %>
-      <% if playlist.processing? %>
-        <%= render partial: 'playlists/processing' %>
-      <% else %>
-        <%= render partial: 'playlists/card', locals: { playlist: playlist } %>
-      <% end %>
+      <%= render partial: 'playlists/card', locals: { playlist: playlist } %>
     <% end %>
   <% end %>
 </section>
