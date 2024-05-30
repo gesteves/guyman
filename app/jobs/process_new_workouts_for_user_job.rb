@@ -1,7 +1,7 @@
-class GenerateUserPlaylistsJob < ApplicationJob
+class ProcessNewWorkoutsForUserJob < ApplicationJob
   queue_as :high
 
-  # This job regenerates the playlists for today's workouts for a given user.
+  # This job generates the playlists for today's workouts for a given user.
   def perform(user_id)
     user = User.find(user_id)
     return unless user.has_valid_spotify_token?
@@ -12,9 +12,10 @@ class GenerateUserPlaylistsJob < ApplicationJob
       playlist = user.playlist_for_todays_workout(workout[:name])
 
       # Skip if:
+      # - A playlist already exists for this workout today and it has tracks.
       # - A playlist already exists for this workout today and it's being processed.
       # - A playlist already exists for this workout today and it's locked.
-      next if playlist&.processing? || playlist&.locked?
+      next if playlist&.tracks&.any? || playlist&.processing? || playlist&.locked?
       
       # Otherwise, create the playlist if it doesn't exist.
       if playlist.blank?

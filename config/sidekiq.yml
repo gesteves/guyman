@@ -7,7 +7,7 @@
   :schedule:
     process_all_workouts_job:
       cron: "*/5 * * * *" # Every 5 minutes
-      class: "ProcessAllWorkoutsJob"
+      class: "ProcessNewWorkoutsJob"
       queue: high
 
     clean_up_playlists_job:

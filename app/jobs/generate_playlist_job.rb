@@ -44,6 +44,7 @@ class GeneratePlaylistJob < ApplicationJob
     SetUpSpotifyPlaylistJob.perform_async(user.id, playlist.id)
   rescue StandardError => e
     playlist.done_processing!
+    playlist.tracks.destroy_all
     raise e
   end
 

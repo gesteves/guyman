@@ -102,24 +102,6 @@ class User < ApplicationRecord
     music_requests.find_by(active: true)
   end
 
-  # Determines whether the user can regenerate playlists.
-  #
-  # Returns true if:
-  # - The user has a music request, and
-  # - The user has no playlists today, or
-  # - None of the playlists are processing, and at least one of them is unlocked
-  #
-  # @return [Boolean] true if the user can regenerate playlists, false otherwise.
-  def can_regenerate_playlists?
-    return false if current_music_request&.prompt.blank?
-    return true if todays_playlists.blank?
-    todays_playlists.none?(&:processing?)
-  end
-
-  def cannot_regenerate_playlists?
-    !can_regenerate_playlists?
-  end
-
   def spotify_user_id
     authentications.find_by(provider: 'spotify')&.uid
   end

@@ -12,10 +12,6 @@ class MusicRequestsController < ApplicationController
 
   def activate
     @music_request.active!
-    if current_user.can_regenerate_playlists?
-      GenerateUserPlaylistsJob.perform_inline(current_user.id) 
-      current_user.todays_playlists.each(&:processing!)
-    end
     redirect_to music_requests_path, notice: 'Your music request has been restored!'
   end
 
@@ -23,17 +19,15 @@ class MusicRequestsController < ApplicationController
     return redirect_to root_path, alert: 'Your playlists can’t be generated if you leave your request blank!' if music_request_params[:prompt].strip.blank?
     
     @music_request = MusicRequest.find_or_create_and_activate(current_user, music_request_params[:prompt])
-    
-    if current_user.can_regenerate_playlists?
-      GenerateUserPlaylistsJob.perform_inline(current_user.id)
-      current_user.todays_playlists.each(&:processing!)
-      if current_user.todays_playlists.present?
-        redirect_to root_path, notice: 'Your playlists are being generated ✨'
-      else
-        redirect_to root_path, alert: "You don’t have any workouts on your calendar! Add some first, and then try again."
-      end
+
+    ProcessNewWorkoutsForUserJob.perform_inline(current_user.id)
+
+    if current_user.todays_playlists.blank?
+      redirect_to root_path, alert: "You don’t have any workouts on your calendar! Add some first, and then try again."
+    elsif current_user.todays_playlists.any?(&:processing?)
+      redirect_to root_path, notice: 'Your playlists are being generated ✨'
     else
-      redirect_to root_path, alert: 'Your playlists can’t be generated at this time.'
+      redirect_to root_path, alert: "You don’t have any new workouts on your calendar! Add some first, and then try again."
     end
   end
 
@@ -41,10 +35,6 @@ class MusicRequestsController < ApplicationController
     if current_user.music_requests.count > 1
       active = @music_request.active?
       @music_request.destroy
-      if active && current_user.can_regenerate_playlists?
-        GenerateUserPlaylistsJob.perform_inline(current_user.id) 
-        current_user.todays_playlists.each(&:processing!)
-      end
       redirect_to music_requests_path, notice: 'Your music request has been deleted!'
     else
       redirect_to music_requests_path, alert: 'You can’t delete your only music request!'
