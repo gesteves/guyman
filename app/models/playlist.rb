@@ -50,6 +50,14 @@ class Playlist < ApplicationRecord
     update!(processing: false)
   end
 
+  # A playlist can be processed if:
+  # - It doesn't have any tracks
+  # - It's not being processed already
+  # - It's not locked
+  def can_be_processed?
+    playlist.tracks.blank? && !playlist.processing? && !playlist.locked?
+  end
+
   # Checks if the playlist is unlocked.
   #
   # @return [Boolean] true if the playlist is unlocked, false otherwise.
