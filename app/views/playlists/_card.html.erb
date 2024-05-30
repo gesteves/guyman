@@ -25,6 +25,11 @@
           <i class="fa-solid fa-arrows-rotate"></i>
         </span>
       <% end %>
+      <%= button_to regenerate_cover_playlist_path(playlist), method: :post, data: { turbo_confirm: 'Are you sure you want to regenerate this playlist’s cover art?' }, disabled: playlist.processing? || playlist.locked?, class: "button is-small" do %>
+        <span class="icon">
+          <i class="fa-solid fa-image"></i>
+        </span>
+      <% end %>
       <%= button_to toggle_lock_playlist_path(playlist), method: :post, data: { turbo_confirm: lock_button_confirmation_message(playlist) }, disabled: playlist.processing?, class: "button is-small #{'is-danger is-light' if playlist.locked?}" do %>
         <% if playlist.locked? %>
           <span class="icon">

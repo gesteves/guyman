@@ -23,6 +23,7 @@ Rails.application.routes.draw do
     member do
       post :toggle_lock
       post :regenerate
+      post :regenerate_cover
       post :follow
       post :unfollow
     end

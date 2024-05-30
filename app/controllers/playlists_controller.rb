@@ -24,6 +24,15 @@ class PlaylistsController < ApplicationController
     end
   end
 
+  def regenerate_cover
+    if @playlist.processing? || @playlist.locked? || @playlist.cover_dalle_prompt.blank?
+      redirect_to root_path, alert: 'Your playlist’s cover art can’t be regenerated at this time.'
+    else
+      GenerateCoverImageJob.perform_async(current_user.id, @playlist.id)
+      redirect_to root_path, notice: 'Your playlist’s cover art is being regenerated ✨'
+    end
+  end
+
   def follow
     if !@playlist.following?
       FollowSpotifyPlaylistJob.perform_inline(current_user.id, @playlist.spotify_playlist_id)
