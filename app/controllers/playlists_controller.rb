@@ -11,7 +11,10 @@ class PlaylistsController < ApplicationController
 
   def toggle_lock
     @playlist.update(locked: !@playlist.locked?)
-    redirect_to root_path, notice: "Your playlist is now #{@playlist.locked? ? 'locked 🔒' : 'unlocked 🔓'}"
+    respond_to do |format|
+      format.turbo_stream { head :no_content }
+      format.html { redirect_to root_path, notice: "Your playlist is now #{@playlist.locked? ? 'locked 🔒' : 'unlocked 🔓'}" }
+    end
   end
 
   def regenerate
@@ -19,8 +22,10 @@ class PlaylistsController < ApplicationController
       redirect_to root_path, alert: 'Your playlist can’t be generated at this time.'
     else
       GeneratePlaylistJob.perform_async(current_user.id, @playlist.id)
-      @playlist.processing!
-      redirect_to root_path, notice: 'Your playlist is being generated ✨'
+      respond_to do |format|
+        format.turbo_stream { head :no_content }
+        format.html { redirect_to root_path, notice: 'Your playlist is being generated ✨' }
+      end
     end
   end
 
@@ -29,7 +34,10 @@ class PlaylistsController < ApplicationController
       redirect_to root_path, alert: 'Your playlist’s cover art can’t be regenerated at this time.'
     else
       GenerateCoverImageJob.perform_async(current_user.id, @playlist.id)
-      redirect_to root_path, notice: 'Your playlist’s cover art is being regenerated ✨'
+      respond_to do |format|
+        format.turbo_stream { head :no_content }
+        format.html { redirect_to root_path, notice: 'Your playlist’s cover art is being regenerated ✨' }
+      end
     end
   end
 
@@ -54,7 +62,7 @@ class PlaylistsController < ApplicationController
   def destroy_all
     if Rails.env.development?
       current_user.playlists.destroy_all
-      redirect_to root_path, notice: 'All playlists have been deleted.'
+      redirect_to root_path
     end
   end
 

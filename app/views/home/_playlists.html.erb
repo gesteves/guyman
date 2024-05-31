@@ -1,0 +1,6 @@
+<hr>
+<% if playlists.any? %>
+  <% playlists.each do |playlist| %>
+    <%= render partial: 'home/playlist', locals: { playlist: playlist } %>
+  <% end %>
+<% end %>

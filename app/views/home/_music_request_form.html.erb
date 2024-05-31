@@ -1,0 +1,22 @@
+<%= form_with model: music_request, url: music_requests_path, method: :post, id: 'music_request_form' do |form| %>
+  <div class="field">
+    <%= form.label :prompt, "What do you want to listen to today?", class: 'label' %>
+    <div class="control">
+      <%= form.text_area :prompt, class: 'textarea', rows: 10, disabled: todays_playlists.any?(&:processing) %>
+    </div>
+    <p class="help">
+      Be as detailed as you want. You can specify moods, genres, albums or artists you want to listen to (or not!)
+    </p>
+  </div>
+  <div class="field">
+    <div class="control">
+      <%= form.button type: "submit", class: generate_playlists_button_class(todays_playlists) do %>
+        <span class="icon">
+          <i class="fa-solid fa-sparkles"></i>
+        </span>
+        <span>Generate playlists!</span>
+      <% end %>
+    </div>
+    </div>
+  </div>
+<% end %>

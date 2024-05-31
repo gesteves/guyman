@@ -8,6 +8,10 @@ class Playlist < ApplicationRecord
 
   default_scope { order(created_at: :desc) }
 
+  after_create_commit -> { broadcast_playlist_additions }
+  after_update_commit -> { broadcast_playlist_changes }
+  after_destroy_commit -> { broadcast_playlist_deletions }
+
   # Returns an array of Spotify URIs for all the tracks in the playlist.
   #
   # @return [Array<String>] An array of Spotify URIs.
@@ -85,5 +89,20 @@ class Playlist < ApplicationRecord
 
   def unfollow_spotify_playlist
     UnfollowSpotifyPlaylistJob.perform_async(user.id, spotify_playlist_id)
+  end
+
+  def broadcast_playlist_additions
+    broadcast_append_to "playlists", partial: "home/playlist", locals: { playlist: self }
+    broadcast_replace_to "music_request", target: "music_request_form", partial: "home/music_request_form", locals: { music_request: self.user.current_music_request, todays_playlists: self.user.todays_playlists }
+  end
+
+  def broadcast_playlist_changes
+    broadcast_replace_to "playlists", partial: "home/playlist", locals: { playlist: self }
+    broadcast_replace_to "music_request", target: "music_request_form", partial: "home/music_request_form", locals: { music_request: self.user.current_music_request, todays_playlists: self.user.todays_playlists }
+  end
+
+  def broadcast_playlist_deletions
+    broadcast_remove_to "playlists"
+    broadcast_replace_to "music_request", target: "music_request_form", partial: "home/music_request_form", locals: { music_request: self.user.current_music_request, todays_playlists: self.user.todays_playlists }
   end
 end
