@@ -7,7 +7,7 @@
     <% end %>
   </div>
   <div class="card-content">
-    <% if playlist.activity.name.blank? || playlist.activity.description.blank? %>
+    <% if playlist.processing? %>
       <div class="content skeleton-lines">
         <div></div>
         <div></div>
@@ -40,7 +40,7 @@
             <i class="fa-solid fa-lock-open"></i>
           </span>
         <% end %>
-      <% end %> 
+      <% end %>
     </div>
   </div>
 </div>
