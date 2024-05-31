@@ -23,7 +23,6 @@ Rails.application.routes.draw do
     member do
       post :toggle_lock
       post :regenerate
-      post :regenerate_cover
       post :follow
       post :unfollow
     end
@@ -46,7 +45,7 @@ Rails.application.routes.draw do
       get 'page/:page', to: 'tracks#index'
     end
   end
-  
+
   get "/settings", to: "preferences#edit", as: :settings
   # Defines the root path route ("/")
   root "home#index"
