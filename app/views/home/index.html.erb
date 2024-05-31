@@ -31,5 +31,5 @@
   <% end %>
 </section>
 
-<%= turbo_stream_from "playlists" %>
-<%= turbo_stream_from "music_request" %>
+<%= turbo_stream_from "playlists:index:user:#{current_user.id}" %>
+<%= turbo_stream_from "music_requests:form:user:#{current_user.id}" %>
