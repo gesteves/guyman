@@ -30,7 +30,7 @@
           <i class="fa-solid fa-album"></i>
         </span>
       <% end %>
-      <%= button_to toggle_lock_playlist_path(playlist), method: :post, data: { turbo_confirm: lock_button_confirmation_message(playlist) }, disabled: playlist.processing?, class: "button is-small #{'is-danger is-light' if playlist.locked?}" do %>
+      <%= button_to toggle_lock_playlist_path(playlist), method: :post, disabled: playlist.processing?, class: "button is-small #{'is-danger is-light' if playlist.locked?}" do %>
         <% if playlist.locked? %>
           <span class="icon">
             <i class="fa-solid fa-lock"></i>
