@@ -3,8 +3,10 @@ class GenerateActivityDetailsJob < ApplicationJob
   sidekiq_options retry_for: 5.minutes
 
   def perform(user_id, activity_id)
-    user = User.find(user_id)    
+    user = User.find(user_id)
     activity = user.activities.find(activity_id)
+
+    activity.playlist.processing!
 
     prompt = chatgpt_user_prompt(activity)
     response = ChatgptClient.new.ask_for_json(chatgpt_system_prompt, prompt, user_id)
@@ -20,6 +22,9 @@ class GenerateActivityDetailsJob < ApplicationJob
 
     # Enqueue a job to generate the playlist for this activity.
     GeneratePlaylistJob.perform_async(user.id, activity.playlist.id)
+  rescue StandardError => e
+    activity.playlist.done_processing!
+    raise e
   end
 
   private
@@ -45,19 +50,19 @@ class GenerateActivityDetailsJob < ApplicationJob
       - You must generate a new description that summarizes the activity in about 300 characters. If the description is very short, you can add more details to make it more informative.
       - You must determine the sport of the activity, which is usually "Cycling", "Running", or "Swimming", but could be something else, such as "Yoga" or "Strength Training".
       - You must determine the type of activity, which can be either "Workout" or "Race".
-      
+
       You must return your response in JSON format using this exact structure:
-      
+
       {
         "name": "The name of the workout",
         "description": "The 300-character summary of the activity or workout.",
         "sport": "The sport of the activity or workout",
         "activity_type": "The type of activity, i.e. Race or Workout"
-      }    
+      }
     PROMPT
   end
 
-  def chatgpt_user_prompt(activity)  
+  def chatgpt_user_prompt(activity)
     <<~PROMPT
       #{activity.name}
 
