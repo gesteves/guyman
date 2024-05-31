@@ -39,7 +39,16 @@ class User < ApplicationRecord
   def todays_playlists
     if preference
       current_date = Time.current.in_time_zone(preference.timezone)
-      playlists.includes(:activity).where(created_at: current_date.beginning_of_day..current_date.end_of_day)
+      playlists.joins(:activity)
+               .where(playlists: { created_at: current_date.beginning_of_day..current_date.end_of_day })
+               .order(Arel.sql("
+                 CASE activities.activity_type
+                   WHEN 'Swimming' THEN 1
+                   WHEN 'Cycling' THEN 2
+                   WHEN 'Running' THEN 3
+                   ELSE 4
+                 END, activities.created_at ASC
+               "))
     else
       []
     end
