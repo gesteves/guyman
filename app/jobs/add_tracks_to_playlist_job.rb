@@ -4,7 +4,6 @@ class AddTracksToPlaylistJob < ApplicationJob
 
   def perform(user_id, playlist_id)
     user = User.find(user_id)
-    return unless user.current_music_request.present?
 
     playlist = user.playlists.find(playlist_id)
 
@@ -14,9 +13,6 @@ class AddTracksToPlaylistJob < ApplicationJob
     validate_response(response)
 
     playlist_tracks = response['tracks']
-
-    # Mark the current music request as used
-    playlist.music_request.used!
 
     # Get the position of the last track in the playlist.
     last_position = playlist.tracks.last&.position || 0
