@@ -19,7 +19,7 @@ class MusicRequestsController < ApplicationController
     current_request = current_user.current_music_request
     @music_request = MusicRequest.find_or_create_and_activate(current_user, music_request_params[:prompt])
   
-    CleanUpPlaylistsForUserJob.perform_inline(current_user.id)
+    CleanUpPlaylistsForUserJob.perform_async(current_user.id)
     ProcessNewWorkoutsForUserJob.perform_async(current_user.id)
     current_user.regenerate_todays_playlists! if current_request != @music_request
   
