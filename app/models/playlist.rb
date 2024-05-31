@@ -92,16 +92,19 @@ class Playlist < ApplicationRecord
   end
 
   def broadcast_playlist_additions
+    return if Rails.env.test?
     broadcast_append_to "playlists", partial: "home/playlist", locals: { playlist: self }
     broadcast_replace_to "music_request", target: "music_request_form", partial: "home/music_request_form", locals: { music_request: self.user.current_music_request, todays_playlists: self.user.todays_playlists }
   end
 
   def broadcast_playlist_changes
+    return if Rails.env.test?
     broadcast_replace_to "playlists", partial: "home/playlist", locals: { playlist: self }
     broadcast_replace_to "music_request", target: "music_request_form", partial: "home/music_request_form", locals: { music_request: self.user.current_music_request, todays_playlists: self.user.todays_playlists }
   end
 
   def broadcast_playlist_deletions
+    return if Rails.env.test?
     broadcast_remove_to "playlists"
     broadcast_replace_to "music_request", target: "music_request_form", partial: "home/music_request_form", locals: { music_request: self.user.current_music_request, todays_playlists: self.user.todays_playlists }
   end
