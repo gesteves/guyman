@@ -8,9 +8,9 @@
 
 <section class="container is-max-desktop">
   <%= turbo_frame_tag "music_request" do %>
-    <%= render partial: 'home/music_request_form', locals: { music_request: @music_request, todays_playlists: @todays_playlists } %>
+    <%= render partial: 'home/music_request_form', locals: { music_request: @music_request } %>
   <% end %>
-  
+
   <%= turbo_frame_tag "playlists" do %>
     <hr>
     <% if @todays_playlists.any? %>

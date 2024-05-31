@@ -54,6 +54,10 @@ class User < ApplicationRecord
     end
   end
 
+  def is_generating_playlists?
+    playlists.present? && playlists.any?(&:processing)
+  end
+
   # Returns the activity associated with a given event today in the user's calendar.
   #
   # @param event_name [String] The name of the event to search for.
