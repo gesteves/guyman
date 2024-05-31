@@ -6,29 +6,31 @@ require 'active_support/time'
 class TrainerroadClient
   # Initializes a new instance of the TrainerroadClient class.
   #
-  # @param calendar_url [String] The URL of the calendar to fetch workouts from.
+  # @param calendar_url [String] The URL of the calendar to fetch events from.
   # @param timezone [String] The timezone to use for date and time calculations.
   def initialize(calendar_url, timezone)
     @calendar_url = calendar_url
     @timezone = timezone
   end
 
-  # Retrieves the workouts for today from the TrainerRoad calendar.
+  # Retrieves the events for today from the TrainerRoad calendar.
   #
-  # @return [Array<Hash>] An array of workout hashes, each containing the workout name, description, and duration.
-  def get_workouts_for_today
-    response = HTTParty.get(@calendar_url)
+  # @return [Array<Hash>] An array of event hashes, each containing the event name, description, and duration.
+  def get_events_for_today
+    Rails.cache.fetch("trainerroad:calendar:#{@calendar_url.parameterize}", expires_in: 1.minute) do
+      response = HTTParty.get(@calendar_url)
 
-    calendar_data = handle_response(response)
-    calendars = Icalendar::Calendar.parse(calendar_data)
-    calendar = calendars.first
+      calendar_data = handle_response(response)
+      calendars = Icalendar::Calendar.parse(calendar_data)
+      calendar = calendars.first
 
-    today = Time.current.in_time_zone(@timezone).to_date
-    workouts = calendar.events.select do |event|
-      event.dtstart.to_date == today && duration_present?(event.summary)
+      today = Time.current.in_time_zone(@timezone).to_date
+      events = calendar.events.select do |event|
+        event.dtstart.to_date == today && duration_present?(event.summary)
+      end
+
+      parse_events(events)
     end
-
-    parse_workouts(workouts)
   end
 
   private
@@ -46,19 +48,19 @@ class TrainerroadClient
     end
   end
 
-  # Checks if the workout duration is present in the summary.
+  # Checks if the event duration is present in the summary.
   #
-  # @param summary [String] The workout summary.
+  # @param summary [String] The event summary.
   # @return [Boolean] True if the duration is present, false otherwise.
   def duration_present?(summary)
     summary.match(/^\d+:\d+/)
   end
 
-  # Parses the workout events and converts them into a structured format.
+  # Parses the events and converts them into a structured format.
   #
-  # @param events [Array<Icalendar::Event>] An array of Icalendar::Event objects representing the workouts.
-  # @return [Array<Hash>] An array of workout hashes, each containing the workout name, description, and duration.
-  def parse_workouts(events)
+  # @param events [Array<Icalendar::Event>] An array of Icalendar::Event objects.
+  # @return [Array<Hash>] An array of event hashes, each containing the event name, description, and duration.
+  def parse_events(events)
     events.map do |event|
       summary_parts = event.summary.split(' - ')
       duration = summary_parts[0].strip

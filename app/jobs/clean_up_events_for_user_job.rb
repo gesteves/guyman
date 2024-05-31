@@ -1,4 +1,4 @@
-class CleanUpPlaylistsForUserJob < ApplicationJob
+class CleanUpEventsForUserJob < ApplicationJob
   queue_as :low
 
   def perform(user_id)
@@ -7,7 +7,7 @@ class CleanUpPlaylistsForUserJob < ApplicationJob
     preference = user.preference
 
     current_date = Time.current.in_time_zone(preference.timezone)
-    workout_names = user.todays_workouts.map { |workout| workout[:name] }
+    event_names = user.todays_calendar_events.map { |event| event[:name] }
 
     # If the user has enabled it, unfollow any Spotify playlists created before the current day and are still being followed.
     # These playlists were likely used in a workout, so we want to unfollow them
@@ -19,16 +19,17 @@ class CleanUpPlaylistsForUserJob < ApplicationJob
       end
     end
 
-    # Unfollow and delete from the database any Spotify playlists created today that don't match today's workouts,
-    # and are not locked.
-    # These playlists probably reference a workout that was previously scheduled for today and has since been removed
+    # Unfollow and delete from the database any events created today that don't match today's events in the calendar,
+    # and don't have any locked playlists
+    # These events probably reference a workout that was previously scheduled for today and has since been removed
     # from the calendar, probably because the user either deleted it, rescheduled it, replaced it with an alternate,
     # or TrainerRoad adapted the plan.
-    # In this case we DO want to delete the playlist from the database so we can reuse its songs in future playlists,
-    # since the playlist was likely never used.
-    # Note that destroying the playlist will also unfollow it in Spotify.
-    user.playlists.where(created_at: current_date.beginning_of_day..current_date.end_of_day, locked: false).each do |playlist|
-      playlist.destroy unless workout_names.include?(playlist.workout_name)
+    user.activities.joins(:playlist)
+          .where(created_at: current_date.beginning_of_day..current_date.end_of_day)
+          .where(playlists: { locked: false })
+          .where.not(name: event_names)
+          .each do |activity|
+      activity.destroy
     end
   end
 end

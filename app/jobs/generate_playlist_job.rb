@@ -4,13 +4,14 @@ class GeneratePlaylistJob < ApplicationJob
 
   def perform(user_id, playlist_id)
     user = User.find(user_id)
-    return unless user.current_music_request.present?
     
     playlist = user.playlists.find(playlist_id)
 
     return if playlist.locked?
 
     playlist.processing!
+
+    playlist.update!(music_request_id: user.current_music_request.id) if playlist.music_request.blank?
 
     # Ask ChatGPT to produce a playlist using the workout details and user's music preferences.
     prompt = chatgpt_user_prompt(user, playlist)
@@ -23,8 +24,8 @@ class GeneratePlaylistJob < ApplicationJob
     playlist_description = response['description']
     playlist_name = response['name']
 
-    # Mark the current music request as used
-    user.current_music_request.used!
+    # Mark the music request as used
+    playlist.music_request.used!
 
     # Update the existing playlist with the new data
     playlist.update!(name: playlist_name, description: playlist_description, cover_dalle_prompt: dalle_prompt)
@@ -86,14 +87,14 @@ class GeneratePlaylistJob < ApplicationJob
       - You may receive a list of songs used in playlists for previous workouts; do not include them in the playlist.
       - Do not include songs with significant amounts of silence (such as songs with hidden tracks).
       - You must come up with a name for the playlist following this exact format: "[name_of_the_workout]: [very_short_description_of_the_playlist]"
-      - You must write a description that summarizes the workout in 300 characters or less; do not include details about the playlist itself or the music.
+      - You must write a description for the playlist in 300 characters or less.
       - Generate a detailed prompt to create, using Dall-E, a playlist cover image that visually represents the workout and the playlist in a creative way, but avoid anything that may cause content policy violations in Dall-E or get flagged by OpenAI's safety systems.
       
       You must return your response in JSON format using this exact structure:
       
       {
         "name": "The name of the playlist",
-        "description": "The 300-character summary of the workout.",
+        "description": "The 300-character summary of the playlist.",
         "cover_prompt": "A prompt to generate a playlist cover image.",
         "tracks": [
           {"artist": "Artist Name 1", "track": "Track Name 1"},
@@ -113,10 +114,10 @@ class GeneratePlaylistJob < ApplicationJob
   # We avoid that by using the song names and artists from previous ChatGPT responses, not ones from the Spotify API.
   def chatgpt_user_prompt(user, playlist)  
     <<~PROMPT
-      #{playlist.workout_name}
-      #{playlist.workout_description}
+      #{playlist.activity.name}
+      #{playlist.activity.description}
   
-      #{user.current_music_request.prompt}
+      #{playlist.music_request.prompt}
   
       #{user.excluded_tracks_string}
     PROMPT

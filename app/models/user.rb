@@ -5,6 +5,7 @@ class User < ApplicationRecord
   has_one :preference, dependent: :destroy
   has_many :playlists, dependent: :destroy
   has_many :music_requests, dependent: :destroy
+  has_many :activities, dependent: :destroy
 
   def self.from_omniauth(auth)
     authentication = Authentication.where(provider: auth.provider, uid: auth.uid).first_or_initialize
@@ -21,14 +22,12 @@ class User < ApplicationRecord
     authentication.user
   end
 
-  # Retrieves today's workouts for the user.
+  # Retrieves today's events in the user's calendar.
   #
-  # @return [Array] The workouts for today.
-  def todays_workouts
+  # @return [Array] The events for today.
+  def todays_calendar_events
     if preference&.has_trainerroad_calendar?
-      TrainerroadClient.new(preference.calendar_url, preference.timezone).get_workouts_for_today
-    elsif preference&.has_trainingpeaks_calendar?
-      TrainingpeaksClient.new(preference.calendar_url, preference.timezone).get_workouts_for_today
+      TrainerroadClient.new(preference.calendar_url, preference.timezone).get_events_for_today
     else
       []
     end
@@ -40,21 +39,21 @@ class User < ApplicationRecord
   def todays_playlists
     if preference
       current_date = Time.current.in_time_zone(preference.timezone)
-      playlists.where(created_at: current_date.beginning_of_day..current_date.end_of_day)
+      playlists.includes(:activity).where(created_at: current_date.beginning_of_day..current_date.end_of_day)
     else
       []
     end
   end
 
-  # Get the playlist for a specific workout scheduled for today.
+  # Returns the activity associated with a given event today in the user's calendar.
   #
-  # @param workout_name [String] The name of the workout.
-  # @return [Playlist, nil] The playlist associated with the workout, or nil if not found.
-  def playlist_for_todays_workout(workout_name)
+  # @param event_name [String] The name of the event to search for.
+  # @return [Activity] The activity associated with the event, or nil if not found.
+  def activity_for_calendar_event(event_name)
     current_date = Time.current.in_time_zone(preference.timezone)
-    playlists.where(workout_name: workout_name)
-             .where(created_at: current_date.beginning_of_day..current_date.end_of_day)
-             .first
+    activities.where(name: event_name)
+              .where(created_at: current_date.beginning_of_day..current_date.end_of_day)
+              .first
   end
 
   # Get the most recent tracks from across all of the user's playlists.
@@ -108,9 +107,5 @@ class User < ApplicationRecord
 
   def spotify_refresh_token
     authentications.find_by(provider: 'spotify')&.refresh_token
-  end
-
-  def regenerate_todays_playlists!
-    todays_playlists.where.not(locked: true).each { |p| GeneratePlaylistJob.perform_async(id, p.id) }
   end
 end

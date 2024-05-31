@@ -54,6 +54,7 @@ gem 'httparty'
 gem 'mini_magick'
 gem 'public_suffix'
 gem 'kaminari'
+gem 'paranoia'
 
 # Background jobs
 gem 'sidekiq'

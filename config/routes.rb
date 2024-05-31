@@ -30,7 +30,6 @@ Rails.application.routes.draw do
 
     collection do
       get 'page/:page', to: 'playlists#index'
-      delete :destroy_all, to: 'playlists#destroy_all'
     end
   end
   resources :music_requests, only: [:index, :create, :destroy] do
@@ -47,7 +46,7 @@ Rails.application.routes.draw do
       get 'page/:page', to: 'tracks#index'
     end
   end
-
+  
   get "/settings", to: "preferences#edit", as: :settings
   # Defines the root path route ("/")
   root "home#index"

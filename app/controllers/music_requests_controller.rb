@@ -6,7 +6,7 @@ class MusicRequestsController < ApplicationController
     page = params[:page]&.to_i || 1
     @todays_playlists = current_user.todays_playlists
     @music_requests = current_user.music_requests.page(page).per(100)
-    
+
     redirect_to tracks_path if @music_requests.empty? && page > 1
   end
 
@@ -16,19 +16,20 @@ class MusicRequestsController < ApplicationController
   end
 
   def create
-    current_request = current_user.current_music_request
     @music_request = MusicRequest.find_or_create_and_activate(current_user, music_request_params[:prompt])
-  
-    CleanUpPlaylistsForUserJob.perform_async(current_user.id)
-    ProcessNewWorkoutsForUserJob.perform_async(current_user.id)
-    current_user.regenerate_todays_playlists! if current_request != @music_request
-  
+
+    CleanUpEventsForUserJob.perform_inline(current_user.id)
+    FetchNewEventsForUserJob.perform_inline(current_user.id)
+    current_user.todays_playlists.where(locked: false).where.not(music_request_id: @music_request.id).each do |playlist|
+      playlist.update!(music_request_id: @music_request.id)
+      GeneratePlaylistJob.perform_async(current_user.id, playlist.id)
+    end
+
     respond_to do |format|
       format.turbo_stream { head :no_content }
       format.html { redirect_to root_path, notice: 'Your playlists are being generated ✨' }
     end
   end
-  
 
   def destroy
     if current_user.music_requests.count > 1

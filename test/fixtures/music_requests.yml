@@ -1,6 +1,23 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+one:
+  user: basic
+  prompt: "Create a playlist for a moderate intensity cycling workout."
+  active: true
+  created_at: <%= Time.now %>
+  updated_at: <%= Time.now %>
+  last_used_at: <%= Time.now %>
 
 two:
-  prompt: MyText
+  user: basic
+  prompt: "Create a playlist for a high intensity running workout."
   active: true
-  user: admin
+  created_at: <%= Time.now %>
+  updated_at: <%= Time.now %>
+  last_used_at: <%= Time.now %>
+
+three:
+  user: basic
+  prompt: "Create a playlist for a relaxing swim session."
+  active: true
+  created_at: <%= Time.now %>
+  updated_at: <%= Time.now %>
+  last_used_at: <%= Time.now %>

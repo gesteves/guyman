@@ -11,11 +11,6 @@ class PlaylistTest < ActiveSupport::TestCase
     assert @playlist.valid?
   end
 
-  test "should be invalid without a workout_name" do
-    @playlist.workout_name = nil
-    assert_not @playlist.valid?
-    assert_includes @playlist.errors[:workout_name], "can't be blank"
-  end
 
   test "should have ordered tracks" do
     track1 = @playlist.tracks.create!(title: "Track 1", artist: "Artist 1", position: 2)
@@ -32,7 +27,7 @@ class PlaylistTest < ActiveSupport::TestCase
   end
 
   test "recent_track_uris_from_other_playlists should return unique URIs from other playlists" do
-    other_playlist = @user.playlists.create!(workout_name: "Other Workout")
+    other_playlist = playlists(:two)
     other_playlist.tracks.create!(title: "Track 1", artist: "Artist 1", spotify_uri: "spotify:track:1", created_at: 1.second.ago)
     other_playlist.tracks.create!(title: "Track 2", artist: "Artist 2", spotify_uri: "spotify:track:2", created_at: 2.second.ago)
     other_playlist.tracks.create!(title: "Track 3", artist: "Artist 3", spotify_uri: "spotify:track:3", created_at: 3.second.ago)
