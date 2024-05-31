@@ -32,9 +32,7 @@ class MusicRequestsController < ApplicationController
 
   def destroy
     if current_user.music_requests.count > 1
-      was_active = @music_request.active?
       @music_request.destroy
-      current_user.regenerate_todays_playlists! if was_active
       redirect_to music_requests_path, notice: 'Your music request has been deleted!'
     else
       redirect_to music_requests_path, alert: 'You can’t delete your only music request!'
