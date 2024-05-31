@@ -47,7 +47,7 @@ class GenerateActivityDetailsJob < ApplicationJob
       You are a helpful fitness assistant tasked with generating structured data about an exercise activity from a snippet of text describing it. Your task is the following:
 
       - You will receive the name of the user's activity, followed by a description of the activity.
-      - You must generate a new description that summarizes the activity in about 300 characters. If the description is very short, you can add more details to make it more informative.
+      - You must write a description that summarizes the activity. If the description is very short, you can add more details to make it more informative.
       - You must determine the sport of the activity, which is usually "Cycling", "Running", or "Swimming", but could be something else, such as "Yoga" or "Strength Training".
       - You must determine the type of activity, which can be either "Workout" or "Race".
 
@@ -55,7 +55,7 @@ class GenerateActivityDetailsJob < ApplicationJob
 
       {
         "name": "The name of the workout",
-        "description": "The 300-character summary of the activity or workout.",
+        "description": "The summary of the activity or workout.",
         "sport": "The sport of the activity or workout",
         "activity_type": "The type of activity, i.e. Race or Workout"
       }
