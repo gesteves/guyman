@@ -16,6 +16,9 @@ class MusicRequest < ApplicationRecord
 
   scope :active, -> { where(active: true) }
 
+  # Tries to prevent duplicate music requests from being created.
+  # If an existing one with the same prompt exists, it becomes the active one.
+  # Otherwise, a new one is created and activated.
   def self.find_or_create_and_activate(user, prompt)
     music_request = user.music_requests.find_by(prompt: normalize_prompt_text(prompt))
     if music_request.present?
@@ -28,24 +31,31 @@ class MusicRequest < ApplicationRecord
     music_request
   end
 
+  # Updates the time the request was last used.
   def used!
     update!(last_used_at: Time.current)
   end
 
+  # Makes a request the active one.
   def active!
     update!(active: true)
   end
 
+  # Makes a request inactive.
   def inactive!
     update!(active: false)
   end
 
   private
 
+  # Performs some normalization on the prompt text before saving to
+  # try to prevent duplicates from being created.
   def normalize_prompt
     self.prompt = self.class.normalize_prompt_text(prompt)
   end
 
+  # Normalizes the prompt text by:
+  # - Replacing Windows-style line endings with Unix-style line endings
   def self.normalize_prompt_text(text)
     text.gsub("\r\n", "\n").strip
   end
