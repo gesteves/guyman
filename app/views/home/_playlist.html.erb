@@ -7,6 +7,18 @@
     <% end %>
   </div>
   <div class="card-content">
+    <% if playlist.processing? %>
+      <div class="content skeleton-lines">
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+    <% else %>
+      <div class="content">
+        <strong><%= playlist.name %></strong><br><%= playlist.description %>
+      </div>
+    <% end %>
+    <hr>
     <div class="field is-grouped is-grouped-right">
       <%= button_to regenerate_playlist_path(playlist), method: :post, data: { turbo_confirm: 'Are you sure you want to regenerate this playlist?' }, disabled: playlist.processing? || playlist.locked?, class: "button is-small" do %>
         <span class="icon">
