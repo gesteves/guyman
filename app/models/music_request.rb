@@ -1,13 +1,15 @@
 class MusicRequest < ApplicationRecord
+  acts_as_paranoid
   belongs_to :user
+  has_many :playlists
 
   validates :prompt, presence: true
 
   default_scope { order(active: :desc, last_used_at: :desc) }
 
-  before_save :ensure_only_one_active, if: :active?
+  before_save :ensure_only_one_active, if: :should_ensure_only_one_active?
   before_save :normalize_prompt
-  before_destroy :set_next_most_recent_as_active, if: :active?
+  after_destroy :handle_after_destroy, if: :active?
   after_create_commit -> { broadcast_create }
   after_update_commit -> { broadcast_update }
   after_destroy_commit -> { broadcast_destroy }
@@ -48,15 +50,20 @@ class MusicRequest < ApplicationRecord
     text.gsub("\r\n", "\n").strip
   end
 
+  def should_ensure_only_one_active?
+    active? && !deleted?
+  end
+
   # Ensures that only one music request is active at a time for the user.
   def ensure_only_one_active
     user.music_requests.where.not(id: id).update_all(active: false)
   end
 
   # Sets the next most recently used music request as active if the current one is active and is being destroyed.
-  def set_next_most_recent_as_active
-    next_most_recent_request = user.music_requests.where.not(id: id).order(last_used_at: :desc).first
-    next_most_recent_request.active! if next_most_recent_request.present?
+  def handle_after_destroy
+    update_column(:active, false)
+    next_most_recent_request = user.music_requests.without_deleted.where.not(id: id).order(last_used_at: :desc).first
+    next_most_recent_request.update!(active: true) if next_most_recent_request.present?
   end
 
   private

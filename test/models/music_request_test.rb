@@ -44,18 +44,21 @@ class MusicRequestTest < ActiveSupport::TestCase
   end
 
   test "should set next most recent as active when destroying the current active request" do
-    old_request = @user.music_requests.create(prompt: "Old song list", last_used_at: 1.week.ago)
-    new_request = @user.music_requests.create(prompt: "New song list", last_used_at: 1.day.ago, active: true)
+    @user.music_requests.destroy_all
+    old_request = @user.music_requests.create!(prompt: "Old song list", last_used_at: 1.week.ago)
+    new_request = @user.music_requests.create!(prompt: "New song list", last_used_at: 1.day.ago, active: true)
 
     new_request.destroy
-    assert old_request.reload.active?
+    old_request.reload
+    assert old_request.active?, "Old request should be set to active"
   end
 
   test "should not set next most recent as active if destroying an inactive request" do
+    @user.music_requests.destroy_all
     old_request = @user.music_requests.create(prompt: "Old song list", last_used_at: 1.week.ago)
     new_request = @user.music_requests.create(prompt: "New song list", last_used_at: 1.day.ago)
     newer_request = @user.music_requests.create(prompt: "Newer song list", last_used_at: Time.now, active: true)
-    
+
     old_request.destroy
     assert newer_request.reload.active?
     assert_not new_request.reload.active?
@@ -64,7 +67,7 @@ class MusicRequestTest < ActiveSupport::TestCase
   test "should find existing music request and activate it" do
     existing_request = MusicRequest.find_or_create_and_activate(@user, "Upbeat pop songs")
     music_request = MusicRequest.find_or_create_and_activate(@user, "Upbeat pop songs")
-    
+
     assert_equal existing_request.id, music_request.id
     assert music_request.active?
   end
@@ -93,7 +96,7 @@ class MusicRequestTest < ActiveSupport::TestCase
     existing_request = @user.music_requests.create!(prompt: normalized_prompt, active: false)
 
     music_request = MusicRequest.find_or_create_and_activate(@user, raw_prompt)
-  
+
     assert_equal existing_request.id, music_request.id
     assert music_request.active?
   end
@@ -101,7 +104,7 @@ class MusicRequestTest < ActiveSupport::TestCase
   test "should ensure only one active music request" do
     first_request = MusicRequest.find_or_create_and_activate(@user, "First request")
     second_request = MusicRequest.find_or_create_and_activate(@user, "Second request")
-    
+
     assert_not first_request.reload.active?
     assert second_request.active?
   end

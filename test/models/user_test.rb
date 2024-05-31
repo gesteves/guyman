@@ -31,7 +31,8 @@ class UserTest < ActiveSupport::TestCase
   end
 
   test "todays_playlists returns playlists created today" do
-    playlist = @user.playlists.create!(workout_name: 'Test Workout', created_at: Time.current)
+    playlist = playlists(:one)
+    playlist.update!(created_at: Time.current)
     assert_includes @user.todays_playlists, playlist
   end
 
@@ -40,24 +41,19 @@ class UserTest < ActiveSupport::TestCase
     assert_equal [], user.todays_playlists
   end
 
-  test "playlist_for_todays_workout returns the correct playlist" do
-    playlist = @user.playlists.create!(workout_name: 'Test Workout', created_at: Time.current)
-    assert_equal playlist, @user.playlist_for_todays_workout('Test Workout')
-  end
-
   test "recent_tracks returns unique recent tracks" do
-    playlist = @user.playlists.create!(workout_name: 'Test Workout')
+    playlist = playlists(:one)
     first = playlist.tracks.create!(spotify_uri: 'uri1', artist: 'Artist1', title: 'Title1', created_at: 1.day.ago)
     second = playlist.tracks.create!(spotify_uri: 'uri2', artist: 'Artist2', title: 'Title2', created_at: 2.days.ago)
     old = playlist.tracks.create!(spotify_uri: 'uri3', artist: 'Artist3', title: 'Title3', created_at: 4.weeks.ago)
-    assert_equal 2, @user.recent_tracks.size 
+    assert_equal 2, @user.recent_tracks.size
     assert @user.recent_tracks.include?(first)
     assert @user.recent_tracks.include?(second)
     assert_not @user.recent_tracks.include?(old)
   end
 
   test "excluded_tracks_string returns formatted string of recent tracks" do
-    playlist = @user.playlists.create!(workout_name: 'Test Workout')
+    playlist = playlists(:one)
     playlist.tracks.create!(spotify_uri: 'uri1', artist: 'Artist1', title: 'Title1', created_at: 1.day.ago)
     playlist.tracks.create!(spotify_uri: 'uri2', artist: 'Artist2', title: 'Title2', created_at: 2.days.ago)
     playlist.tracks.create!(spotify_uri: 'uri3', artist: 'Artist3', title: 'Title3', created_at: 4.weeks.ago)

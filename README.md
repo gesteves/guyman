@@ -25,7 +25,7 @@ It's a Rails app that uses ChatGPT to generate Spotify playlists tailored to the
 
 ## What does it do?
 
-Schedule some workouts in [TrainerRoad](https://www.trainerroad.com) or [TrainingPeaks](https://www.trainingpeaks.com)...
+Schedule some workouts in [TrainerRoad](https://www.trainerroad.com)...
 
 ![Capture-2024-05-27-083935](https://github.com/gesteves/robot-rock/assets/6379/eab31d28-7891-42c5-9bf0-fad256dd984d)
 

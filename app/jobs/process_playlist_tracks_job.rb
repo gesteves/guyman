@@ -20,7 +20,7 @@ class ProcessPlaylistTracksJob < ApplicationJob
 
     track_uris = []
     total_duration = 0
-    workout_duration_ms = playlist.workout_duration * 60 * 1000 # Convert workout duration from minutes to milliseconds
+    workout_duration_ms = playlist.activity.duration * 60 * 1000 # Convert workout duration from minutes to milliseconds
 
     # Collect all track URIs from the user's other playlists
     recent_track_uris = playlist.recent_track_uris_from_other_playlists

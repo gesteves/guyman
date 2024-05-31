@@ -216,6 +216,8 @@ GEM
     omniauth-spotify (0.0.13)
       omniauth-oauth2 (~> 1.1)
     orm_adapter (0.5.0)
+    paranoia (2.6.3)
+      activerecord (>= 5.1, < 7.2)
     pg (1.5.6)
     psych (5.1.2)
       stringio
@@ -360,6 +362,7 @@ DEPENDENCIES
   omniauth
   omniauth-rails_csrf_protection
   omniauth-spotify
+  paranoia
   pg (~> 1.1)
   public_suffix
   puma (>= 5.0)

@@ -13,6 +13,8 @@ one:
   updated_at: <%= Time.now %>
   spotify_playlist_id: "spotify_playlist_id_one"
   locked: false
+  music_request: one
+  activity: one
 
 two:
   user: basic
@@ -27,6 +29,8 @@ two:
   updated_at: <%= Time.now %>
   spotify_playlist_id: "spotify_playlist_id_two"
   locked: false
+  music_request: two
+  activity: two
 
 with_tracks:
   user: basic
@@ -41,3 +45,5 @@ with_tracks:
   updated_at: <%= Time.now %>
   spotify_playlist_id: "spotify_playlist_id_three"
   locked: false
+  music_request: three
+  activity: three

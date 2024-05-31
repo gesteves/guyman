@@ -59,13 +59,6 @@ class PlaylistsController < ApplicationController
     end
   end
 
-  def destroy_all
-    if Rails.env.development?
-      current_user.playlists.destroy_all
-      redirect_to root_path
-    end
-  end
-
   private
 
   def set_playlist

@@ -1,0 +1,29 @@
+one:
+  user: basic
+  name: "Morning Ride"
+  description: "A moderate intensity cycling workout."
+  sport: "Cycling"
+  duration: 60
+  activity_type: "Workout"
+  created_at: <%= Time.now %>
+  updated_at: <%= Time.now %>
+
+two:
+  user: basic
+  name: "Evening Run"
+  description: "A high intensity running workout."
+  sport: "Running"
+  duration: 45
+  activity_type: "Workout"
+  created_at: <%= Time.now %>
+  updated_at: <%= Time.now %>
+
+three:
+  user: basic
+  name: "Afternoon Swim"
+  description: "A relaxing swim session."
+  sport: "Swimming"
+  duration: 30
+  activity_type: "Workout"
+  created_at: <%= Time.now %>
+  updated_at: <%= Time.now %>

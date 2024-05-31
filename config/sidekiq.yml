@@ -5,12 +5,15 @@
   - low
 :scheduler:
   :schedule:
-    process_all_workouts_job:
+    fetch_new_events_job:
       cron: "*/5 * * * *" # Every 5 minutes
-      class: "ProcessNewWorkoutsJob"
+      class: "FetchNewEventsJob"
       queue: high
-
-    clean_up_playlists_job:
+    clean_up_events_job:
       cron: "*/5 * * * *" # Every 5 minutes
+      class: "CleanUpEventsJob"
+      queue: low
+    clean_up_playlists_job:
+      cron: "0 * * * *" # Every hour
       class: "CleanUpPlaylistsJob"
       queue: low

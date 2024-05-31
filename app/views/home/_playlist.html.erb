@@ -7,7 +7,7 @@
     <% end %>
   </div>
   <div class="card-content">
-    <% if playlist.processing? %>
+    <% if playlist.activity.name.blank? || playlist.activity.description.blank? %>
       <div class="content skeleton-lines">
         <div></div>
         <div></div>
@@ -15,12 +15,12 @@
       </div>
     <% else %>
       <div class="content">
-        <%= simple_format(playlist.description) %>
+        <strong><%= playlist.activity.name %></strong><br><%= playlist.activity.description %>
       </div>
     <% end %>
     <hr>
     <div class="field is-grouped is-grouped-right">
-      <%= button_to regenerate_playlist_path(playlist), method: :post, data: { turbo_confirm: 'Are you sure you want to regenerate this playlist?' }, disabled: playlist.processing? || playlist.locked?, class: "button is-small" do %>
+      <%= button_to regenerate_playlist_path(playlist), method: :post, data: { turbo_confirm: 'Are you sure you want to regenerate this playlist?' }, disabled: playlist.locked?, class: "button is-small #{'is-loading' if playlist.processing?}" do %>
         <span class="icon">
           <i class="fa-solid fa-sparkles"></i>
         </span>

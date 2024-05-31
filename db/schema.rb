@@ -10,9 +10,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_05_28_143508) do
+ActiveRecord::Schema[7.1].define(version: 2024_05_31_163330) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "activities", force: :cascade do |t|
+    t.string "name"
+    t.text "description"
+    t.string "sport"
+    t.integer "duration"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.string "activity_type"
+    t.index ["user_id"], name: "index_activities_on_user_id"
+  end
 
   create_table "authentications", force: :cascade do |t|
     t.string "provider"
@@ -32,6 +44,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_28_143508) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "last_used_at"
+    t.datetime "deleted_at"
     t.index ["user_id"], name: "index_music_requests_on_user_id"
   end
 
@@ -50,6 +63,10 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_28_143508) do
     t.boolean "following", default: false, null: false
     t.boolean "processing", default: false
     t.boolean "locked", default: false
+    t.bigint "activity_id", null: false
+    t.bigint "music_request_id", null: false
+    t.index ["activity_id"], name: "index_playlists_on_activity_id"
+    t.index ["music_request_id"], name: "index_playlists_on_music_request_id"
     t.index ["user_id"], name: "index_playlists_on_user_id"
   end
 
@@ -89,8 +106,11 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_28_143508) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "activities", "users"
   add_foreign_key "authentications", "users"
   add_foreign_key "music_requests", "users"
+  add_foreign_key "playlists", "activities"
+  add_foreign_key "playlists", "music_requests"
   add_foreign_key "playlists", "users"
   add_foreign_key "preferences", "users"
   add_foreign_key "tracks", "playlists"
