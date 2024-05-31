@@ -15,11 +15,13 @@ class MusicRequestsController < ApplicationController
     redirect_to music_requests_path, notice: 'Your music request has been restored!'
   end
 
-  def create    
+  def create
+    current_request = current_user.current_music_request
     @music_request = MusicRequest.find_or_create_and_activate(current_user, music_request_params[:prompt])
   
+    CleanUpPlaylistsForUserJob.perform_inline(current_user.id)
     ProcessNewWorkoutsForUserJob.perform_async(current_user.id)
-    CleanUpPlaylistsForUserJob.perform_async(current_user.id)
+    current_user.regenerate_todays_playlists! if current_request != @music_request
   
     respond_to do |format|
       format.turbo_stream { head :no_content }
@@ -30,7 +32,9 @@ class MusicRequestsController < ApplicationController
 
   def destroy
     if current_user.music_requests.count > 1
+      was_active = @music_request.active?
       @music_request.destroy
+      current_user.regenerate_todays_playlists! if was_active
       redirect_to music_requests_path, notice: 'Your music request has been deleted!'
     else
       redirect_to music_requests_path, alert: 'You can’t delete your only music request!'

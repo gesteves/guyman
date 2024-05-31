@@ -109,4 +109,8 @@ class User < ApplicationRecord
   def spotify_refresh_token
     authentications.find_by(provider: 'spotify')&.refresh_token
   end
+
+  def regenerate_todays_playlists!
+    todays_playlists.where.not(locked: true).each { |p| GeneratePlaylistJob.perform_async(id, p.id) }
+  end
 end
