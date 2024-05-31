@@ -6,8 +6,6 @@ class GenerateActivityDetailsJob < ApplicationJob
     user = User.find(user_id)
     activity = user.activities.find(activity_id)
 
-    activity.playlist.processing!
-
     prompt = chatgpt_user_prompt(activity)
     response = ChatgptClient.new.ask_for_json(chatgpt_system_prompt, prompt, user_id)
 
@@ -22,9 +20,6 @@ class GenerateActivityDetailsJob < ApplicationJob
 
     # Enqueue a job to generate the playlist for this activity.
     GeneratePlaylistJob.perform_async(user.id, activity.playlist.id)
-  rescue StandardError => e
-    activity.playlist.done_processing!
-    raise e
   end
 
   private
