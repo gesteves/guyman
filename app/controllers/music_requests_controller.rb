@@ -20,14 +20,25 @@ class MusicRequestsController < ApplicationController
 
     CleanUpEventsForUserJob.perform_inline(current_user.id)
     FetchNewEventsForUserJob.perform_inline(current_user.id)
-    current_user.todays_playlists.where(locked: false).where.not(music_request_id: @music_request.id).each do |playlist|
+    updateable_playlists = current_user.todays_playlists.where(locked: false).where.not(music_request_id: @music_request.id)
+    updateable_playlists.each do |playlist|
       playlist.update!(music_request_id: @music_request.id)
       GeneratePlaylistJob.perform_async(current_user.id, playlist.id)
     end
 
+    notification = if current_user.todays_playlists.present?
+      if updateable_playlists.present?
+        { message: 'Your playlists are being generated ✨', level: 'success' }
+      else
+        { message: 'You don’t have any new workouts on your calendar! Go add some and try again.', level: 'warning' }
+      end
+    else
+      { message: 'You don’t have any workouts on your calendar! Go add some and try again.', level: 'warning'}
+    end
+
     respond_to do |format|
-      format.turbo_stream { head :no_content }
-      format.html { redirect_to root_path, notice: 'Your playlists are being generated ✨' }
+      format.turbo_stream { render turbo_stream: turbo_stream_notification(notification) }
+      format.html { redirect_to root_path }
     end
   end
 

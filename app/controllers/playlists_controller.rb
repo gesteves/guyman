@@ -12,8 +12,8 @@ class PlaylistsController < ApplicationController
   def toggle_lock
     @playlist.update(locked: !@playlist.locked?)
     respond_to do |format|
-      format.turbo_stream { head :no_content }
-      format.html { redirect_to root_path, notice: "Your playlist is now #{@playlist.locked? ? 'locked 🔒' : 'unlocked 🔓'}" }
+      format.turbo_stream { render turbo_stream: turbo_stream_notification({ message: "Your playlist is now #{@playlist.locked? ? 'locked 🔒' : 'unlocked 🔓'}", level: 'success' }) }
+      format.html { redirect_to root_path }
     end
   end
 
@@ -23,8 +23,8 @@ class PlaylistsController < ApplicationController
     else
       GeneratePlaylistJob.perform_async(current_user.id, @playlist.id)
       respond_to do |format|
-        format.turbo_stream { head :no_content }
-        format.html { redirect_to root_path, notice: 'Your playlist is being generated ✨' }
+        format.turbo_stream { render turbo_stream: turbo_stream_notification({ message: 'Your playlist is being generated ✨', level: 'success' }) }
+        format.html { redirect_to root_path }
       end
     end
   end
