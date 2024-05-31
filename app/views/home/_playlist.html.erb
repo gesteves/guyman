@@ -15,7 +15,7 @@
       </div>
     <% else %>
       <div class="content">
-        <strong><%= playlist.name %></strong><br><%= playlist.description %>
+        <%= simple_format(playlist.description) %>
       </div>
     <% end %>
     <hr>
