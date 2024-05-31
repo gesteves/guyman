@@ -1,7 +1,7 @@
 class Playlist < ApplicationRecord
   belongs_to :user
   belongs_to :activity, dependent: :destroy
-  belongs_to :music_request
+  belongs_to :music_request, -> { with_deleted }, optional: true
   has_many :tracks, -> { order(:position) }, dependent: :destroy
 
   before_destroy :unfollow_spotify_playlist, if: :spotify_playlist_id?
