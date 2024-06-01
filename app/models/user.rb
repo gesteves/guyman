@@ -54,6 +54,9 @@ class User < ApplicationRecord
     end
   end
 
+  # Checks if the user has any playlist that are in the process of being generated.
+  #
+  # @return [Boolean] True if the user has any playlist being generated, false otherwise.
   def is_generating_playlists?
     playlists.present? && playlists.any?(&:processing)
   end
@@ -92,6 +95,13 @@ class User < ApplicationRecord
     end
   end
 
+  # Returns the active music request for the user
+  #
+  # @return [MusicRequest, nil] The active music request, or nil if not found.
+  def current_music_request
+    music_requests.find_by(active: true)
+  end
+
   # Checks if the user has a valid Spotify token.
   #
   # @return [Boolean] True if the user has a valid Spotify token, false otherwise.
@@ -105,13 +115,6 @@ class User < ApplicationRecord
     rescue
       false
     end
-  end
-
-  # Returns the active music request for the user
-  #
-  # @return [MusicRequest, nil] The active music request, or nil if not found.
-  def current_music_request
-    music_requests.find_by(active: true)
   end
 
   def spotify_user_id
