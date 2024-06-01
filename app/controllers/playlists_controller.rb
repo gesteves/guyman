@@ -21,6 +21,7 @@ class PlaylistsController < ApplicationController
     if @playlist.processing? || @playlist.locked?
       redirect_to root_path, alert: 'Your playlist can’t be generated at this time.'
     else
+      @playlist.processing!
       GeneratePlaylistJob.perform_async(current_user.id, @playlist.id)
       respond_to do |format|
         format.turbo_stream { head :no_content }
@@ -33,6 +34,7 @@ class PlaylistsController < ApplicationController
     if @playlist.processing? || @playlist.locked? || @playlist.cover_dalle_prompt.blank?
       redirect_to root_path, alert: 'Your playlist’s cover art can’t be regenerated at this time.'
     else
+      @playlist.generating_cover_image!
       GenerateCoverImageJob.perform_async(current_user.id, @playlist.id)
       respond_to do |format|
         format.turbo_stream { head :no_content }
