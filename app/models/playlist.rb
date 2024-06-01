@@ -63,6 +63,20 @@ class Playlist < ApplicationRecord
     update!(processing: false)
   end
 
+  # Indicates that the cover image is being generated.
+  #
+  # @return [void]
+  def generating_cover_image!
+    update!(generating_cover_image: true)
+  end
+
+  # Indicates that the cover image has been generated.
+  #
+  # @return [void]
+  def done_generating_cover_image!
+    update!(generating_cover_image: false)
+  end
+
   # Sets the cover_image_updated_at column to the current time.
   #
   # @return [void]
@@ -120,7 +134,7 @@ class Playlist < ApplicationRecord
       broadcast_update_to "music_requests:form:user:#{user.id}", target: "music_request_form", partial: "home/music_request_form", locals: { music_request: self.user.current_music_request, todays_playlists: self.user.todays_playlists }
     elsif saved_change_to_cover_image_updated_at?
       broadcast_update_to "playlists:index:user:#{user.id}", partial: "home/playlist", locals: { playlist: self }
-    elsif saved_change_to_locked? || saved_change_to_processing?
+    elsif saved_change_to_locked? || saved_change_to_processing? || saved_change_to_generating_cover_image?
       broadcast_update_to "playlists:index:user:#{user.id}", target: "playlist_buttons_#{id}", partial: "home/playlist_buttons", locals: { playlist: self }
     end
   end

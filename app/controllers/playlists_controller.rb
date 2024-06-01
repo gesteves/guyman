@@ -1,6 +1,6 @@
 class PlaylistsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_playlist, only: [:toggle_lock, :regenerate, :follow, :unfollow]
+  before_action :set_playlist, only: [:toggle_lock, :regenerate, :regenerate_cover, :follow, :unfollow]
 
   def index
     page = params[:page]&.to_i || 1
@@ -25,6 +25,18 @@ class PlaylistsController < ApplicationController
       respond_to do |format|
         format.turbo_stream { head :no_content }
         format.html { redirect_to root_path }
+      end
+    end
+  end
+
+  def regenerate_cover
+    if @playlist.processing? || @playlist.locked? || @playlist.cover_dalle_prompt.blank?
+      redirect_to root_path, alert: 'Your playlist’s cover art can’t be regenerated at this time.'
+    else
+      GenerateCoverImageJob.perform_async(current_user.id, @playlist.id)
+      respond_to do |format|
+        format.turbo_stream { head :no_content }
+        format.html { redirect_to root_path, notice: 'Your playlist’s cover art is being regenerated ✨' }
       end
     end
   end

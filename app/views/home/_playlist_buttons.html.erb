@@ -1,9 +1,14 @@
-<%= button_to regenerate_playlist_path(playlist), method: :post, data: { turbo_confirm: 'Are you sure you want to regenerate this playlist?' }, disabled: playlist.locked?, class: "button is-small #{'is-loading' if playlist.processing?}" do %>
+<%= button_to regenerate_playlist_path(playlist), method: :post, data: { turbo_confirm: 'Are you sure you want to regenerate this playlist?' }, disabled: playlist.locked? || playlist.generating_cover_image?, class: "button is-small #{'is-loading' if playlist.processing?}" do %>
   <span class="icon">
     <i class="fa-solid fa-sparkles"></i>
   </span>
 <% end %>
-<%= button_to toggle_lock_playlist_path(playlist), method: :post, disabled: playlist.processing?, class: "button is-small #{'is-danger is-light' if playlist.locked?}" do %>
+<%= button_to regenerate_cover_playlist_path(playlist), method: :post, data: { turbo_confirm: 'Are you sure you want to regenerate this playlist’s cover art?' }, disabled: playlist.processing? || playlist.locked?, class: "button is-small #{'is-loading' if playlist.generating_cover_image?}" do %>
+  <span class="icon">
+    <i class="fa-solid fa-album"></i>
+  </span>
+<% end %>
+<%= button_to toggle_lock_playlist_path(playlist), method: :post, disabled: playlist.processing? || playlist.generating_cover_image?, class: "button is-small #{'is-danger is-light' if playlist.locked?}" do %>
   <% if playlist.locked? %>
     <span class="icon">
       <i class="fa-solid fa-lock"></i>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_06_01_025903) do
+ActiveRecord::Schema[7.1].define(version: 2024_06_01_091818) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -67,6 +67,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_06_01_025903) do
     t.bigint "activity_id", null: false
     t.bigint "music_request_id", null: false
     t.datetime "cover_image_updated_at"
+    t.boolean "generating_cover_image", default: false, null: false
     t.index ["activity_id"], name: "index_playlists_on_activity_id"
     t.index ["music_request_id"], name: "index_playlists_on_music_request_id"
     t.index ["user_id"], name: "index_playlists_on_user_id"
