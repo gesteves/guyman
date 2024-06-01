@@ -94,20 +94,20 @@ class Playlist < ApplicationRecord
   def broadcast_create
     return if Rails.env.test?
     broadcast_append_to "playlists:index:user:#{user.id}", partial: "home/playlist", locals: { playlist: self }
-    broadcast_replace_to "music_requests:form:user:#{user.id}", target: "music_request_form", partial: "home/music_request_form", locals: { music_request: self.user.current_music_request, todays_playlists: self.user.todays_playlists }
+    broadcast_update_to "music_requests:form:user:#{user.id}", target: "music_request_form", partial: "home/music_request_form", locals: { music_request: self.user.current_music_request, todays_playlists: self.user.todays_playlists }
   end
 
   def broadcast_update
     return if Rails.env.test?
     if saved_change_to_processing? || saved_change_to_locked? || (saved_change_to_updated_at? && !processing?)
-      broadcast_replace_to "playlists:index:user:#{user.id}", partial: "home/playlist", locals: { playlist: self }
-      broadcast_replace_to "music_requests:form:user:#{user.id}", target: "music_request_form", partial: "home/music_request_form", locals: { music_request: self.user.current_music_request, todays_playlists: self.user.todays_playlists }
+      broadcast_update_to "playlists:index:user:#{user.id}", partial: "home/playlist", locals: { playlist: self }
+      broadcast_update_to "music_requests:form:user:#{user.id}", target: "music_request_form", partial: "home/music_request_form", locals: { music_request: self.user.current_music_request, todays_playlists: self.user.todays_playlists }
     end
   end
 
   def broadcast_destroy
     return if Rails.env.test?
     broadcast_remove_to "playlists:index:user:#{user.id}"
-    broadcast_replace_to "music_requests:form:user:#{user.id}", target: "music_request_form", partial: "home/music_request_form", locals: { music_request: self.user.current_music_request, todays_playlists: self.user.todays_playlists }
+    broadcast_update_to "music_requests:form:user:#{user.id}", target: "music_request_form", partial: "home/music_request_form", locals: { music_request: self.user.current_music_request, todays_playlists: self.user.todays_playlists }
   end
 end
