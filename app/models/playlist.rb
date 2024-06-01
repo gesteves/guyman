@@ -19,6 +19,9 @@ class Playlist < ApplicationRecord
     tracks.pluck(:spotify_uri).compact
   end
 
+  # Returns the URL for the Spotify playlist iframe, including a cache buster if the cover image was updated.
+  #
+  # @return [String] The URL for the Spotify playlist iframe.
   def spotify_iframe_url
     return if spotify_playlist_id.blank?
     cache_buster = "?#{cover_image_updated_at.to_i}" if cover_image_updated_at.present?
