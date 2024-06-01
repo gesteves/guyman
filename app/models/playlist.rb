@@ -8,9 +8,9 @@ class Playlist < ApplicationRecord
 
   default_scope { order(created_at: :desc) }
 
-  after_create_commit -> { broadcast_create }
-  after_update_commit -> { broadcast_update }
-  after_destroy_commit -> { broadcast_destroy }
+  after_create_commit :broadcast_create
+  after_update_commit :broadcast_update
+  after_destroy_commit :broadcast_destroy
 
   # Returns an array of Spotify URIs for all the tracks in the playlist.
   #
@@ -99,8 +99,10 @@ class Playlist < ApplicationRecord
 
   def broadcast_update
     return if Rails.env.test?
-    broadcast_replace_to "playlists:index:user:#{user.id}", partial: "home/playlist", locals: { playlist: self }
-    broadcast_replace_to "music_requests:form:user:#{user.id}", target: "music_request_form", partial: "home/music_request_form", locals: { music_request: self.user.current_music_request, todays_playlists: self.user.todays_playlists }
+    if saved_change_to_processing? || saved_change_to_locked? || (saved_change_to_updated_at? && !processing?)
+      broadcast_replace_to "playlists:index:user:#{user.id}", partial: "home/playlist", locals: { playlist: self }
+      broadcast_replace_to "music_requests:form:user:#{user.id}", target: "music_request_form", partial: "home/music_request_form", locals: { music_request: self.user.current_music_request, todays_playlists: self.user.todays_playlists }
+    end
   end
 
   def broadcast_destroy
