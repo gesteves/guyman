@@ -4,7 +4,7 @@ class GeneratePlaylistJob < ApplicationJob
 
   def perform(user_id, playlist_id)
     user = User.find(user_id)
-    
+
     playlist = user.playlists.find(playlist_id)
 
     return if playlist.locked?
@@ -39,7 +39,7 @@ class GeneratePlaylistJob < ApplicationJob
     playlist_tracks.each_with_index do |track, index|
       playlist.tracks.create!(title: track['track'], artist: track['artist'], position: index + 1)
     end
-    
+
     # Enqueue a job to create or update the playlist in Spotify
     # with the name and description ChatGPT generated.
     SetUpSpotifyPlaylistJob.perform_async(user.id, playlist.id)
@@ -81,17 +81,17 @@ class GeneratePlaylistJob < ApplicationJob
 
       - You will receive the name of the user's workout, followed by a description of the workout.
       - You must generate a playlist tailored to the workout's structure and intensity.
-      - The playlist must contain at least 50 songs. 
+      - The playlist must contain at least 50 songs.
       - The user may specify genres and bands they like; use this information to guide your choices.
       - The user may specify genres, bands, or specific tracks they want to avoid; do not include them in the playlist.
       - You may receive a list of songs used in playlists for previous workouts; do not include them in the playlist.
       - Do not include songs with significant amounts of silence (such as songs with hidden tracks).
       - You must come up with a name for the playlist following this exact format: "[name_of_the_workout]: [very_short_description_of_the_playlist]"
       - You must write a description for the playlist in 300 characters or less.
-      - Generate a detailed prompt to create, using Dall-E, a playlist cover image that visually represents the workout and the playlist in a creative way, but avoid anything that may cause content policy violations in Dall-E or get flagged by OpenAI's safety systems.
-      
+      - Generate a detailed prompt to create, using Dall-E, a playlist cover image that visually represents the workout and the playlist in a creative way. Do not prompt Dall-E to generate text, album art, or concert posters, and avoid anything that may cause content policy violations in Dall-E or get flagged by OpenAI's safety systems.
+
       You must return your response in JSON format using this exact structure:
-      
+
       {
         "name": "The name of the playlist",
         "description": "The 300-character summary of the playlist.",
@@ -100,11 +100,11 @@ class GeneratePlaylistJob < ApplicationJob
           {"artist": "Artist Name 1", "track": "Track Name 1"},
           {"artist": "Artist Name 2", "track": "Track Name 2"}
         ]
-      }    
+      }
     PROMPT
   end
 
-  # In the user prompt, we pass the workout name and description, along with the musical preferences the user specified. 
+  # In the user prompt, we pass the workout name and description, along with the musical preferences the user specified.
   # ChatGPT is not super original at creating playlists, and tends to return the same songs over and over.
   # To try to work around this, we store in the database the songs that have already been used in other playlists,
   # then tell it to avoid using those songs in the current playlist.
@@ -112,13 +112,13 @@ class GeneratePlaylistJob < ApplicationJob
   #
   # Note that Spotify's terms of use forbid passing Spotify data to ChatGPT, so it's important that we never do that in the prompt.
   # We avoid that by using the song names and artists from previous ChatGPT responses, not ones from the Spotify API.
-  def chatgpt_user_prompt(user, playlist)  
+  def chatgpt_user_prompt(user, playlist)
     <<~PROMPT
       #{playlist.activity.name}
       #{playlist.activity.description}
-  
+
       #{playlist.music_request.prompt}
-  
+
       #{user.excluded_tracks_string}
     PROMPT
   end
