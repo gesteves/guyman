@@ -3,9 +3,9 @@ class User < ApplicationRecord
 
   has_many :authentications, dependent: :destroy
   has_one :preference, dependent: :destroy
-  has_many :playlists, dependent: :destroy
+  has_many :playlists, -> { order(created_at: :desc)}, dependent: :destroy
   has_many :music_requests, dependent: :destroy
-  has_many :activities, dependent: :destroy
+  has_many :activities, -> { order(created_at: :desc) }, dependent: :destroy
 
   def self.from_omniauth(auth)
     authentication = Authentication.where(provider: auth.provider, uid: auth.uid).first_or_initialize
@@ -41,14 +41,6 @@ class User < ApplicationRecord
       current_date = Time.current.in_time_zone(preference.timezone)
       playlists.joins(:activity)
                .where(playlists: { created_at: current_date.beginning_of_day..current_date.end_of_day })
-               .order(Arel.sql("
-                 CASE activities.activity_type
-                   WHEN 'Swimming' THEN 1
-                   WHEN 'Cycling' THEN 2
-                   WHEN 'Running' THEN 3
-                   ELSE 4
-                 END, activities.created_at ASC
-               "))
     else
       []
     end
