@@ -61,7 +61,7 @@ class GenerateActivityDetailsJob < ApplicationJob
     <<~PROMPT
       #{activity.name}
 
-      #{activity.description}
+      #{activity.original_description}
     PROMPT
   end
 end
