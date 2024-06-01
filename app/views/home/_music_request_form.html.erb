@@ -2,7 +2,7 @@
   <div class="field">
     <%= form.label :prompt, "What do you want to listen to today?", class: 'label' %>
     <div class="control">
-      <%= form.text_area :prompt, class: 'textarea', rows: 10, disabled: music_request.user.is_generating_playlists? %>
+      <%= form.text_area :prompt, class: 'textarea', disabled: music_request.user.is_generating_playlists? %>
     </div>
     <p class="help">
       Be as detailed as you want. You can specify moods, genres, albums or artists you want to listen to (or not!)
