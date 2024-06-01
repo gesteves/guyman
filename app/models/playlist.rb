@@ -19,6 +19,12 @@ class Playlist < ApplicationRecord
     tracks.pluck(:spotify_uri).compact
   end
 
+  def spotify_iframe_url
+    return if spotify_playlist_id.blank?
+    cache_buster = "?#{cover_image_updated_at.to_i}" if cover_image_updated_at.present?
+    "https://open.spotify.com/embed/playlist/#{spotify_playlist_id}#{cache_buster}"
+  end
+
   # Get the most recent unique track URIs from the user's playlists, excluding the current playlist.
   #
   # @return [Array<String>] An array of recent unique track URIs.
@@ -52,6 +58,13 @@ class Playlist < ApplicationRecord
   # @return [void]
   def done_processing!
     update!(processing: false)
+  end
+
+  # Sets the cover_image_updated_at column to the current time.
+  #
+  # @return [void]
+  def update_cover_image_timestamp!
+    update!(cover_image_updated_at: Time.current)
   end
 
   # A playlist can be processed if:
@@ -102,8 +115,9 @@ class Playlist < ApplicationRecord
     if saved_change_to_processing?
       broadcast_update_to "playlists:index:user:#{user.id}", partial: "home/playlist", locals: { playlist: self }
       broadcast_update_to "music_requests:form:user:#{user.id}", target: "music_request_form", partial: "home/music_request_form", locals: { music_request: self.user.current_music_request, todays_playlists: self.user.todays_playlists }
-    end
-    if saved_change_to_locked? || saved_change_to_processing?
+    elsif saved_change_to_cover_image_updated_at?
+      broadcast_update_to "playlists:index:user:#{user.id}", partial: "home/playlist", locals: { playlist: self }
+    elsif saved_change_to_locked? || saved_change_to_processing?
       broadcast_update_to "playlists:index:user:#{user.id}", target: "playlist_buttons_#{id}", partial: "home/playlist_buttons", locals: { playlist: self }
     end
   end
