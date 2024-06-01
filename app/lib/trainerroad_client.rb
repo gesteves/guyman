@@ -17,7 +17,7 @@ class TrainerroadClient
   #
   # @return [Array<Hash>] An array of event hashes, each containing the event name, description, and duration.
   def get_events_for_today
-    Rails.cache.fetch("trainerroad:calendar:#{@calendar_url.parameterize}", expires_in: 1.minute) do
+    Rails.cache.fetch("trainerroad:#{@calendar_url.parameterize}:#{@timezone.parameterize}", expires_in: 1.minute) do
       response = HTTParty.get(@calendar_url)
 
       calendar_data = handle_response(response)
