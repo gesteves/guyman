@@ -12,6 +12,7 @@
         <div></div>
         <div></div>
         <div></div>
+        <div></div>
       </div>
     <% else %>
       <div class="content">
@@ -19,8 +20,60 @@
       </div>
     <% end %>
     <hr>
-    <div class="field is-grouped is-grouped-right" id="playlist_buttons_<%= playlist.id %>">
-      <%= render partial: 'home/playlist_buttons', locals: { playlist: playlist } %>
+    <div class="level">
+      <div class="level-left">
+        <% if playlist.processing? %>
+          <div class="tags">
+            <span class="tag is-skeleton">Processing…</span>
+            <span class="tag is-skeleton">Processing…</span>
+            <span class="tag is-skeleton">Processing…</span>
+          </div>
+        <% else %>
+          <div class="field is-grouped is-grouped-multiline">
+            <div class="control">
+              <div class="tags has-addons">
+                <span class="tag is-dark"><i class="fa-solid fa-stopwatch"></i></span>
+                <span class="tag"><%= convert_minutes_to_duration playlist.activity.duration %></span>
+              </div>
+            </div>
+            <div class="control">
+              <div class="tags has-addons">
+                <span class="tag is-dark">
+                  <% if playlist.activity.sport == 'Swimming' %>
+                    <i class="fa-solid fa-person-swimming" style="transform: scaleX(-1);"></i>
+                  <% elsif playlist.activity.sport == 'Cycling' %>
+                    <i class="fa-solid fa-person-biking"></i>
+                  <% elsif playlist.activity.sport == 'Running' %>
+                    <i class="fa-solid fa-person-running-fast"></i>
+                  <% else %>
+                    <i class="fa-solid fa-circle-question"></i>
+                  <% end %>
+                </span>
+                <span class="tag"><%= playlist.activity.sport %></span>
+              </div>
+            </div>
+            <div class="control">
+              <div class="tags has-addons">
+                <span class="tag is-dark">
+                  <% if playlist.activity.activity_type == 'Race' %>
+                    <i class="fa-solid fa-medal"></i>
+                  <% elsif playlist.activity.activity_type == 'Workout' %>
+                    <i class="fa-solid fa-heart-pulse"></i>
+                  <% else %>
+                    <i class="fa-solid fa-circle-question"></i>
+                  <% end %>
+                </span>
+                <span class="tag"><%= playlist.activity.activity_type %></span>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+      <div class="level-right">
+        <div class="field is-grouped is-grouped-right" id="playlist_buttons_<%= playlist.id %>">
+          <%= render partial: 'home/playlist_buttons', locals: { playlist: playlist } %>
+        </div>
+      </div>
     </div>
   </div>
 </div>

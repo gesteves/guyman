@@ -1,12 +1,11 @@
 module ApplicationHelper
-  def notification_class(key)
-    case key
-    when "notice"
-      "is-success"
-    when "alert"
-      "is-warning"
-    else
-      "is-info"
-    end
+  # Converts the duration from minutes to HH:MM format.
+  #
+  # @param minutes [Integer] The duration in minutes.
+  # @return [String] The duration in HH:MM format.
+  def convert_minutes_to_duration(minutes)
+    hours = minutes / 60
+    remaining_minutes = minutes % 60
+    format('%02d:%02d', hours, remaining_minutes)
   end
 end
