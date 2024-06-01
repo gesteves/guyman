@@ -134,7 +134,7 @@ class Playlist < ApplicationRecord
       broadcast_update_to "music_requests:form:user:#{user.id}", target: "music_request_form", partial: "home/music_request_form", locals: { music_request: self.user.current_music_request, todays_playlists: self.user.todays_playlists }
     elsif saved_change_to_cover_image_updated_at?
       broadcast_update_to "playlists:index:user:#{user.id}", partial: "home/playlist", locals: { playlist: self }
-    elsif saved_change_to_locked? || saved_change_to_processing? || saved_change_to_generating_cover_image?
+    elsif saved_change_to_locked? || saved_change_to_processing? || saved_change_to_generating_cover_image? || saved_change_to_following?
       broadcast_update_to "playlists:index:user:#{user.id}", target: "playlist_buttons_#{id}", partial: "home/playlist_buttons", locals: { playlist: self }
     end
   end
