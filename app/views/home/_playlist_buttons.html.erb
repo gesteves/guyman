@@ -3,7 +3,7 @@
     <i class="fa-solid fa-sparkles"></i>
   </span>
 <% end %>
-<%= button_to regenerate_cover_playlist_path(playlist), method: :post, data: { turbo_confirm: 'Are you sure you want to regenerate this playlist’s cover art?' }, disabled: playlist.processing? || playlist.locked?, class: "button #{'is-loading' if playlist.generating_cover_image?}" do %>
+<%= button_to regenerate_cover_playlist_path(playlist), method: :post, data: { turbo_confirm: 'Are you sure you want to regenerate this playlist’s cover art?' }, disabled: playlist.processing? || playlist.locked?, class: "button #{'is-loading' if !playlist.processing? && playlist.generating_cover_image?}" do %>
   <span class="icon">
     <i class="fa-kit fa-solid-image-rotate"></i>
   </span>
