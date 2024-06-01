@@ -123,19 +123,19 @@ class Playlist < ApplicationRecord
 
   def broadcast_create
     return if Rails.env.test?
-    broadcast_append_to "playlists:index:user:#{user.id}", partial: "home/playlist", locals: { playlist: self }
+    broadcast_append_to "playlists:index:user:#{user.id}", partial: "playlists/card", locals: { playlist: self }
     broadcast_update_to "music_requests:form:user:#{user.id}", target: "music_request_form", partial: "home/music_request_form", locals: { music_request: self.user.current_music_request, todays_playlists: self.user.todays_playlists }
   end
 
   def broadcast_update
     return if Rails.env.test?
     if saved_change_to_processing?
-      broadcast_update_to "playlists:index:user:#{user.id}", partial: "home/playlist", locals: { playlist: self }
+      broadcast_update_to "playlists:index:user:#{user.id}", partial: "playlists/card", locals: { playlist: self }
       broadcast_update_to "music_requests:form:user:#{user.id}", target: "music_request_form", partial: "home/music_request_form", locals: { music_request: self.user.current_music_request, todays_playlists: self.user.todays_playlists }
     elsif saved_change_to_cover_image_updated_at?
-      broadcast_update_to "playlists:index:user:#{user.id}", partial: "home/playlist", locals: { playlist: self }
+      broadcast_update_to "playlists:index:user:#{user.id}", partial: "playlists/card", locals: { playlist: self }
     elsif saved_change_to_locked? || saved_change_to_processing? || saved_change_to_generating_cover_image? || saved_change_to_following?
-      broadcast_update_to "playlists:index:user:#{user.id}", target: "playlist_buttons_#{id}", partial: "home/playlist_buttons", locals: { playlist: self }
+      broadcast_update_to "playlists:index:user:#{user.id}", target: "playlist_actions_#{id}", partial: "playlists/actions", locals: { playlist: self }
     end
   end
 

@@ -70,8 +70,8 @@
         <% end %>
       </div>
       <div class="level-right">
-        <div class="field is-grouped is-grouped-right" id="playlist_buttons_<%= playlist.id %>">
-          <%= render partial: 'home/playlist_buttons', locals: { playlist: playlist } %>
+        <div class="field is-grouped is-grouped-right" id="playlist_actions_<%= playlist.id %>">
+          <%= render partial: 'playlists/actions', locals: { playlist: playlist } %>
         </div>
       </div>
     </div>

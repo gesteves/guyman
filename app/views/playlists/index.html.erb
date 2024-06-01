@@ -24,42 +24,8 @@
           <td><%= playlist.description %></td>
           <td><%= playlist.todays? ? "<strong>Today</strong>".html_safe : playlist.created_at.in_time_zone(current_user.preference.timezone).strftime("%m/%d/%Y") %></td>
           <td>
-            <div class="field is-grouped is-grouped-right">
-              <% if playlist.todays? %>
-                <%= button_to toggle_lock_playlist_path(playlist), method: :post, class: "button" do %>
-                  <% if playlist.locked? %>
-                    <span class="icon">
-                      <i class="fa-solid fa-lock-open"></i>
-                    </span>
-                    <span>Unlock</span>
-                  <% else %>
-                    <span class="icon">
-                      <i class="fa-solid fa-lock"></i>
-                    </span>
-                    <span>Lock</span>
-                  <% end %>
-                <% end %> 
-                <%= button_to regenerate_playlist_path(playlist), method: :post, data: { turbo_confirm: 'Are you sure you want to regenerate this playlist?' }, disabled: playlist.locked?, class: "button" do %>
-                  <span class="icon">
-                    <i class="fa-solid fa-sparkles"></i>
-                  </span>
-                  <span>Regenerate</span>
-                <% end %>
-              <% elsif playlist.following? %>
-                <%= button_to unfollow_playlist_path(playlist), method: :post, data: { turbo_confirm: 'Are you sure you want to remove this playlist from your Spotify library?' }, class: "button" do %>
-                  <span class="icon">
-                    <i class="fa-solid fa-trash"></i>
-                  </span>
-                  <span>Remove</span>
-                <% end %>
-              <% else %>
-                <%= button_to follow_playlist_path(playlist), method: :post, data: { turbo_confirm: 'Are you sure you want to restore this playlist to your Spotify library?' }, class: "button" do %>
-                  <span class="icon">
-                    <i class="fa-solid fa-trash-undo"></i>
-                  </span>
-                  <span>Restore</span>
-                <% end %>
-              <% end %>
+            <div class="field is-grouped is-grouped-right" id="playlist_actions_<%= playlist.id %>">
+              <%= render partial: 'playlists/actions', locals: { playlist: playlist } %>
             </div>
           </td>
         </tr>

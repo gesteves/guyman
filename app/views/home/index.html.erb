@@ -15,7 +15,7 @@
     <hr>
     <% if @todays_playlists.any? %>
       <% @todays_playlists.each do |playlist| %>
-        <%= render partial: 'home/playlist', locals: { playlist: playlist } %>
+        <%= render partial: 'playlists/card', locals: { playlist: playlist } %>
       <% end %>
     <% end %>
   <% end %>
