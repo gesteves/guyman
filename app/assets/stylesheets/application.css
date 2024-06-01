@@ -14,3 +14,13 @@
  *= require_self
  */
  @import "https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css";
+
+ #given-to-tri-logo {
+  g,
+  path {
+    fill: black;
+    @media (prefers-color-scheme: dark) {
+      fill: white;
+    }
+  }
+ }
