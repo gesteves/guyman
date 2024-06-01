@@ -28,7 +28,7 @@ class MusicRequestsController < ApplicationController
 
     notification = if current_user.todays_playlists.present?
       if updateable_playlists.present? || current_user.todays_playlists.any? { |p| p.tracks.blank? }
-        { message: 'Your playlists are being generated ✨', level: 'success' }
+        nil
       else
         { message: 'You don’t have any new workouts on your calendar! Go add some and try again.', level: 'warning' }
       end
@@ -37,7 +37,13 @@ class MusicRequestsController < ApplicationController
     end
 
     respond_to do |format|
-      format.turbo_stream { render turbo_stream: turbo_stream_notification(notification) }
+      format.turbo_stream {
+        if notification.present?
+          render turbo_stream: turbo_stream_notification(notification)
+        else
+          head :no_content
+        end
+      }
       format.html { redirect_to root_path }
     end
   end
