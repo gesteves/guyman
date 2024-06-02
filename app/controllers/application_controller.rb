@@ -5,7 +5,7 @@ class ApplicationController < ActionController::Base
 
   def turbo_stream_notification
     return if flash.blank?
-    turbo_stream.update("notification", partial: "shared/flash")
+    turbo_stream.update("notifications", partial: "shared/flash")
   end
 
   private

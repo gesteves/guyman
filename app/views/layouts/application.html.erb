@@ -20,9 +20,10 @@
       <%= yield %>
     </section>
     <div class="notifications" data-turbo-permanent>
-      <%= turbo_frame_tag "notification" do %>
+      <%= turbo_frame_tag "notifications" do %>
         <%= render partial: 'shared/flash' %>
       <% end %>
     </div>
+    <%= turbo_stream_from "notifications:user:#{current_user.id}" %>
   </body>
 </html>
