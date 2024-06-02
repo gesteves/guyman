@@ -17,6 +17,18 @@ class PlaylistsController < ApplicationController
     end
   end
 
+  def toggle_follow
+    if @playlist.following?
+      UnfollowSpotifyPlaylistJob.perform_inline(current_user.id, @playlist.spotify_playlist_id)
+    else
+      FollowSpotifyPlaylistJob.perform_inline(current_user.id, @playlist.spotify_playlist_id)
+    end
+    respond_to do |format|
+      format.turbo_stream { head :no_content }
+      format.html { redirect_to root_path }
+    end
+  end
+
   def regenerate
     if @playlist.processing? || @playlist.locked?
       redirect_to root_path, alert: 'Your playlist can’t be generated at this time.'
@@ -40,24 +52,6 @@ class PlaylistsController < ApplicationController
         format.turbo_stream { head :no_content }
         format.html { redirect_to root_path, notice: 'Your playlist’s cover art is being regenerated ✨' }
       end
-    end
-  end
-
-  def follow
-    if !@playlist.following?
-      FollowSpotifyPlaylistJob.perform_inline(current_user.id, @playlist.spotify_playlist_id)
-      redirect_to playlists_path, notice: 'The playlist has been added to your Spotify library.'
-    else
-      redirect_to playlists_path, alert: 'This playlist is already in your Spotify library.'
-    end
-  end
-
-  def unfollow
-    if @playlist.following?
-      UnfollowSpotifyPlaylistJob.perform_inline(current_user.id, @playlist.spotify_playlist_id)
-      redirect_to playlists_path, notice: 'The playlist has been removed from your Spotify library.'
-    else
-      redirect_to playlists_path, alert: 'This playlist is not in your Spotify library.'
     end
   end
 
