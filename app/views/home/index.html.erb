@@ -13,10 +13,8 @@
 
   <%= turbo_frame_tag "playlists" do %>
     <hr>
-    <% if @todays_playlists.any? %>
-      <% @todays_playlists.each do |playlist| %>
-        <%= render partial: 'playlists/card', locals: { playlist: playlist } %>
-      <% end %>
+    <% @todays_playlists.each do |playlist| %>
+      <%= render partial: 'playlists/card', locals: { playlist: playlist } %>
     <% end %>
   <% end %>
 </section>

@@ -6,30 +6,13 @@
   </div>
 </section>
 
-<section class="container">
-  <table class="table is-striped is-fullwidth">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Created</th>
-        <th class="has-text-right">Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @playlists.each do |playlist| %>
-        <tr>
-          <td><%= link_to playlist.name, "https://open.spotify.com/playlist/#{playlist.spotify_playlist_id}", target: "_blank" %></td>
-          <td><%= playlist.todays? ? "<strong>Today</strong>".html_safe : non_breaking_time_ago(playlist.created_at) %></td>
-          <td>
-            <div class="field is-grouped is-grouped-right" id="playlist_actions_<%= playlist.id %>">
-              <%= render partial: 'playlists/actions', locals: { playlist: playlist } %>
-            </div>
-          </td>
-        </tr>
-        </tr>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
+<section class="container is-max-desktop">
+  <%= turbo_frame_tag "playlists" do %>
+    <% @playlists.each do |playlist| %>
+      <%= render partial: 'playlists/card', locals: { playlist: playlist } %>
+    <% end %>
+  <% end %>
   <%= paginate @playlists, outer_window: 1, window: 1 %>
 </section>
+
+<%= turbo_stream_from "playlists:user:#{current_user.id}" %>
