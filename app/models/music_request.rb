@@ -10,9 +10,9 @@ class MusicRequest < ApplicationRecord
   before_save :ensure_only_one_active, if: :should_ensure_only_one_active?
   before_save :normalize_prompt
   after_destroy :handle_after_destroy, if: :active?
-  after_create_commit -> { broadcast_create }
-  after_update_commit -> { broadcast_update }
-  after_destroy_commit -> { broadcast_destroy }
+  after_create_commit :broadcast_create
+  after_update_commit :broadcast_update
+  after_destroy_commit :broadcast_destroy
 
   scope :active, -> { where(active: true) }
 
