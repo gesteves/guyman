@@ -9,7 +9,7 @@ class PreferencesController < ApplicationController
   def update
     @preference = current_user.preference || current_user.build_preference
     if @preference.update(preference_params)
-      redirect_to settings_path, notice: 'Your changes have been saved!'
+      redirect_to settings_path, notice: 'Your changes have been saved.'
     else
       render :edit
     end
