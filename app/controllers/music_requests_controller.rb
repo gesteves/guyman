@@ -12,7 +12,12 @@ class MusicRequestsController < ApplicationController
 
   def activate
     @music_request.active!
-    redirect_to music_requests_path, notice: 'Your music request has been restored!'
+    flash[:success] = 'This music request will be used for future playlists.'
+
+    respond_to do |format|
+      format.turbo_stream { render turbo_stream: turbo_stream_notification }
+      format.html { redirect_to music_requests_path }
+    end
   end
 
   def create
@@ -27,24 +32,18 @@ class MusicRequestsController < ApplicationController
       GeneratePlaylistJob.perform_async(current_user.id, playlist.id)
     end
 
-    notification = if current_user.todays_playlists.present?
+    if current_user.todays_playlists.present?
       if updateable_playlists.present? || current_user.todays_playlists.any? { |p| p.tracks.blank? }
-        nil
+        flash[:success] = 'Your playlists for today’s workouts are being generated. This may take a couple of minutes.'
       else
-        { message: 'You don’t have any new workouts on your calendar! Go add some and try again.', level: 'warning' }
+        flash[:warning] = 'You don’t have any new workouts on your calendar. Add some and try again.'
       end
     else
-      { message: 'You don’t have any workouts on your calendar! Go add some and try again.', level: 'warning'}
+      flash[:warning] = 'You don’t have any workouts on your calendar. Add some and try again.'
     end
 
     respond_to do |format|
-      format.turbo_stream {
-        if notification.present?
-          render turbo_stream: turbo_stream_notification(notification)
-        else
-          head :no_content
-        end
-      }
+      format.turbo_stream { render turbo_stream: turbo_stream_notification }
       format.html { redirect_to root_path }
     end
   end
@@ -52,9 +51,14 @@ class MusicRequestsController < ApplicationController
   def destroy
     if current_user.music_requests.count > 1
       @music_request.destroy
-      redirect_to music_requests_path, notice: 'Your music request has been deleted!'
+      flash[:success] = 'The music request has been deleted.'
     else
-      redirect_to music_requests_path, alert: 'You can’t delete your only music request!'
+      flash[:warning] = 'You can’t delete your only music request.'
+    end
+
+    respond_to do |format|
+      format.turbo_stream { render turbo_stream: turbo_stream_notification }
+      format.html { redirect_to music_requests_path }
     end
   end
 
