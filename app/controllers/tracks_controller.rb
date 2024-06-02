@@ -9,8 +9,10 @@ class TracksController < ApplicationController
   end
 
   def destroy
-    @track = current_user.playlists.joins(:tracks).find_by(tracks: { id: params[:id] })
+    @track = Track.joins(playlist: :user)
+                .where(playlists: { user_id: current_user.id })
+                .find_by(id: params[:id])
     @track.destroy
-    redirect_to tracks_path, notice: 'Your track has been deleted.'
+    redirect_to tracks_path, notice: "The track <strong>#{@track.title}</strong> by <strong>#{@track.artist}</strong> has been deleted."
   end
 end
