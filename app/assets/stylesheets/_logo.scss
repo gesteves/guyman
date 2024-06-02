@@ -1,0 +1,9 @@
+#given-to-tri-logo {
+  g,
+  path {
+    fill: black;
+    @media (prefers-color-scheme: dark) {
+      fill: white;
+    }
+  }
+ }

@@ -55,6 +55,7 @@ gem 'mini_magick'
 gem 'public_suffix'
 gem 'kaminari'
 gem 'paranoia'
+gem 'sassc-rails'
 
 # Background jobs
 gem 'sidekiq'

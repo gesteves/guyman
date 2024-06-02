@@ -1,5 +1,3 @@
-
-<div class="notification is-light is-<%= level %>" data-controller="notification">
-  <button class="delete" data-action="click->notification#close" data-notification-target="closeButton"></button>
+<div class="notification is-light is-<%= level %>" data-controller="notification" data-action="click->notification#close">
   <%= message %>
 </div>
