@@ -7,7 +7,6 @@
 </section>
 
 <section class="container">
-<% if @playlists.any? %>
   <table class="table is-striped is-fullwidth">
     <thead>
       <tr>
@@ -35,9 +34,4 @@
     </tbody>
   </table>
   <%= paginate @playlists, outer_window: 1, window: 1 %>
-<% else %>
-  <div class="notification">
-    <strong>You don’t have any playlists yet.</strong> Why don’t you go add some workouts to your calendar?
-  </div>
-<% end %>
 </section>
