@@ -6,47 +6,13 @@
   </div>
 </section>
 
-<section class="container">
-<% if @music_requests.any? %>
-  <table class="table is-striped is-fullwidth">
-    <thead>
-      <tr>
-        <th>In&nbsp;use?</th>
-        <th>Request</th>
-        <th>Last&nbsp;Used</th>
-        <th class="has-text-right">Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @music_requests.each do |request| %>
-        <tr>
-          <td><% if request.active? %><span class="icon has-text-success"><i class="fa-solid fa-circle-check"></i><span><% end %></td>
-          <td><%= simple_format(request.prompt) %></td>
-          <td><%= request.last_used_at.blank? ? "Never" : time_ago_in_words(request.last_used_at).gsub(/\s+/, "&nbsp;").html_safe + "&nbsp;ago".html_safe %></td>
-          <td>
-            <div class="field is-grouped is-grouped-right">
-              <%= button_to activate_music_request_path(request), method: :patch, class: "button", disabled: request.active? || music_request_buttons_disabled do %>
-                  <span class="icon">
-                    <i class="fa-solid fa-clock-rotate-left"></i>
-                  </span>
-              <% end %>
-              <%= button_to music_request_path(request), method: :delete, data: { turbo_confirm: 'Are you sure you want to delete this request? This can’t be undone.' }, class: "button is-danger", disabled: music_request_buttons_disabled do %>
-                <span class="icon">
-                  <i class="fa-solid fa-circle-xmark"></i>
-                </span>
-              <% end %>
-            </div>
-          </td>
-        </tr>
-        </tr>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
+<section class="container is-max-desktop">
+  <%= turbo_frame_tag "music_requests" do %>
+    <% @music_requests.each do |request| %>
+      <%= render partial: 'music_requests/card', locals: { music_request: request } %>
+    <% end %>
+  <% end %>
   <%= paginate @music_requests, outer_window: 1, window: 1 %>
-<% else %>
-  <div class="notification">
-    <strong>You haven’t made any requests yet.</strong> Why don’t you go make one?
-  </div>
-<% end %>
 </section>
+
+<%= turbo_stream_from "music_requests:user:#{current_user.id}" %>

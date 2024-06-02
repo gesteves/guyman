@@ -1,0 +1,36 @@
+<div id="<%= dom_id(music_request) %>" class="card">
+  <div class="card-content">
+    <div class="content">
+      <%= simple_format(music_request.prompt) %>
+    </div>
+    <hr>
+    <div class="level">
+      <div class="level-left">
+        <div class="field is-grouped is-grouped-multiline">
+          <% if music_request.active? %>
+            <div class="control">
+              <div class="tags has-addons">
+                <span class="tag is-success"><i class="fa-solid fa-circle-check"></i></span>
+                <span class="tag is-success is-light">In use</span>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+      <div class="level-right">
+        <div class="field is-grouped is-grouped-right">
+          <%= button_to activate_music_request_path(music_request), method: :patch, data: { turbo_confirm: 'Are you sure you want to use this request for future playlists?' }, class: "button", disabled: music_request.active? || music_request_buttons_disabled do %>
+            <span class="icon">
+              <i class="fa-solid fa-clock-rotate-left"></i>
+            </span>
+          <% end %>
+          <%= button_to music_request_path(music_request), method: :delete, data: { turbo_confirm: 'Are you sure you want to delete this request? This can’t be undone.' }, class: "button is-danger", disabled: music_request_buttons_disabled do %>
+            <span class="icon">
+              <i class="fa-solid fa-circle-xmark"></i>
+            </span>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
