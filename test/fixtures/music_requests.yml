@@ -4,7 +4,6 @@ one:
   active: true
   created_at: <%= Time.now %>
   updated_at: <%= Time.now %>
-  last_used_at: <%= Time.now %>
 
 two:
   user: basic
@@ -12,7 +11,6 @@ two:
   active: true
   created_at: <%= Time.now %>
   updated_at: <%= Time.now %>
-  last_used_at: <%= Time.now %>
 
 three:
   user: basic
@@ -20,4 +18,3 @@ three:
   active: true
   created_at: <%= Time.now %>
   updated_at: <%= Time.now %>
-  last_used_at: <%= Time.now %>

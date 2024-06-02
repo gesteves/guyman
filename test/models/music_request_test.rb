@@ -15,12 +15,6 @@ class MusicRequestTest < ActiveSupport::TestCase
     assert_not request.valid?
   end
 
-  test "should set last_used_at when used! is called" do
-    request = @user.music_requests.create(prompt: "Upbeat pop songs")
-    request.used!
-    assert_not_nil request.reload.last_used_at
-  end
-
   test "should set active to true when active! is called" do
     request = @user.music_requests.create(prompt: "Upbeat pop songs")
     request.active!
@@ -55,9 +49,9 @@ class MusicRequestTest < ActiveSupport::TestCase
 
   test "should not set next most recent as active if destroying an inactive request" do
     @user.music_requests.destroy_all
-    old_request = @user.music_requests.create(prompt: "Old song list", last_used_at: 1.week.ago)
-    new_request = @user.music_requests.create(prompt: "New song list", last_used_at: 1.day.ago)
-    newer_request = @user.music_requests.create(prompt: "Newer song list", last_used_at: Time.now, active: true)
+    old_request = @user.music_requests.create(prompt: "Old song list", updated_at: 1.week.ago)
+    new_request = @user.music_requests.create(prompt: "New song list", updated_at: 1.day.ago)
+    newer_request = @user.music_requests.create(prompt: "Newer song list", updated_at: 1.hour.ago, active: true)
 
     old_request.destroy
     assert newer_request.reload.active?

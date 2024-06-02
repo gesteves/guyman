@@ -24,9 +24,6 @@ class GeneratePlaylistJob < ApplicationJob
     playlist_description = response['description']
     playlist_name = response['name']
 
-    # Mark the music request as used
-    playlist.music_request.used!
-
     # Update the existing playlist with the new data
     playlist.update!(name: playlist_name, description: playlist_description, cover_dalle_prompt: dalle_prompt)
     # Remove existing tracks

@@ -31,11 +31,6 @@ class MusicRequest < ApplicationRecord
     music_request
   end
 
-  # Updates the time the request was last used.
-  def used!
-    update!(last_used_at: Time.current)
-  end
-
   # Makes a request the active one.
   def active!
     update!(active: true)
