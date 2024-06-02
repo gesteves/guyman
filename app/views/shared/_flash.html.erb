@@ -1,5 +1,5 @@
 <% flash.each do |key, value| %>
-  <div class="notification is-light is-<%= key %>" data-controller="notification" data-action="click->notification#close">
+  <div class="notification is-light is-<%= flash_level(key) %>" data-controller="notification" data-action="click->notification#close">
     <%= value %>
   </div>
 <% end %>

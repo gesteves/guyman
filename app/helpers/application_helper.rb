@@ -12,4 +12,15 @@ module ApplicationHelper
   def non_breaking_time_ago(from_time, options = {})
     "#{time_ago_in_words(from_time, options)} ago".gsub(/\s+/, "&nbsp;").html_safe
   end
+
+  def flash_level(key)
+    case key.to_s
+    when 'notice'
+      'success'
+    when 'alert'
+      'warning'
+    else
+      key
+    end
+  end
 end
