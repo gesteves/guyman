@@ -11,7 +11,6 @@
     <thead>
       <tr>
         <th>Name</th>
-        <th>Description</th>
         <th>Created</th>
         <th class="has-text-right">Actions</th>
       </tr>
@@ -20,7 +19,6 @@
       <% @playlists.each do |playlist| %>
         <tr>
           <td><%= link_to playlist.name, "https://open.spotify.com/playlist/#{playlist.spotify_playlist_id}", target: "_blank" %></td>
-          <td><%= playlist.description %></td>
           <td><%= playlist.todays? ? "<strong>Today</strong>".html_safe : non_breaking_time_ago(playlist.created_at) %></td>
           <td>
             <div class="field is-grouped is-grouped-right" id="playlist_actions_<%= playlist.id %>">
