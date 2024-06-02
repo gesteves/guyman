@@ -1,0 +1,11 @@
+<div class="notification is-light is-<%= level %>" data-controller="notification">
+  <button class="delete" data-action="click->notification#close"></button>
+  <span class="icon has-text-<%= level %>">
+    <% if level == 'warning' %>
+      <i class="fa-solid fa-triangle-exclamation"></i>
+    <% elsif level == 'success' %>
+      <i class="fa-solid fa-circle-check"></i>
+    <% end %>
+  </span>
+  <%= message.html_safe %>
+</div>
