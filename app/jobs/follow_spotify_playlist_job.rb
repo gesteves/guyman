@@ -9,7 +9,7 @@ class FollowSpotifyPlaylistJob < ApplicationJob
     spotify_client = SpotifyClient.new(user.spotify_user_id, user.spotify_refresh_token)
     spotify_client.follow_playlist(spotify_playlist_id)
 
-    # Set the playlist's following attribute to false.
+    # Set the playlist's following attribute to true.
     playlist = user.playlists.find_by(spotify_playlist_id: spotify_playlist_id)
     playlist.update(following: true) if playlist
   end
