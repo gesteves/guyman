@@ -14,7 +14,7 @@ class PlaylistsController < ApplicationController
     if @playlist.locked?
       flash[:success] = "The playlist <b>#{@playlist.name}</b> is now locked."
     else
-      flash[:success] = "The playlist <b>#{@playlist.name}</b> is now unlocked"
+      flash[:success] = "The playlist <b>#{@playlist.name}</b> is now unlocked."
     end
     respond_to do |format|
       format.turbo_stream { render turbo_stream: turbo_stream_notification }
