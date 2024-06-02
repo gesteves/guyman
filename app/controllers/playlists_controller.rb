@@ -11,8 +11,13 @@ class PlaylistsController < ApplicationController
 
   def toggle_lock
     @playlist.update(locked: !@playlist.locked?)
+    if @playlist.locked?
+      flash[:success] = 'The playlist is now locked.'
+    else
+      flash[:success] = 'The playlist is now unlocked'
+    end
     respond_to do |format|
-      format.turbo_stream { head :no_content }
+      format.turbo_stream { render turbo_stream: turbo_stream_notification }
       format.html { redirect_to root_path }
     end
   end
@@ -20,38 +25,51 @@ class PlaylistsController < ApplicationController
   def toggle_follow
     if @playlist.following?
       UnfollowSpotifyPlaylistJob.perform_inline(current_user.id, @playlist.spotify_playlist_id)
+      flash[:success]  = 'The playlist has been removed from your Spotify library.'
     else
       FollowSpotifyPlaylistJob.perform_inline(current_user.id, @playlist.spotify_playlist_id)
+      flash[:success]  = 'The playlist has been added to your Spotify library.'
     end
     respond_to do |format|
-      format.turbo_stream { head :no_content }
-      format.html { redirect_to root_path }
+      format.turbo_stream { render turbo_stream: turbo_stream_notification }
+      format.html { redirect_to playlists_path }
     end
   end
 
   def regenerate
-    if @playlist.processing? || @playlist.locked?
-      redirect_to root_path, alert: 'Your playlist can’t be generated at this time.'
+    if @playlist.processing?
+      flash[:warning] = 'The playlist is already being regenerated.'
+    elsif @playlist.locked?
+      flash[:warning] = 'The playlist can’t be regenerated while it’s locked.'
     else
       @playlist.processing!
       GeneratePlaylistJob.perform_async(current_user.id, @playlist.id)
-      respond_to do |format|
-        format.turbo_stream { head :no_content }
-        format.html { redirect_to root_path }
-      end
+      flash[:success] = 'The playlist is being regenerated. This may take a minute.'
+    end
+
+    respond_to do |format|
+      format.turbo_stream { render turbo_stream: turbo_stream_notification }
+      format.html { redirect_to root_path }
     end
   end
 
   def regenerate_cover
-    if @playlist.processing? || @playlist.locked? || @playlist.cover_dalle_prompt.blank?
-      redirect_to root_path, alert: 'Your playlist’s cover art can’t be regenerated at this time.'
+    if @playlist.processing?
+      flash[:warning] = 'The playlist’s cover can’t be regenerated while the playlist itself is being regenerated.'
+    elsif @playlist.locked?
+      flash[:warning] = 'The playlist’s cover can’be be regenerated while the playlist is locked.'
+    elsif @playlist.generating_cover_image?
+      flash[:warning] = 'The playlist’s cover is already being regenerated.'
+    elsif @playlist.cover_dalle_prompt.blank?
+      flash[:warning] = 'The playlist’s cover can’t be regenerated at this time.'
     else
       @playlist.generating_cover_image!
       GenerateCoverImageJob.perform_async(current_user.id, @playlist.id)
-      respond_to do |format|
-        format.turbo_stream { head :no_content }
-        format.html { redirect_to root_path, notice: 'Your playlist’s cover art is being regenerated ✨' }
-      end
+      flash[:success] = 'The playlist’s cover is being regenerated. This may take a minute.'
+    end
+    respond_to do |format|
+      format.turbo_stream { render turbo_stream: turbo_stream_notification }
+      format.html { redirect_to root_path }
     end
   end
 
