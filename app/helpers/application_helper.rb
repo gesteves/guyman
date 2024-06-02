@@ -8,4 +8,8 @@ module ApplicationHelper
     remaining_minutes = minutes % 60
     format('%02d:%02d', hours, remaining_minutes)
   end
+
+  def non_breaking_time_ago(from_time, options = {})
+    "#{time_ago_in_words(from_time, options)} ago".gsub(/\s+/, "&nbsp;").html_safe
+  end
 end
