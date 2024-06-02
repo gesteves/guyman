@@ -33,10 +33,10 @@ class MusicRequestTest < ActiveSupport::TestCase
     assert_not request.reload.active?
   end
 
-  test "should order by active and last_used_at by default" do
-    old_request = @user.music_requests.create(prompt: "Old song list", last_used_at: 1.week.ago, active: false)
-    new_request = @user.music_requests.create(prompt: "New song list", last_used_at: 1.day.ago, active: true)
-    newer_request = @user.music_requests.create(prompt: "Newer song list", last_used_at: Time.now, active: false)
+  test "should order by active and updated_at by default" do
+    old_request = @user.music_requests.create(prompt: "Old song list", updated_at: 1.week.ago, active: false)
+    new_request = @user.music_requests.create(prompt: "New song list", updated_at: 1.day.ago, active: true)
+    newer_request = @user.music_requests.create(prompt: "Newer song list", updated_at: Time.now, active: false)
 
     assert_equal new_request, @user.music_requests.first
     assert_equal newer_request, @user.music_requests.second
@@ -45,8 +45,8 @@ class MusicRequestTest < ActiveSupport::TestCase
 
   test "should set next most recent as active when destroying the current active request" do
     @user.music_requests.destroy_all
-    old_request = @user.music_requests.create!(prompt: "Old song list", last_used_at: 1.week.ago)
-    new_request = @user.music_requests.create!(prompt: "New song list", last_used_at: 1.day.ago, active: true)
+    old_request = @user.music_requests.create!(prompt: "Old song list", updated_at: 1.week.ago)
+    new_request = @user.music_requests.create!(prompt: "New song list", updated_at: 1.day.ago, active: true)
 
     new_request.destroy
     old_request.reload

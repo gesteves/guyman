@@ -69,10 +69,10 @@ class MusicRequest < ApplicationRecord
     user.music_requests.where.not(id: id).update_all(active: false)
   end
 
-  # Sets the next most recently used music request as active if the current one is active and is being destroyed.
+  # Sets the next most recent music request as active if the current one is active and is being destroyed.
   def handle_after_destroy
     update_column(:active, false)
-    next_most_recent_request = user.music_requests.without_deleted.where.not(id: id).order(last_used_at: :desc).first
+    next_most_recent_request = user.music_requests.without_deleted.where.not(id: id).order(updated_at: :desc).first
     next_most_recent_request.update!(active: true) if next_most_recent_request.present?
   end
 
