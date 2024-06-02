@@ -24,13 +24,13 @@
   <% if playlist.following? %>
     <%= button_to unfollow_playlist_path(playlist), method: :post, data: { turbo_confirm: 'Are you sure you want to remove this playlist from your Spotify library?' }, class: "button" do %>
       <span class="icon">
-        <i class="fa-solid fa-trash"></i>
+        <i class="fa-solid fa-circle-minus"></i>
       </span>
     <% end %>
   <% else %>
     <%= button_to follow_playlist_path(playlist), method: :post, data: { turbo_confirm: 'Are you sure you want to restore this playlist to your Spotify library?' }, class: "button" do %>
       <span class="icon">
-        <i class="fa-solid fa-trash-undo"></i>
+        <i class="fa-solid fa-circle-plus"></i>
       </span>
     <% end %>
   <% end %>
