@@ -3,9 +3,9 @@ class TracksController < ApplicationController
 
   def index
     page = params[:page]&.to_i || 1
-    @recent_tracks = current_user.recent_tracks.page(page).per(500)
+    @tracks = current_user.recent_tracks.page(page).per(100)
     @page_title = "Recent Tracks"
-    redirect_to tracks_path if @recent_tracks.empty? && page > 1
+    redirect_to tracks_path if @tracks.empty? && page > 1
   end
 
   def destroy
