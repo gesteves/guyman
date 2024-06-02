@@ -15,7 +15,6 @@ class MusicRequestsController < ApplicationController
     flash[:success] = 'This music request will be used for future playlists.'
 
     respond_to do |format|
-      format.turbo_stream { render turbo_stream: turbo_stream_notification }
       format.html { redirect_to music_requests_path }
     end
   end
@@ -57,7 +56,6 @@ class MusicRequestsController < ApplicationController
     end
 
     respond_to do |format|
-      format.turbo_stream { render turbo_stream: turbo_stream_notification }
       format.html { redirect_to music_requests_path }
     end
   end
