@@ -20,7 +20,7 @@
     <tbody>
       <% @music_requests.each do |request| %>
         <tr>
-          <td><% if request.active? %><span class="icon"><i class="fa-solid fa-check"></i><span><% end %></td>
+          <td><% if request.active? %><span class="icon has-text-success"><i class="fa-solid fa-circle-check"></i><span><% end %></td>
           <td><%= simple_format(request.prompt) %></td>
           <td><%= request.last_used_at.blank? ? "Never" : time_ago_in_words(request.last_used_at).gsub(/\s+/, "&nbsp;").html_safe + "&nbsp;ago".html_safe %></td>
           <td>
