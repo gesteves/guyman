@@ -3,7 +3,12 @@
   bottom: 1rem;
   display: flex;
   flex-flow: column;
+  left: 1rem;
   position: fixed;
   right: 1rem;
   z-index: 100;
+
+  .notification {
+    padding-right: 3rem;
+  }
 }
