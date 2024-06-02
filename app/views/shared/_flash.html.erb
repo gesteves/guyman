@@ -1,3 +1,5 @@
-<div class="notification is-light is-<%= level %>" data-controller="notification" data-action="click->notification#close">
-  <%= message %>
-</div>
+<% flash.each do |key, value| %>
+  <div class="notification is-light is-<%= key %>" data-controller="notification" data-action="click->notification#close">
+    <%= value %>
+  </div>
+<% end %>

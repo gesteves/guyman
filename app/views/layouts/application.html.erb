@@ -20,7 +20,9 @@
       <%= yield %>
     </section>
     <div class="notifications" data-turbo-permanent>
-      <%= turbo_frame_tag "notification" %>
+      <%= turbo_frame_tag "notification" do %>
+        <%= render partial: 'shared/flash' %>
+      <% end %>
     </div>
   </body>
 </html>
