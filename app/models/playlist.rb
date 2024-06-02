@@ -135,7 +135,6 @@ class Playlist < ApplicationRecord
       broadcast_update_to "notifications:user:#{user.id}", target: 'notifications', partial: "shared/notification", locals: { level: 'success', message: "The playlist <strong>#{name}</strong> has been generated for you!" } unless processing?
     elsif saved_change_to_cover_image_updated_at?
       broadcast_update_to "playlists:user:#{user.id}", partial: "playlists/card", locals: { playlist: self }
-      broadcast_update_to "notifications:user:#{user.id}", target: 'notifications', partial: "shared/notification", locals: { level: 'success', message: "The cover for the playlist <strong>#{name}</strong> has been generated." }
     elsif saved_change_to_locked? || saved_change_to_processing? || saved_change_to_generating_cover_image? || saved_change_to_following?
       broadcast_update_to "playlists:user:#{user.id}", target: "playlist_actions_#{id}", partial: "playlists/actions", locals: { playlist: self }
     end
