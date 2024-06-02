@@ -1,6 +1,6 @@
 class PlaylistsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_playlist, only: [:toggle_lock, :regenerate, :regenerate_cover, :follow, :unfollow]
+  before_action :set_playlist, only: [:toggle_lock, :regenerate, :regenerate_cover, :toggle_follow]
 
   def index
     page = params[:page]&.to_i || 1
