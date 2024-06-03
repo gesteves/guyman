@@ -35,10 +35,10 @@ class MusicRequestsController < ApplicationController
       if updateable_playlists.present? || current_user.todays_playlists.any? { |p| p.tracks.blank? }
         flash[:success] = 'Your playlists for today’s workouts are being generated. This may take a couple of minutes.'
       else
-        flash[:warning] = 'You don’t have any new workouts on your calendar. Add some and try again.'
+        flash[:warning] = 'You don’t have any new workouts on your calendar.'
       end
     else
-      flash[:warning] = 'You don’t have any workouts on your calendar. Add some and try again.'
+      flash[:warning] = 'You don’t have any workouts on your calendar.'
     end
 
     respond_to do |format|
