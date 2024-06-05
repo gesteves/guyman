@@ -1,6 +1,7 @@
 class MusicRequestsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_request, only: [:activate, :destroy]
+  skip_before_action :verify_authenticity_token, only: [:create]
 
   def index
     page = params[:page]&.to_i || 1
