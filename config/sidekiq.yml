@@ -9,11 +9,14 @@
       cron: "*/5 * * * *" # Every 5 minutes
       class: "FetchNewEventsJob"
       queue: high
+      enabled: false
     clean_up_events_job:
       cron: "*/5 * * * *" # Every 5 minutes
       class: "CleanUpEventsJob"
       queue: low
+      enabled: false
     clean_up_playlists_job:
       cron: "0 * * * *" # Every hour
       class: "CleanUpPlaylistsJob"
       queue: low
+      enabled: false
