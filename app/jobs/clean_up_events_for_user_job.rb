@@ -3,7 +3,6 @@ class CleanUpEventsForUserJob < ApplicationJob
 
   def perform(user_id)
     user = User.find(user_id)
-
     preference = user.preference
 
     current_date = Time.current.in_time_zone(preference.timezone)

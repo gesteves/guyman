@@ -22,6 +22,7 @@ class MusicRequestsController < ApplicationController
   def create
     @music_request = MusicRequest.find_or_create_and_activate(current_user, music_request_params[:prompt])
 
+    CleanUpPlaylistsForUserJob.perform_async(current_user.id)
     CleanUpEventsForUserJob.perform_inline(current_user.id)
     FetchNewEventsForUserJob.perform_inline(current_user.id)
     updateable_playlists = current_user.todays_playlists.where(locked: false).where.not(music_request_id: @music_request.id)
