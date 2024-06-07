@@ -4,6 +4,7 @@ class CleanUpPlaylistsForUserJob < ApplicationJob
   def perform(user_id)
     user = User.find(user_id)
     preference = user.preference
+    return unless preference.automatically_clean_up_old_playlists
 
     current_date = Time.current.in_time_zone(preference.timezone)
 
