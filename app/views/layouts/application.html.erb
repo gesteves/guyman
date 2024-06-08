@@ -6,12 +6,11 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css">
-    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <% if ENV['FONT_AWESOME_KEY'].present?%>
       <script src="https://kit.fontawesome.com/<%= ENV['FONT_AWESOME_KEY'] %>.js" crossorigin="anonymous"></script>
     <% end %>
-    <%= javascript_importmap_tags %>
+    <%= vite_client_tag %>
+    <%= vite_javascript_tag 'application' %>
   </head>
 
   <body>

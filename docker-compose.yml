@@ -2,6 +2,7 @@ volumes:
   postgres-data:
   bundle:
   node-modules:
+
 services:
   postgres:
     image: postgres:16.3
@@ -9,10 +10,12 @@ services:
       - postgres-data:/var/lib/postgresql/data
     environment:
       - POSTGRES_HOST_AUTH_METHOD=trust
+
   redis:
     image: redis:7.0.15
     ports:
       - '6379:6379'
+
   sidekiq:
     build: .
     command: bundle exec sidekiq
@@ -28,6 +31,7 @@ services:
       - bundle:/usr/local/bundle
       - node-modules:/app/node_modules
       - /app/tmp
+
   app:
     build: .
     command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0'"
