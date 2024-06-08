@@ -53,6 +53,7 @@ gem 'public_suffix'
 gem 'kaminari'
 gem 'paranoia'
 gem 'vite_rails'
+gem 'sassc'
 
 # Background jobs
 gem 'sidekiq'
