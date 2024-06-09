@@ -16,7 +16,7 @@
       queue: low
       enabled: <%= Rails.env.production? %>
     clean_up_playlists_job:
-      cron: "*/5 * * * *" # Every hour
+      cron: "*/5 * * * *" # Every 5 minutes
       class: "CleanUpPlaylistsJob"
       queue: low
       enabled: <%= Rails.env.production? %>
