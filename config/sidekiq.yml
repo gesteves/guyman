@@ -9,14 +9,14 @@
       cron: "*/5 * * * *" # Every 5 minutes
       class: "FetchNewEventsJob"
       queue: high
-      enabled: <%= Rails.env.production? %>
+      enabled: <%= ENV['ENABLE_RECURRING_JOBS'].present? %>
     clean_up_events_job:
       cron: "*/5 * * * *" # Every 5 minutes
       class: "CleanUpEventsJob"
       queue: low
-      enabled: <%= Rails.env.production? %>
+      enabled: <%= ENV['ENABLE_RECURRING_JOBS'].present? %>
     clean_up_playlists_job:
       cron: "*/5 * * * *" # Every 5 minutes
       class: "CleanUpPlaylistsJob"
       queue: low
-      enabled: <%= Rails.env.production? %>
+      enabled: <%= ENV['ENABLE_RECURRING_JOBS'].present? %>
