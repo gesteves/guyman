@@ -1,14 +1,17 @@
 <section class="hero is-small">
   <div class="hero-body">
     <h1 class="title">Recent Tracks</h1>
-    <p class="subtitle">These are the tracks used in your playlists in the past two weeks. They won’t be used in future playlists unless you delete them first.</p>
+    <p class="subtitle">These are the tracks used in your playlists in the past two weeks. They won’t be added to future playlists unless you delete them first.</p>
     <hr>
   </div>
 </section>
 
 <section class="container is-max-desktop">
-  <% @tracks.each do |track| %>
-    <%= render partial: 'tracks/card', locals: { track: track } %>
-  <% end %>
-  <%= paginate @tracks, outer_window: 1, window: 1 %>
+  <table class="table is-fullwidth is-hoverable">
+    <tbody>
+      <% @tracks.each do |track| %>
+        <%= render partial: 'tracks/row', locals: { track: track } %>
+      <% end %>
+    </tbody>
+  </table>
 </section>

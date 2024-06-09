@@ -11,4 +11,12 @@ class Track < ApplicationRecord
     return if spotify_uri.blank?
     "https://open.spotify.com/embed/track/#{spotify_uri.split(':').last}"
   end
+
+  # Returns the URL for the track in Spotify
+  #
+  # @return [String] The URL for the track.
+  def spotify_url
+    return if spotify_uri.blank?
+    "https://open.spotify.com/track/#{spotify_uri.split(':').last}"
+  end
 end
