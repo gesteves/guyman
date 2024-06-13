@@ -10,6 +10,5 @@
   <% @music_requests.each do |request| %>
     <%= render partial: 'music_requests/card', locals: { music_request: request } %>
   <% end %>
-  <hr>
   <%= paginate @music_requests, outer_window: 1, window: 1 %>
 </section>
