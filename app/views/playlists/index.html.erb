@@ -12,6 +12,7 @@
       <%= render partial: 'playlists/card', locals: { playlist: playlist } %>
     <% end %>
   <% end %>
+  <hr>
   <%= paginate @playlists, outer_window: 1, window: 1 %>
 </section>
 
