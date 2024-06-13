@@ -12,7 +12,7 @@ class TracksController < ApplicationController
                  .find_by(id: params[:id])
   
     if track.present?
-      tracks = Track.joins(:playlist)
+      tracks = Track.joins(playlist: :user)
                     .where(playlists: { user_id: current_user.id })
                     .where(spotify_uri: track.spotify_uri)
       tracks.destroy_all
