@@ -69,11 +69,13 @@ class User < ApplicationRecord
   # @return [Array<Track>] An array of recent tracks.
   def recent_tracks
     Track.joins(:playlist)
-       .where(playlists: { user_id: id })
-       .where.not(spotify_uri: nil)
-       .where('tracks.created_at >= ?', 2.weeks.ago)
-       .order('tracks.created_at DESC')
+         .where(playlists: { user_id: id })
+         .where.not(spotify_uri: nil)
+         .where('tracks.created_at >= ?', 2.weeks.ago)
+         .order('tracks.created_at DESC')
+         .distinct(:spotify_uri)
   end
+  
 
   # Generates a string of tracks to be excluded from the playlist generation prompt.
   #

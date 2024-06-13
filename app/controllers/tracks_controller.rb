@@ -7,13 +7,16 @@ class TracksController < ApplicationController
   end
 
   def destroy
-    @track = Track.joins(playlist: :user)
-                  .where(playlists: { user_id: current_user.id })
-                  .find_by(id: params[:id])
-
-    if @track
-      @track.destroy
-      flash[:success] = "The track <strong>#{@track.title}</strong> by <strong>#{@track.artist}</strong> has been deleted."
+    track = Track.joins(playlist: :user)
+                 .where(playlists: { user_id: current_user.id })
+                 .find_by(id: params[:id])
+  
+    if track.present?
+      tracks = Track.joins(:playlist)
+                    .where(playlists: { user_id: current_user.id })
+                    .where(spotify_uri: track.spotify_uri)
+      tracks.destroy_all
+      flash[:success] = "The track <strong>#{track.title}</strong> by <strong>#{track.artist}</strong> has been deleted."
       respond_to do |format|
         format.html { redirect_to tracks_path }
         format.turbo_stream
