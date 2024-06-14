@@ -1,23 +1,5 @@
-*♪  
-Rock, robot rock   
-Rock, robot rock  
-Rock, robot rock  
-Rock, robot rock  
-Rock, robot rock  
-Rock, robot rock  
-Rock, robot rock  
-Rock, robot rock  
-Rock, robot rock  
-Rock, robot rock  
-Rock, robot rock  
-Rock, robot rock  
-Rock, robot rock  
-Rock, robot rock  
-Rock, robot rock  
-Rock, robot rock  
-♪*
 
-—Daft Punk, [Robot Rock](https://open.spotify.com/track/4zu9wo2FXoBSsKjO6tRB3R?si=8d71c00be1114587)
+![Daft Punk TRON Legacy](https://github.com/gesteves/guyman/assets/6379/28593907-c16e-426c-b0be-7158e11aebd3)
 
 ## What is this?
 
