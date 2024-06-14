@@ -42,7 +42,6 @@ class PlaylistsController < ApplicationController
     elsif @playlist.locked?
       flash[:warning] = "The playlist <b>#{@playlist.name}</b> can’t be regenerated while it’s locked."
     else
-      @playlist.processing!
       GeneratePlaylistJob.perform_async(current_user.id, @playlist.id)
       flash[:success] = "The playlist <b>#{@playlist.name}</b> is being regenerated. This may take a minute."
     end
