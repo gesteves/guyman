@@ -76,15 +76,21 @@ class MusicRequest < ApplicationRecord
   def broadcast_create
     return if Rails.env.test?
     broadcast_replace_to "music_request_form:user:#{user.id}", target: "music_request_form", partial: "home/music_request_form", locals: { music_request: self.user.current_music_request }
+  rescue Redis::CannotConnectError
+    nil
   end
 
   def broadcast_update
     return if Rails.env.test?
     broadcast_replace_to "music_request_form:user:#{user.id}", target: "music_request_form", partial: "home/music_request_form", locals: { music_request: self.user.current_music_request }
+  rescue Redis::CannotConnectError
+    nil
   end
 
   def broadcast_destroy
     return if Rails.env.test?
     broadcast_replace_to "music_request_form:user:#{user.id}", target: "music_request_form", partial: "home/music_request_form", locals: { music_request: self.user.current_music_request }
+  rescue Redis::CannotConnectError
+    nil
   end
 end
