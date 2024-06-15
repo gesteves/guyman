@@ -54,6 +54,7 @@ gem 'kaminari'
 gem 'paranoia'
 gem 'vite_rails'
 gem 'sassc'
+gem 'lograge'
 
 # Background jobs
 gem 'sidekiq'
