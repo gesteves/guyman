@@ -9,10 +9,14 @@ class FetchNewEventsJob < ApplicationJob
         # Find any playlists already created for this workout today.
         activity = user.activity_for_calendar_event(event[:name])
 
-        next if activity.present?
-
-        activity = user.activities.create!(name: event[:name], original_description: event[:description], duration: event[:duration])
-        Playlist.create!(user_id: user.id, activity_id: activity.id, music_request_id: user.current_music_request.id, processing: true)
+        if activity.present? && activity.original_description == event[:description] && activity.duration == event[:duration]
+          next
+        elsif activity.present?
+          activity.update!(original_description: event[:description], duration: event[:duration])
+        else
+          activity = user.activities.create!(name: event[:name], original_description: event[:description], duration: event[:duration])
+          Playlist.create!(user_id: user.id, activity_id: activity.id, music_request_id: user.current_music_request.id, processing: true)
+        end
 
         # Enqueue a job to generate the rest of the details with ChatGPT.
         GenerateActivityDetailsJob.perform_async(user.id, activity.id)
