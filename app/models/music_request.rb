@@ -68,7 +68,7 @@ class MusicRequest < ApplicationRecord
   def handle_after_destroy
     update_column(:active, false)
     next_most_recent_request = user.music_requests.without_deleted.where.not(id: id).order(updated_at: :desc).first
-    next_most_recent_request.update!(active: true) if next_most_recent_request.present?
+    next_most_recent_request.active! if next_most_recent_request.present?
   end
 
   private
