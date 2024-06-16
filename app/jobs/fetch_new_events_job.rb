@@ -13,6 +13,7 @@ class FetchNewEventsJob < ApplicationJob
 
         if activity.present?
           activity.update!(original_description: event[:description], duration: event[:duration])
+          activity.playlist.update!(music_request_id: user.current_music_request.id) unless activity.playlist.locked?
         else
           activity = user.activities.create!(name: event[:name], original_description: event[:description], duration: event[:duration])
           Playlist.create!(user_id: user.id, activity_id: activity.id, music_request_id: user.current_music_request.id)
