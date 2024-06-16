@@ -7,7 +7,7 @@ class GeneratePlaylistJob < ApplicationJob
 
     playlist = user.playlists.find(playlist_id)
 
-    return if playlist.locked?
+    return if playlist.locked? || playlist.processing?
 
     playlist.processing!
 

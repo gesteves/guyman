@@ -15,7 +15,7 @@ class FetchNewEventsForUserJob < ApplicationJob
         activity.update!(original_description: event[:description], duration: event[:duration])
       else
         activity = user.activities.create!(name: event[:name], original_description: event[:description], duration: event[:duration])
-        Playlist.create!(user_id: user.id, activity_id: activity.id, music_request_id: user.current_music_request.id, processing: true)
+        Playlist.create!(user_id: user.id, activity_id: activity.id, music_request_id: user.current_music_request.id)
       end
 
       # Enqueue a job to generate the rest of the details with ChatGPT.
