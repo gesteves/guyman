@@ -1,4 +1,4 @@
-class FetchNewEventsForUserJob < ApplicationJob
+class FetchEventsForUserJob < ApplicationJob
   queue_as :high
 
   # This job generates the playlists for today's workouts for a given user.

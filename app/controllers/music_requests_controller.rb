@@ -25,7 +25,7 @@ class MusicRequestsController < ApplicationController
 
     CleanUpPlaylistsForUserJob.perform_async(current_user.id)
     CleanUpEventsForUserJob.perform_inline(current_user.id)
-    FetchNewEventsForUserJob.perform_inline(current_user.id)
+    FetchEventsForUserJob.perform_inline(current_user.id)
     updateable_playlists = current_user.todays_playlists.where(locked: false).where.not(music_request_id: @music_request.id)
     updateable_playlists.each do |playlist|
       playlist.update!(music_request_id: @music_request.id)

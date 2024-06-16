@@ -1,4 +1,4 @@
-class FetchNewEventsJob < ApplicationJob
+class FetchEventsJob < ApplicationJob
   queue_as :high
 
   # This fetches new workouts in every users' calendars.

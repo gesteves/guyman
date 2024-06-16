@@ -7,7 +7,7 @@
   :schedule:
     fetch_new_events_job:
       cron: "*/5 * * * *" # Every 5 minutes
-      class: "FetchNewEventsJob"
+      class: "FetchEventsJob"
       queue: high
       enabled: <%= !ENV['ENABLE_RECURRING_JOBS'].nil? %>
     clean_up_events_job:
