@@ -9,9 +9,9 @@ class FetchNewEventsForUserJob < ApplicationJob
       # Find any playlists already created for this workout today.
       activity = user.activity_for_calendar_event(event[:name])
 
-      if activity.present? && activity.original_description == event[:description] && activity.duration == event[:duration]
-        next
-      elsif activity.present?
+      next if activity.present? && activity.original_description == event[:description] && activity.duration == event[:duration]
+
+      if activity.present?
         activity.update!(original_description: event[:description], duration: event[:duration])
       else
         activity = user.activities.create!(name: event[:name], original_description: event[:description], duration: event[:duration])
