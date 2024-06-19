@@ -23,21 +23,10 @@ class MusicRequestsController < ApplicationController
   def create
     @music_request = MusicRequest.find_or_create_and_activate(current_user, music_request_params[:prompt])
 
-    CleanUpPlaylistsForUserJob.perform_async(current_user.id)
-    CleanUpEventsForUserJob.perform_inline(current_user.id)
-    FetchEventsForUserJob.perform_inline(current_user.id)
-    updateable_playlists = current_user.todays_playlists.where(locked: false).where.not(music_request_id: @music_request.id)
-    updateable_playlists.each do |playlist|
-      playlist.update!(music_request_id: @music_request.id)
-      GeneratePlaylistJob.perform_async(current_user.id, playlist.id)
-    end
+    current_user.process_todays_activities
 
-    if current_user.todays_playlists.present?
-      if updateable_playlists.present? || current_user.todays_playlists.any? { |p| p.tracks.blank? }
-        flash[:success] = 'Your playlists for today’s workouts are being generated. This may take a couple of minutes.'
-      else
-        flash[:warning] = 'You don’t have any new workouts on your calendar.'
-      end
+    if current_user.reload.todays_playlists.present?
+      flash[:success] = 'Fetching today’s workouts. This may take a couple of minutes.'
     else
       flash[:warning] = 'You don’t have any workouts on your calendar.'
     end

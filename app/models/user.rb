@@ -119,6 +119,34 @@ class User < ApplicationRecord
     authentications.find_by(provider: 'spotify')&.refresh_token
   end
 
+  # Processes the users workouts of the day:
+  # - Deletes activities whose events have been removed from the calendar.
+  # - Fetches the user's calendar events for today.
+  # - Creates activities for each event if they don't exist.
+  # - Updates the description and duration of existing activities if they have changed.
+  # - Updates the music request of the playlist associated with each activity if it's not the current one, and the playlist is unlocked.
+  def process_todays_activities
+    destroy_activities_removed_from_calendar
+    todays_calendar_events.each do |event|
+      # Find any playlists already created for this workout today.
+      activity = activity_for_calendar_event(event[:name])
+      if activity.present?
+        if activity.playlist.music_request_id != current_music_request.id && activity.playlist.unlocked?
+          activity.playlist.update!(music_request_id: current_music_request.id)
+          GeneratePlaylistJob.perform_async(id, activity.playlist.id)
+        end
+        if activity.original_description != event[:description] || activity.duration != event[:duration]
+          activity.update!(original_description: event[:description], duration: event[:duration])
+          GenerateActivityDetailsJob.perform_async(id, activity.id)
+        end
+      else
+        activity = activities.create!(name: event[:name], original_description: event[:description], duration: event[:duration])
+        Playlist.create!(user_id: id, activity_id: activity.id, music_request_id: current_music_request.id)
+        GenerateActivityDetailsJob.perform_async(id, activity.id)
+      end
+    end
+  end
+
   # Unfollows any Spotify playlists created before the current day and are still being followed.
   # These playlists were likely used in a workout, so we want to unfollow them
   # to avoid cluttering the user's Spotify account, but we don't want to delete them
