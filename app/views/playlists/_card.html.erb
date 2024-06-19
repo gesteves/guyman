@@ -1,13 +1,13 @@
 <div id="<%= dom_id(playlist) %>" class="card">
   <div class="card-image">
-    <% if playlist.processing? %>
+    <% if playlist.processing? || playlist.activity.processing? %>
       <div class="skeleton-block" style="height: 352px"></div>
     <% else %>
       <iframe style="border-radius:12px" src="<%= playlist.spotify_iframe_url %>" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
     <% end %>
   </div>
   <div class="card-content">
-    <% if playlist.processing? %>
+    <% if playlist.processing? || playlist.activity.processing? %>
       <div class="content skeleton-lines">
         <div></div>
         <div></div>
@@ -22,7 +22,7 @@
     <hr>
     <div class="level">
       <div class="level-left">
-        <% if playlist.processing? %>
+        <% if playlist.processing? || playlist.activity.processing? %>
           <div class="tags">
             <span class="tag is-skeleton">Processing…</span>
             <span class="tag is-skeleton">Processing…</span>

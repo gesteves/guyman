@@ -49,8 +49,10 @@ class User < ApplicationRecord
   # Checks if the user has any playlist that are in the process of being generated.
   #
   # @return [Boolean] True if the user has any playlist being generated, false otherwise.
-  def is_generating_playlists?
-    playlists.present? && playlists.any?(&:processing)
+  def processing?
+    return true if activities.present? && activities.any?(&:processing?)
+    return true if playlists.present? && playlists.any?(&:processing?)
+    false
   end
 
   # Returns the activity associated with a given event today in the user's calendar.
@@ -136,7 +138,7 @@ class User < ApplicationRecord
           GeneratePlaylistJob.perform_async(id, activity.playlist.id)
         end
         if activity.original_description != event[:description] || activity.duration != event[:duration]
-          activity.update!(original_description: event[:description], duration: event[:duration])
+          activity.update!(original_description: event[:description], duration: event[:duration], description: nil, sport: nil, activity_type: nil)
           GenerateActivityDetailsJob.perform_async(id, activity.id)
         end
       else

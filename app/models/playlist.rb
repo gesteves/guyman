@@ -124,7 +124,7 @@ class Playlist < ApplicationRecord
   def broadcast_create
     return if Rails.env.test?
     broadcast_append_to "playlists:user:#{user.id}", partial: "playlists/card", locals: { playlist: self }
-    broadcast_update_to "music_request_form:user:#{user.id}", target: "music_request_form", partial: "home/music_request_form", locals: { music_request: self.user.current_music_request, todays_playlists: self.user.todays_playlists }
+    broadcast_update_to "music_request_form:user:#{user.id}", target: "music_request_form", partial: "home/music_request_form", locals: { music_request: self.user.current_music_request }
   rescue Redis::CannotConnectError
     nil
   end
@@ -133,7 +133,7 @@ class Playlist < ApplicationRecord
     return if Rails.env.test?
     if saved_change_to_processing?
       broadcast_update_to "playlists:user:#{user.id}", partial: "playlists/card", locals: { playlist: self }
-      broadcast_update_to "music_request_form:user:#{user.id}", target: "music_request_form", partial: "home/music_request_form", locals: { music_request: self.user.current_music_request, todays_playlists: self.user.todays_playlists }
+      broadcast_update_to "music_request_form:user:#{user.id}", target: "music_request_form", partial: "home/music_request_form", locals: { music_request: self.user.current_music_request }
       broadcast_update_to "notifications:user:#{user.id}", target: 'notifications', partial: "shared/notification", locals: { level: 'success', message: "The playlist <strong>#{name}</strong> has been generated!" } unless processing? & tracks.present?
     elsif saved_change_to_cover_image_updated_at?
       broadcast_update_to "playlists:user:#{user.id}", partial: "playlists/card", locals: { playlist: self }
@@ -147,7 +147,7 @@ class Playlist < ApplicationRecord
   def broadcast_destroy
     return if Rails.env.test?
     broadcast_remove_to "playlists:user:#{user.id}"
-    broadcast_update_to "music_request_form:user:#{user.id}", target: "music_request_form", partial: "home/music_request_form", locals: { music_request: self.user.current_music_request, todays_playlists: self.user.todays_playlists }
+    broadcast_update_to "music_request_form:user:#{user.id}", target: "music_request_form", partial: "home/music_request_form", locals: { music_request: self.user.current_music_request }
   rescue Redis::CannotConnectError
     nil
   end
