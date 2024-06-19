@@ -23,12 +23,12 @@ class MusicRequestsController < ApplicationController
   def create
     @music_request = MusicRequest.find_or_create_and_activate(current_user, music_request_params[:prompt])
 
-    current_user.process_todays_activities
+    updates = current_user.process_todays_activities
 
-    if current_user.reload.todays_playlists.present?
-      flash[:success] = 'Fetching today’s workouts. This may take a couple of minutes.'
+    if updates
+      flash[:success] = 'Generating today’s playlists. This may take a couple of minutes.'
     else
-      flash[:warning] = 'You don’t have any workouts on your calendar.'
+      flash[:warning] = 'You don’t have any new workouts on your calendar.'
     end
 
     respond_to do |format|
