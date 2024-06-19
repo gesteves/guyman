@@ -23,4 +23,38 @@ module ApplicationHelper
       key
     end
   end
+
+  def sport_icon(sport)
+    icon = case sport.downcase
+    when 'swimming'
+      "fa-person-swimming"
+    when 'cycling'
+      "fa-person-biking"
+    when 'running'
+      "fa-person-running-fast"
+    when 'strength training'
+      "fa-dumbbell"
+    else
+      "fa-circle-question"
+    end
+
+    if sport == 'swimming'
+      tag_helper :i, class: "fa-solid #{icon}", style: "transform: scaleX(-1);"
+    else
+      tag_helper :i, class: "fa-solid #{icon}"
+    end
+  end
+
+  def activity_type_icon(activity_type)
+    icon = case activity_type.downcase
+    when 'workout'
+      "fa-heart-pulse"
+    when 'race'
+      "fa-medal"
+    else
+      "fa-circle-question"
+    end
+
+    tag_helper :i, class: "fa-solid #{icon}"
+  end
 end

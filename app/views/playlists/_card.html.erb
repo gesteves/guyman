@@ -39,15 +39,7 @@
             <div class="control">
               <div class="tags has-addons">
                 <span class="tag is-dark">
-                  <% if playlist.activity.sport == 'Swimming' %>
-                    <i class="fa-solid fa-person-swimming" style="transform: scaleX(-1);"></i>
-                  <% elsif playlist.activity.sport == 'Cycling' %>
-                    <i class="fa-solid fa-person-biking"></i>
-                  <% elsif playlist.activity.sport == 'Running' %>
-                    <i class="fa-solid fa-person-running-fast"></i>
-                  <% else %>
-                    <i class="fa-solid fa-circle-question"></i>
-                  <% end %>
+                  <%= sport_icon(playlist.activity.sport) %>
                 </span>
                 <span class="tag"><%= playlist.activity.sport %></span>
               </div>
@@ -55,13 +47,7 @@
             <div class="control">
               <div class="tags has-addons">
                 <span class="tag is-dark">
-                  <% if playlist.activity.activity_type == 'Race' %>
-                    <i class="fa-solid fa-medal"></i>
-                  <% elsif playlist.activity.activity_type == 'Workout' %>
-                    <i class="fa-solid fa-heart-pulse"></i>
-                  <% else %>
-                    <i class="fa-solid fa-circle-question"></i>
-                  <% end %>
+                  <%= activity_type_icon(playlist.activity.activity_type) %>
                 </span>
                 <span class="tag"><%= playlist.activity.activity_type %></span>
               </div>
