@@ -23,6 +23,7 @@ class Activity < ApplicationRecord
 
   def broadcast_update
     return if Rails.env.test?
+    broadcast_update_to "playlists:user:#{user.id}", partial: "playlists/card", locals: { playlist: playlist }
     broadcast_update_to "music_request_form:user:#{user.id}", target: "music_request_form", partial: "home/music_request_form", locals: { music_request: self.user.current_music_request }
   rescue Redis::CannotConnectError
     nil
