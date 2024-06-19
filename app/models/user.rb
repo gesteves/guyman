@@ -75,7 +75,7 @@ class User < ApplicationRecord
          .order('tracks.created_at DESC')
          .distinct(:spotify_uri)
   end
-  
+
 
   # Generates a string of tracks to be excluded from the playlist generation prompt.
   #
@@ -117,5 +117,18 @@ class User < ApplicationRecord
 
   def spotify_refresh_token
     authentications.find_by(provider: 'spotify')&.refresh_token
+  end
+
+  # Unfollows any Spotify playlists created before the current day and are still being followed.
+  # These playlists were likely used in a workout, so we want to unfollow them
+  # to avoid cluttering the user's Spotify account, but we don't want to delete them
+  # from the database so we don't reuse their songs in future playlists.
+  def unfollow_old_playlists
+    return unless preference.automatically_clean_up_old_playlists
+
+    current_date = Time.current.in_time_zone(preference.timezone)
+    playlists.where('created_at < ?', current_date.beginning_of_day).where(following: true, locked: false).each do |playlist|
+      UnfollowSpotifyPlaylistJob.perform_async(id, playlist.spotify_playlist_id)
+    end
   end
 end
