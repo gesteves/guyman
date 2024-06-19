@@ -138,7 +138,7 @@ class User < ApplicationRecord
         activity_details_changed = activity.original_description != event[:description] || activity.duration != event[:duration]
         if activity.playlist.music_request_id != current_music_request.id && activity.playlist.unlocked?
           activity.playlist.update!(music_request_id: current_music_request.id)
-          GeneratePlaylistJob.perform_async(id, activity.playlist.id) unless activity_details_changed
+          GeneratePlaylistJob.perform_async(id, activity.playlist.id) unless activity_details_changed # Skip it because GenerateActivityDetailsJob will take care of it.
           updates = true
         end
         if activity_details_changed
