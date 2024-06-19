@@ -39,9 +39,9 @@ module ApplicationHelper
     end
 
     if sport == 'swimming'
-      tag_helper :i, class: "fa-solid #{icon}", style: "transform: scaleX(-1);"
+      tag.i class: "fa-solid #{icon}", style: "transform: scaleX(-1);"
     else
-      tag_helper :i, class: "fa-solid #{icon}"
+      tag.i class: "fa-solid #{icon}"
     end
   end
 
@@ -55,6 +55,6 @@ module ApplicationHelper
       "fa-circle-question"
     end
 
-    tag_helper :i, class: "fa-solid #{icon}"
+    tag.i class: "fa-solid #{icon}"
   end
 end
