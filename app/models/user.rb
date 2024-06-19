@@ -46,9 +46,9 @@ class User < ApplicationRecord
     end
   end
 
-  # Checks if the user has any playlist that are in the process of being generated.
+  # Checks if the user has any activities or playlists that are in the process of being generated.
   #
-  # @return [Boolean] True if the user has any playlist being generated, false otherwise.
+  # @return [Boolean] True if the user has any activities or playlists being generated, false otherwise.
   def processing?
     return true if activities.present? && activities.any?(&:processing?)
     return true if playlists.present? && playlists.any?(&:processing?)
