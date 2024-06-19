@@ -133,13 +133,13 @@ class User < ApplicationRecord
       # Find any playlists already created for this workout today.
       activity = activity_for_calendar_event(event[:name])
       if activity.present?
-        if activity.playlist.music_request_id != current_music_request.id && activity.playlist.unlocked?
-          activity.playlist.update!(music_request_id: current_music_request.id)
-          GeneratePlaylistJob.perform_async(id, activity.playlist.id)
-        end
         if activity.original_description != event[:description] || activity.duration != event[:duration]
           activity.update!(original_description: event[:description], duration: event[:duration], description: nil, sport: nil, activity_type: nil)
           GenerateActivityDetailsJob.perform_async(id, activity.id)
+        end
+        if activity.playlist.music_request_id != current_music_request.id && activity.playlist.unlocked?
+          activity.playlist.update!(music_request_id: current_music_request.id)
+          GeneratePlaylistJob.perform_async(id, activity.playlist.id)
         end
       else
         activity = activities.create!(name: event[:name], original_description: event[:description], duration: event[:duration])
