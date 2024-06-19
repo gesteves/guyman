@@ -11,7 +11,7 @@
       queue: high
       enabled: <%= !ENV['ENABLE_RECURRING_JOBS'].nil? %>
     clean_up_playlists_job:
-      cron: "*/5 * * * *" # Every 5 minutes
+      cron: "0 * * * *" # Every hour
       class: "CleanUpPlaylistsJob"
       queue: low
       enabled: <%= !ENV['ENABLE_RECURRING_JOBS'].nil? %>
