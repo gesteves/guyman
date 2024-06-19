@@ -127,7 +127,9 @@ class User < ApplicationRecord
   # - Creates activities for each event if they don't exist.
   # - Updates the description and duration of existing activities if they have changed.
   # - Updates the music request of the playlist associated with each activity if it's not the current one, and the playlist is unlocked.
+  # @return [Boolean] True if any updates were triggered.
   def process_todays_activities
+    updates = false
     destroy_activities_removed_from_calendar
     todays_calendar_events.each do |event|
       # Find any playlists already created for this workout today.
@@ -136,17 +138,21 @@ class User < ApplicationRecord
         if activity.original_description != event[:description] || activity.duration != event[:duration]
           activity.update!(original_description: event[:description], duration: event[:duration], description: nil, sport: nil, activity_type: nil)
           GenerateActivityDetailsJob.perform_async(id, activity.id)
+          updates = true
         end
         if activity.playlist.music_request_id != current_music_request.id && activity.playlist.unlocked?
           activity.playlist.update!(music_request_id: current_music_request.id)
           GeneratePlaylistJob.perform_async(id, activity.playlist.id)
+          updates = true
         end
       else
         activity = activities.create!(name: event[:name], original_description: event[:description], duration: event[:duration])
         Playlist.create!(user_id: id, activity_id: activity.id, music_request_id: current_music_request.id)
         GenerateActivityDetailsJob.perform_async(id, activity.id)
+        updates = true
       end
     end
+    updates
   end
 
   # Unfollows any Spotify playlists created before the current day and are still being followed.
