@@ -42,7 +42,7 @@ class GenerateActivityDetailsJob < ApplicationJob
       You are a helpful fitness assistant tasked with generating structured data about an exercise activity from a snippet of text describing it. Your task is the following:
 
       - You will receive the name of the user's activity, followed by a description of the activity.
-      - You must clean up the description to make it more readable. If the description is very short, add more details to make it more informative.
+      - You must clean up the description to make it more readable. If the description is very short or missing entirely, add more details to make it more informative.
       - You must determine the sport of the activity, which is usually "Cycling", "Running", or "Swimming", but could be something else, such as "Yoga" or "Strength Training".
       - You must determine the type of activity, which can be either "Workout" or "Race".
 
