@@ -1,5 +1,6 @@
 class GenerateCoverImageJob < ApplicationJob
   queue_as :default
+  sidekiq_options retry_for: 5.minutes
 
   def perform(user_id, playlist_id)
     user = User.find(user_id)
