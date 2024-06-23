@@ -29,7 +29,7 @@ class TrainerroadClient
         event.dtstart.to_date == today && valid_event?(event)
       end
 
-      parse_events(events)
+      parse_and_combine_events(events)
     end
   end
 
@@ -38,7 +38,7 @@ class TrainerroadClient
   # Handles the response from the TrainerRoad calendar.
   #
   # @param response [HTTParty::Response] The response object.
-  # @return [Hash] The response body if the request was successful.
+  # @return [String] The response body if the request was successful.
   # @raise [RuntimeError] If the request failed.
   def handle_response(response)
     if response.success?
@@ -56,7 +56,7 @@ class TrainerroadClient
     summary = event.summary.downcase
     description = event.description.to_s.downcase
 
-    duration_present?(summary) && !summary.include?("ironman") && !summary.include?("triathlon") && !description.include?("#nomusic")
+    duration_present?(summary) && !description.include?("#nomusic")
   end
 
   # Checks if the event duration is present in the summary.
@@ -67,23 +67,24 @@ class TrainerroadClient
     summary.match(/^\d+:\d+/)
   end
 
-  # Parses the events and converts them into a structured format.
+  # Parses and combines events with the same name, summing their durations.
   #
   # @param events [Array<Icalendar::Event>] An array of Icalendar::Event objects.
   # @return [Array<Hash>] An array of event hashes, each containing the event name, description, and duration.
-  def parse_events(events)
-    events.map do |event|
+  def parse_and_combine_events(events)
+    event_hash = Hash.new { |hash, key| hash[key] = { name: key, duration: 0, description: '' } }
+
+    events.each do |event|
       summary_parts = event.summary.split(' - ')
       duration = summary_parts[0].strip
       name = summary_parts[1].strip
       duration_in_minutes = convert_duration_to_minutes(duration)
 
-      {
-        name: name,
-        description: event.description.to_s,
-        duration: duration_in_minutes
-      }
+      event_hash[name][:duration] += duration_in_minutes
+      event_hash[name][:description] = event.description.to_s
     end
+
+    event_hash.values
   end
 
   # Converts the duration from HH:MM format to minutes.
