@@ -26,7 +26,7 @@ class TrainerroadClient
 
       today = Time.current.in_time_zone(@timezone).to_date
       events = calendar.events.select do |event|
-        event.dtstart.to_date == today && duration_present?(event.summary)
+        event.dtstart.to_date == today && valid_event?(event)
       end
 
       parse_events(events)
@@ -46,6 +46,17 @@ class TrainerroadClient
     else
       raise "TrainerRoad calendar request failed with status code #{response.code}: #{response.message}"
     end
+  end
+
+  # Checks if the event duration is present in the summary and if the event is valid.
+  #
+  # @param event [Icalendar::Event] The calendar event.
+  # @return [Boolean] True if the duration is present and the event is valid, false otherwise.
+  def valid_event?(event)
+    summary = event.summary.downcase
+    description = event.description.to_s.downcase
+
+    duration_present?(summary) && !summary.include?("ironman") && !summary.include?("triathlon") && !description.include?("#nomusic")
   end
 
   # Checks if the event duration is present in the summary.
