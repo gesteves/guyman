@@ -1,6 +1,6 @@
 class PlaylistsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_playlist, only: [:toggle_lock, :regenerate, :regenerate_cover, :toggle_follow]
+  before_action :set_playlist, only: [:toggle_lock, :regenerate, :regenerate_cover, :toggle_follow, :destroy]
 
   def index
     page = params[:page]&.to_i || 1
@@ -69,6 +69,20 @@ class PlaylistsController < ApplicationController
     respond_to do |format|
       format.turbo_stream { render turbo_stream: turbo_stream_notification }
       format.html { redirect_to root_path }
+    end
+  end
+
+  def destroy
+    if @playlist.todays?
+      flash[:warning] = "Today's playlist can't be deleted."
+    else
+      @playlist.destroy
+      flash[:success] = "The playlist <b>#{@playlist.name}</b> has been deleted."
+    end
+
+    respond_to do |format|
+      format.turbo_stream { render turbo_stream: turbo_stream_notification }
+      format.html { redirect_to playlists_path }
     end
   end
 
