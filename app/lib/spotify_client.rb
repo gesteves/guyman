@@ -104,7 +104,7 @@ class SpotifyClient
   # @return [Hash] The first matching track object.
   def search_tracks(track_name, artist_name)
     return if track_name.nil? || artist_name.nil?
-    query = "#{track_name} artist:#{artist_name}"
+    query = "track:#{track_name} artist:#{artist_name}"
     response = HTTParty.get("#{SPOTIFY_API_URL}/search", query: { type: 'track', limit: 1, q: query }, headers: { "Authorization" => "Bearer #{@access_token}" })
     handle_response(response)['tracks']['items'].first
   end
