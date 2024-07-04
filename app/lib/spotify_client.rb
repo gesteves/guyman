@@ -26,7 +26,7 @@ class SpotifyClient
   end
 
   # Creates a new playlist with the given name and description.
-  # 
+  #
   # @param playlist_name [String] The name of the playlist.
   # @param playlist_description [String] The description of the playlist (optional).
   # @param public [Boolean] Whether the playlist is public or private. Defaults to true.
@@ -104,7 +104,7 @@ class SpotifyClient
   # @return [Hash] The first matching track object.
   def search_tracks(track_name, artist_name)
     return if track_name.nil? || artist_name.nil?
-    query = "track:#{track_name} artist:#{artist_name}"
+    query = "track:\"#{track_name}\" artist:\"#{artist_name}\""
     response = HTTParty.get("#{SPOTIFY_API_URL}/search", query: { type: 'track', limit: 1, q: query }, headers: { "Authorization" => "Bearer #{@access_token}" })
     handle_response(response)['tracks']['items'].first
   end
@@ -122,7 +122,7 @@ class SpotifyClient
       headers: { "Authorization" => "Bearer #{@access_token}", "Content-Type" => "image/jpeg" },
       body: jpg_data
     }
-    
+
     response = HTTParty.put("#{SPOTIFY_API_URL}/playlists/#{playlist_id}/images", options)
 
     handle_response(response)
@@ -164,7 +164,7 @@ class SpotifyClient
     response = HTTParty.get("#{SPOTIFY_API_URL}/me", headers: { "Authorization" => "Bearer #{@access_token}" })
     handle_response(response)['id']
   end
-  
+
   # Converts a PNG image to a base64-encoded JPEG image, keeping it under the given file size.
   #
   # @param image_url [String] The URL of the PNG image.
@@ -180,9 +180,9 @@ class SpotifyClient
       quality = 80
       image.quality(quality)
       jpeg_data = image.to_blob
-  
+
       base64_image = Base64.strict_encode64(jpeg_data)
-  
+
       # Reduce the quality until the base64 size is less than MAX_IMAGE_FILE_SIZE
       while base64_image.bytesize > MAX_IMAGE_FILE_SIZE && quality > MIN_IMAGE_QUALITY
         quality -= 5
@@ -190,7 +190,7 @@ class SpotifyClient
         jpeg_data = image.to_blob
         base64_image = Base64.strict_encode64(jpeg_data)
       end
-  
+
       return if quality <= MIN_IMAGE_QUALITY
       base64_image
     else
