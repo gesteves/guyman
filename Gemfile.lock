@@ -366,6 +366,7 @@ PLATFORMS
   aarch64-linux
   arm64-darwin-22
   arm64-darwin-23
+  arm64-darwin-24
   x86_64-linux
 
 DEPENDENCIES
@@ -403,7 +404,7 @@ DEPENDENCIES
   web-console
 
 RUBY VERSION
-   ruby 3.3.1p55
+   ruby 3.3.5p100
 
 BUNDLED WITH
-   2.4.10
+   2.5.22

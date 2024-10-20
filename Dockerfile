@@ -1,4 +1,4 @@
-FROM ruby:3.3.1
+FROM ruby:3.3.5
 
 # Install Node.js (latest LTS version) and npm
 RUN curl -sL https://deb.nodesource.com/setup_lts.x | bash -
