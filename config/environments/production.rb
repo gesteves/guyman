@@ -46,13 +46,15 @@ Rails.application.configure do
     ENV['ALLOWED_REQUEST_ORIGIN']
   ]
 
-
   # Assume all access to the app is happening through a SSL-terminating reverse proxy.
   # Can be used together with config.force_ssl for Strict-Transport-Security and secure cookies.
   # config.assume_ssl = true
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
   config.force_ssl = true
+
+  # Skip http-to-https redirect for the default health check endpoint.
+  # config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
 
   # Log to STDOUT by default
   config.logger = ActiveSupport::Logger.new(STDOUT)
@@ -74,6 +76,8 @@ Rails.application.configure do
   # config.active_job.queue_adapter = :resque
   # config.active_job.queue_name_prefix = "workout_playlist_generator_production"
 
+  # Disable caching for Action Mailer templates even if Action Controller
+  # caching is enabled.
   config.action_mailer.perform_caching = false
 
   # Ignore bad email addresses and do not raise email delivery errors.
