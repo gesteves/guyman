@@ -1,6 +1,6 @@
 class PlaylistsController < ApplicationController
-  before_action :authenticate_user!, except: [:redirect_to_spotify]
-  before_action :set_playlist, only: [:toggle_lock, :regenerate, :regenerate_cover, :toggle_follow, :destroy, :redirect_to_spotify]
+  before_action :authenticate_user!
+  before_action :set_playlist, only: [:toggle_lock, :regenerate, :regenerate_cover, :toggle_follow, :destroy]
 
   def index
     page = params[:page]&.to_i || 1
@@ -84,10 +84,6 @@ class PlaylistsController < ApplicationController
       format.turbo_stream { render turbo_stream: turbo_stream_notification }
       format.html { redirect_to playlists_path }
     end
-  end
-
-  def redirect_to_spotify
-    redirect_to @playlist.spotify_url, allow_other_host: true
   end
 
   private

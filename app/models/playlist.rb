@@ -1,7 +1,4 @@
 class Playlist < ApplicationRecord
-  include Rails.application.routes.url_helpers
-  include ActionView::Helpers::UrlHelper
-
   belongs_to :user
   belongs_to :activity, dependent: :destroy
   belongs_to :music_request, -> { with_deleted }, optional: true
@@ -37,13 +34,6 @@ class Playlist < ApplicationRecord
   def spotify_url
     return if spotify_playlist_id.blank?
     "https://open.spotify.com/playlist/#{spotify_playlist_id}"
-  end
-
-  # Returns a URL that redirects to the Spotify playlist.
-  #
-  # @return [String] The redirect URL for the Spotify playlist.
-  def spotify_redirect_url
-    redirect_to_spotify_playlist_url(self.id, host: ENV['DOMAIN'] || 'localhost:3000')
   end
 
   # Get the most recent unique track URIs from the user's playlists, excluding the current playlist.
