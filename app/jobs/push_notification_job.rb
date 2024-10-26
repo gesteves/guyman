@@ -1,7 +1,5 @@
 class PushNotificationJob < ApplicationJob
-  include Rails.application.routes.url_helpers
   include ActionView::Helpers::AssetUrlHelper
-  include ActionView::Helpers::UrlHelper
 
   def perform(push_subscription_id, playlist_id)
     push_subscription = PushSubscription.find(push_subscription_id)
@@ -23,7 +21,7 @@ class PushNotificationJob < ApplicationJob
       title: playlist.name,
       body: playlist.description,
       icon: cover_url,
-      url: redirect_to_spotify_playlist_url(playlist),
+      url: playlist.spotify_redirect_url,
     }
 
     begin

@@ -87,7 +87,7 @@ class PlaylistsController < ApplicationController
   end
 
   def redirect_to_spotify
-    redirect_to @playlist.spotify_url
+    redirect_to @playlist.spotify_url, allow_other_host: true
   end
 
   private
