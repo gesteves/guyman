@@ -1,5 +1,5 @@
 class PlaylistsController < ApplicationController
-  before_action :authenticate_user!
+  before_action :authenticate_user!, except: [:redirect_to_spotify]
   before_action :set_playlist, only: [:toggle_lock, :regenerate, :regenerate_cover, :toggle_follow, :destroy, :redirect_to_spotify]
 
   def index
