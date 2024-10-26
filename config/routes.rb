@@ -43,6 +43,13 @@ Rails.application.routes.draw do
   resources :tracks, only: [:index, :destroy]
 
   get "/settings", to: "preferences#edit", as: :settings
+
+  #PWA
+  get    '/service_worker.js'               => 'service_worker#index', defaults: { format: 'js' }, :as => :service_worker
+  get    '/manifest.json'                   => 'manifest#index', :as => :manifest
+  post   '/push-notifications/subscription' => 'push_subscriptions#create', :as => :push_subscribe
+  delete '/push-notifications/subscription' => 'push_subscriptions#destroy'
+
   # Defines the root path route ("/")
   root "home#index"
 end

@@ -28,6 +28,14 @@ class Playlist < ApplicationRecord
     "https://open.spotify.com/embed/playlist/#{spotify_playlist_id}#{cache_buster}"
   end
 
+  # Returns the URL for the Spotify playlist.
+  #
+  # @return [String] The URL for the Spotify playlist.
+  def spotify_url
+    return if spotify_playlist_id.blank?
+    "https://open.spotify.com/playlist/#{spotify_playlist_id}"
+  end
+
   # Get the most recent unique track URIs from the user's playlists, excluding the current playlist.
   #
   # @return [Array<String>] An array of recent unique track URIs.

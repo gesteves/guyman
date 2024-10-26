@@ -60,6 +60,14 @@
       </p>
     </div>
 
+    <div class="field" data-controller="push-notifications" data-push-notifications-vapid-public-key-value="<%= ENV['VAPID_PUBLIC_KEY'] %>" data-push-notifications-endpoint-url-value="<%= push_subscribe_path %>">
+      <div class="control">
+        <%= form.label :notify_when_playlists_are_generated, class: "checkbox", "data-push-notifications-target": "label" do %>
+          <%= form.check_box :notify_when_playlists_are_generated, class: "checkbox", "data-push-notifications-target": "checkbox", "data-action": "click->push-notifications#toggleSubscription"  %> Notify me when playlists are generated
+        <% end %>
+      </div>
+    </div>
+
     <hr>
 
     <div class="field is-grouped is-grouped-right">

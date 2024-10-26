@@ -6,6 +6,7 @@ class User < ApplicationRecord
   has_many :playlists, -> { order(created_at: :desc)}, dependent: :destroy
   has_many :music_requests, dependent: :destroy
   has_many :activities, -> { order(created_at: :desc) }, dependent: :destroy
+  has_many :push_subscriptions, dependent: :destroy
 
   def self.from_omniauth(auth)
     authentication = Authentication.where(provider: auth.provider, uid: auth.uid).first_or_initialize
@@ -183,6 +184,13 @@ class User < ApplicationRecord
         .where.not(name: event_names)
         .each do |activity|
       activity.destroy
+    end
+  end
+
+  # Loop through every push subscription and notify that the given playlist has been generated.
+  def send_push_notifications_for_playlist(playlist_id)
+    self.push_subscriptions.each do |ps|
+      PushNotificationJob.perform_async(ps.id, playlist_id)
     end
   end
 end

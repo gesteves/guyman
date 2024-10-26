@@ -9,3 +9,6 @@ application.register("navbar", NavbarController)
 
 import NotificationController from "./notification_controller"
 application.register("notification", NotificationController)
+
+import PushNotificationsController from "./push_notifications_controller"
+application.register("push-notifications", PushNotificationsController)

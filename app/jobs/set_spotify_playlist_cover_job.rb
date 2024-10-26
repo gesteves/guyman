@@ -9,6 +9,7 @@ class SetSpotifyPlaylistCoverJob < ApplicationJob
     spotify_client.set_playlist_cover(playlist.spotify_playlist_id, image_url)
     playlist.update_cover_image_timestamp!
     playlist.done_generating_cover_image!
+    user.send_push_notifications_for_playlist(playlist_id)
   end
 
   sidekiq_retries_exhausted do |msg, _|

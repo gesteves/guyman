@@ -56,6 +56,7 @@ gem 'vite_rails'
 gem 'sassc'
 gem 'lograge'
 gem 'bugsnag'
+gem 'web-push'
 
 # Background jobs
 gem 'sidekiq'

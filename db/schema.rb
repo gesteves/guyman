@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_10_20_154415) do
+ActiveRecord::Schema[7.2].define(version: 2024_10_26_171233) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -80,6 +80,16 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_20_154415) do
     t.index ["user_id"], name: "index_preferences_on_user_id"
   end
 
+  create_table "push_subscriptions", force: :cascade do |t|
+    t.string "endpoint"
+    t.string "p256dh"
+    t.string "auth"
+    t.bigint "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_push_subscriptions_on_user_id"
+  end
+
   create_table "tracks", force: :cascade do |t|
     t.bigint "playlist_id", null: false
     t.string "title"
@@ -112,5 +122,6 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_20_154415) do
   add_foreign_key "playlists", "music_requests"
   add_foreign_key "playlists", "users"
   add_foreign_key "preferences", "users"
+  add_foreign_key "push_subscriptions", "users"
   add_foreign_key "tracks", "playlists"
 end
