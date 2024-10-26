@@ -4,10 +4,5 @@ one:
   endpoint: MyString
   p256dh: MyString
   auth: MyString
-  user: one
+  user: basic
 
-two:
-  endpoint: MyString
-  p256dh: MyString
-  auth: MyString
-  user: two
