@@ -1,5 +1,6 @@
 class PushNotificationJob < ApplicationJob
   include ActionView::Helpers::AssetUrlHelper
+  include ActionView::Helpers::UrlHelper
 
   def perform(push_subscription_id, playlist_id)
     push_subscription = PushSubscription.find(push_subscription_id)
