@@ -23,6 +23,10 @@ class User < ApplicationRecord
     authentication.user
   end
 
+  def rememberable_value
+    remember_token || generate_remember_token
+  end
+
   # Retrieves today's events in the user's calendar.
   #
   # @return [Array] The events for today.
@@ -185,5 +189,13 @@ class User < ApplicationRecord
         .each do |activity|
       activity.destroy
     end
+  end
+
+  private
+
+  def generate_remember_token
+    self.remember_token = Devise.friendly_token
+    save(validate: false)
+    remember_token
   end
 end
