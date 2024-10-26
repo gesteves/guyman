@@ -25,6 +25,7 @@ Rails.application.routes.draw do
       post :toggle_lock
       post :regenerate
       post :regenerate_cover
+      get :redirect_to_spotify
     end
 
     collection do

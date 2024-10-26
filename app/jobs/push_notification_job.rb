@@ -21,7 +21,7 @@ class PushNotificationJob < ApplicationJob
       title: playlist.name,
       body: playlist.description,
       icon: cover_url,
-      url: playlist.spotify_url
+      url: redirect_to_spotify_playlist_url(playlist),
     }
 
     begin
