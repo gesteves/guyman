@@ -16,7 +16,7 @@ module Users
       @user = User.from_omniauth(auth)
 
       if @user.persisted?
-        sign_in_and_redirect @user, event: :authentication
+        sign_in_and_redirect @user, event: :authentication, remember_me: true
         set_flash_message(:notice, :success, kind: kind) if is_navigational_format?
       else
         session["devise.#{kind.downcase}_data"] = auth
