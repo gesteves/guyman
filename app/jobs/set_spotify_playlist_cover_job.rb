@@ -16,5 +16,6 @@ class SetSpotifyPlaylistCoverJob < ApplicationJob
     _user_id, playlist_id, _image_url = msg['args']
     playlist = Playlist.find(playlist_id)
     playlist.done_generating_cover_image!
+    user.send_push_notifications_for_playlist(playlist_id)
   end
 end
