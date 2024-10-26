@@ -1,4 +1,5 @@
 class PushNotificationJob < ApplicationJob
+  include Rails.application.routes.url_helpers
   include ActionView::Helpers::AssetUrlHelper
   include ActionView::Helpers::UrlHelper
 
