@@ -10,6 +10,7 @@ class GeneratePlaylistJob < ApplicationJob
     return if playlist.locked? || playlist.processing?
 
     playlist.processing!
+    playlist.push_notifications_not_sent!
 
     playlist.update!(music_request_id: user.current_music_request.id) if playlist.music_request.blank?
 

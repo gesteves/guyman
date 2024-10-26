@@ -186,11 +186,4 @@ class User < ApplicationRecord
       activity.destroy
     end
   end
-
-  # Loop through every push subscription and notify that the given playlist has been generated.
-  def send_push_notifications_for_playlist(playlist_id)
-    self.push_subscriptions.each do |ps|
-      PushNotificationJob.perform_async(ps.id, playlist_id)
-    end
-  end
 end

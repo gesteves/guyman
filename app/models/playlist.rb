@@ -92,6 +92,20 @@ class Playlist < ApplicationRecord
     update!(cover_image_updated_at: Time.current)
   end
 
+  # Sets the playlist's notifications flag to true if notifications have been sent.
+  #
+  # @return [void]
+  def push_notifications_sent!
+    update!(push_notifications_sent: true)
+  end
+
+  # Sets the playlist's notifications flag to false if notifications have not been sent.
+  #
+  # @return [void]
+  def push_notifications_not_sent!
+    update!(push_notifications_sent: false)
+  end
+
   # A playlist can be processed if:
   # - It doesn't have any tracks
   # - It's not being processed already
@@ -121,6 +135,15 @@ class Playlist < ApplicationRecord
   # @return [Integer] The total duration of the playlist in milliseconds.
   def total_duration
     tracks.sum(:duration_ms)
+  end
+
+  # Loop through every push subscription the user has and notify that the playlist has been generated.
+  def send_push_notifications!
+    return if push_notifications_sent?
+    user.push_subscriptions.each do |ps|
+      PushNotificationJob.perform_async(ps.id, id)
+    end
+    push_notifications_sent!
   end
 
   private
