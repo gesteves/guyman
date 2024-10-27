@@ -57,6 +57,7 @@ gem 'sassc'
 gem 'lograge'
 gem 'bugsnag'
 gem 'web-push'
+gem 'dalli'
 
 # Background jobs
 gem 'sidekiq'
