@@ -43,7 +43,7 @@ class Playlist < ApplicationRecord
     user.playlists.joins(:tracks)
           .where.not(id: id)
           .where.not(tracks: { spotify_uri: nil })
-          .where('tracks.created_at >= ?', 2.weeks.ago)
+          .where('tracks.created_at >= ?', 1.month.ago)
           .select('tracks.spotify_uri, tracks.created_at')
           .order('tracks.created_at DESC')
           .pluck('tracks.spotify_uri')
