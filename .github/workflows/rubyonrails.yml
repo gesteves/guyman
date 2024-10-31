@@ -35,12 +35,12 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: 'lts/*'
+        node-version-file: '.nvmrc'
 
     - name: Set up Ruby
       uses: ruby/setup-ruby@v1
       with:
-        ruby-version: 3.3.5
+        ruby-version-file: '.ruby-version'
 
     - name: Install dependencies
       run: |
