@@ -133,11 +133,9 @@ class SpotifyClient
   # @param playlist_id [String] The ID of the playlist to get the cover for.
   # @return [String] The URL of the largest cover image available.
   def get_playlist_cover_url(playlist_id)
-    Rails.cache.fetch("spotify:playlist:#{playlist_id}:cover_url", expires_in: 1.minute) do
-      response = HTTParty.get("#{SPOTIFY_API_URL}/playlists/#{playlist_id}/images", headers: { "Authorization" => "Bearer #{@access_token}" })
-      images = handle_response(response)
-      images.max_by { |image| image['height'] }['url']
-    end
+    response = HTTParty.get("#{SPOTIFY_API_URL}/playlists/#{playlist_id}/images", headers: { "Authorization" => "Bearer #{@access_token}" })
+    images = handle_response(response)
+    images.max_by { |image| image['height'] }['url']
   end
 
   private
