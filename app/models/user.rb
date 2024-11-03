@@ -128,6 +128,7 @@ class User < ApplicationRecord
 
   # Processes the users workouts of the day:
   # - Deletes activities whose events have been removed from the calendar.
+  # - Unfollows old playlists.
   # - Fetches the user's calendar events for today.
   # - Creates activities for each event if they don't exist.
   # - Updates the description and duration of existing activities if they have changed.
@@ -136,6 +137,7 @@ class User < ApplicationRecord
   def process_todays_activities
     updates = false
     destroy_activities_removed_from_calendar
+    unfollow_old_playlists
     todays_calendar_events.each do |event|
       # Find any playlists already created for this workout today.
       activity = activity_for_calendar_event(event[:name])
