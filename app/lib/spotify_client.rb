@@ -135,6 +135,7 @@ class SpotifyClient
   def get_playlist_cover_url(playlist_id)
     response = HTTParty.get("#{SPOTIFY_API_URL}/playlists/#{playlist_id}/images", headers: { "Authorization" => "Bearer #{@access_token}" })
     images = handle_response(response)
+    return if images.empty?
     images.max_by { |image| image['height'] }['url']
   end
 
