@@ -3,7 +3,6 @@ class PushNotificationJob < ApplicationJob
 
   def perform(push_subscription_id, playlist_id)
     push_subscription = PushSubscription.find(push_subscription_id)
-    user = push_subscription.user
     playlist = Playlist.find(playlist_id)
 
     return if push_subscription.blank? || playlist.blank?
