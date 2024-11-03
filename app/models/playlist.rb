@@ -146,6 +146,13 @@ class Playlist < ApplicationRecord
     push_notifications_sent!
   end
 
+  def cover_image_url
+    Rails.cache.fetch("spotify:playlist:#{spotify_playlist_id}:cover_url", expires_in: 1.minute) do
+      spotify_client = SpotifyClient.new(user.spotify_user_id, user.spotify_refresh_token)
+      spotify_client.get_playlist_cover_url(spotify_playlist_id)
+    end
+  end
+
   private
 
   def unfollow_spotify_playlist

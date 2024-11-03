@@ -14,13 +14,10 @@ class PushNotificationJob < ApplicationJob
       private_key: ENV['VAPID_PRIVATE_KEY']
     }
 
-    spotify_client = SpotifyClient.new(user.spotify_user_id, user.spotify_refresh_token)
-    cover_url = spotify_client.get_playlist_cover_url(playlist.spotify_playlist_id)
-
     message = {
       title: playlist.name,
       body: playlist.description,
-      icon: cover_url,
+      icon: playlist.cover_image_url,
       url: playlist.spotify_url,
     }
 
