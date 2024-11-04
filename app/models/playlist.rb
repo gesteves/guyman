@@ -139,7 +139,7 @@ class Playlist < ApplicationRecord
 
   # Loop through every push subscription the user has and notify that the playlist has been generated.
   def send_push_notifications!
-    return if push_notifications_sent?
+    return if processing? || generating_cover_image? || push_notifications_sent?
     user.push_subscriptions.each do |ps|
       PushNotificationJob.perform_async(ps.id, id)
     end

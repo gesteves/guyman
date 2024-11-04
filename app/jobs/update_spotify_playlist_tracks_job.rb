@@ -11,6 +11,7 @@ class UpdateSpotifyPlaylistTracksJob < ApplicationJob
     spotify_client.update_playlist_tracks(playlist.spotify_playlist_id, playlist.spotify_uris)
 
     playlist.done_processing!
+    playlist.send_push_notifications!
   end
 
   sidekiq_retries_exhausted do |msg, exception|
