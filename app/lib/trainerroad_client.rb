@@ -17,20 +17,18 @@ class TrainerroadClient
   #
   # @return [Array<Hash>] An array of event hashes, each containing the event name, description, and duration.
   def get_events_for_today
-    Rails.cache.fetch("trainerroad:#{@calendar_url.parameterize}:#{@timezone.parameterize}", expires_in: 1.minute) do
-      response = HTTParty.get(@calendar_url)
+    response = HTTParty.get(@calendar_url)
 
-      calendar_data = handle_response(response)
-      calendars = Icalendar::Calendar.parse(calendar_data)
-      calendar = calendars.first
+    calendar_data = handle_response(response)
+    calendars = Icalendar::Calendar.parse(calendar_data)
+    calendar = calendars.first
 
-      today = Time.current.in_time_zone(@timezone).to_date
-      events = calendar.events.select do |event|
-        event.dtstart.to_date == today && valid_event?(event)
-      end
-
-      parse_and_combine_events(events)
+    today = Time.current.in_time_zone(@timezone).to_date
+    events = calendar.events.select do |event|
+      event.dtstart.to_date == today && valid_event?(event)
     end
+
+    parse_and_combine_events(events)
   end
 
   private
