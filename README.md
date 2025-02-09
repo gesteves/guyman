@@ -1,3 +1,6 @@
+# Guyman
+
+Pronounced `/ɡi man/`, as in...
 
 ![Daft Punk TRON Legacy](https://github.com/gesteves/guyman/assets/6379/28593907-c16e-426c-b0be-7158e11aebd3)
 
